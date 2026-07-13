@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalaonni - kalakelien mittari ja vieheopas</title>
+<title>FastFishing - kalakelien mittari ja vieheopas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -200,11 +200,14 @@ main { padding-bottom: 70px; }
 .mini-link { min-height: 38px; padding: 7px 12px; font-size: .78rem; }
 .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .fish-card { overflow: hidden; border-radius: var(--radius); }
-.fish-hero { display: grid; grid-template-columns: 1fr 180px; min-height: 210px; padding: 28px; }
-.fish-visual { display: grid; place-items: center; min-height: 140px; border-radius: 50% 12px 50% 12px; background: var(--mist); }
-.checklist { display: grid; gap: 12px; padding: 0 28px 28px; }
+.fish-hero { display: block; }
+.fish-body { padding: 28px; }
+.fish-visual { width: 100%; aspect-ratio: 21 / 9; background: var(--mist); overflow: hidden; }
+.fish-visual img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; display: block; }
+.checklist { display: grid; gap: 12px; padding: 0 0 4px; }
 .check { display: grid; grid-template-columns: 24px 1fr; gap: 10px; color: var(--ink-soft); }
 .check::before { content: ""; width: 9px; height: 9px; margin-top: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 5px #f3dfc6; }
+.check b { color: var(--ink); }
 
 footer { margin-top: 45px; padding: 36px 0 44px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .82rem; }
 button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
@@ -239,7 +242,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
   .manual-form { grid-template-columns: 1fr; }
   .manual-form > div, .manual-form .full { grid-column: 1; }
   .grid > article, .tip-card, .link-card { grid-column: 1 / -1; }
-  .fish-hero { grid-template-columns: 1fr; }
+  .fish-hero { display: block; }
   .hero-actions .btn { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -257,7 +260,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
       <div class="brand-mark" aria-hidden="true">
         <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M4 16c5.5-6.4 13.2-7.2 22-1-8.8 6.2-16.5 5.4-22 1Z" fill="#ffffff"/><path d="M24 15l4-4v10l-4-4" fill="#ffffff"/><circle cx="10.2" cy="15.2" r="1.8" fill="#d97725"/></svg>
       </div>
-      <span>Kalaonni</span>
+      <span>FastFishing</span>
     </div>
     <nav class="tabs" aria-label="Sivut">
       <button class="tab-btn active" data-page="kelimittari">Kelimittari</button>
@@ -272,7 +275,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
 <header class="shell hero">
   <div class="hero-copy">
     <div class="eyebrow">Kalapäivän suunnitteluun</div>
-    <h1>Kalaonni</h1>
+    <h1>FastFishing</h1>
     <p class="lead">Yksi sivu, josta näkee nopeasti kelin, syönti-ikkunan ja millä vieheellä kannattaisi aloittaa. Ei lupaa kalaa, mutta säästää vähän arvailua.</p>
     <div class="hero-actions">
       <a class="btn primary" href="#kelimittari" data-go="kelimittari">Katso keli</a>
@@ -378,8 +381,10 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
     </div>
     <div class="species-tools" id="speciesButtons"></div>
     <div class="fish-hero">
-      <article class="fish-card large" id="fishInfo"></article>
-      <div class="fish-visual" aria-hidden="true" id="fishVisual"></div>
+      <article class="fish-card large">
+        <div class="fish-visual" aria-hidden="true" id="fishVisual"></div>
+        <div class="fish-body" id="fishInfo"></div>
+      </article>
     </div>
   </section>
 
@@ -389,9 +394,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
       <p>Pieni muistilista ennen kuin lähdet rannalle tai veneelle.</p>
     </div>
     <div class="grid">
-      <article class="tip-card"><span class="tag">Pakkaa mukaan</span><h3>Peruspaketti rannalle</h3><p>Monipuolinen rasia syntyy muutamasta lusikasta, vaapusta, lipasta, jigistä, perukkeista, pihdeistä ja mittanauhasta.</p><div class="link-row"><a class="mini-link" href="https://www.motonet.fi/haku?q=kalastusrasia" target="_blank" rel="noopener">Kalastusrasia</a><a class="mini-link" href="https://www.motonet.fi/haku?q=kalastuspihdit" target="_blank" rel="noopener">Pihdit</a></div></article>
+      <article class="tip-card"><span class="tag">Pakkaa mukaan</span><h3>Peruspaketti rannalle</h3><p>Monipuolinen rasia syntyy muutamasta lusikasta, vaapusta, lipasta, jigistä, perukkeista, pihdeistä ja mittanauhasta.</p></article>
       <article class="tip-card"><span class="tag">Solmut</span><h3>Harjoittele kaksi solmua</h3><p>Viehesolmu ja perukkeen liitos riittävät useimpiin tilanteisiin. Testaa solmu aina vetämällä ennen ensimmäistä heittoa.</p><div class="link-row"><a class="mini-link" href="https://www.youtube.com/results?search_query=viehesolmu+kalastus" target="_blank" rel="noopener">Viehesolmu</a><a class="mini-link" href="https://www.youtube.com/results?search_query=perukkeen+liitos+kalastus" target="_blank" rel="noopener">Perukkeen liitos</a></div></article>
-      <article class="tip-card"><span class="tag">Turvallisuus</span><h3>Vesillä ensin järki</h3><p>Pelastusliivit, sääennuste, varavirta puhelimelle ja pimeällä otsalamppu ovat halvempia kuin huono yllätys.</p><div class="link-row"><a class="mini-link" href="https://www.motonet.fi/haku?q=pelastusliivit" target="_blank" rel="noopener">Pelastusliivit</a></div></article>
+      <article class="tip-card"><span class="tag">Turvallisuus</span><h3>Vesillä ensin järki</h3><p>Pelastusliivit, sääennuste, varavirta puhelimelle ja pimeällä otsalamppu ovat halvempia kuin huono yllätys.</p></article>
       <article class="tip-card"><span class="tag">Lukeminen</span><h3>Katso tuulen puoli</h3><p>Tuuli työntää ravintoa rannoille ja karikoille. Kokeile ensin tuulen pieksemää reunaa, sitten suojaisampaa kohtaa.</p></article>
       <article class="tip-card"><span class="tag">Rytmi</span><h3>Vaihda vain yhtä asiaa</h3><p>Jos ei tärppää, vaihda ensin nopeutta, sitten syvyyttä ja vasta lopuksi väriä. Näin opit, mikä oikeasti vaikutti.</p></article>
       <article class="tip-card"><span class="tag">Vastuullisuus</span><h3>Mittaa, vapauta, ota kohtuudella</h3><p>Tarkista alamitat, rauhoitukset ja paikalliset rajoitukset. Isot emokalat kannattaa usein päästää jatkamaan sukua.</p></article>
@@ -404,9 +409,6 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
       <p>Ostohakuja, sääpalveluja ja virallisia linkkejä samassa nipussa.</p>
     </div>
     <div class="grid">
-      <article class="link-card"><span class="tag">Ostohaku</span><h3>Hauelle</h3><p>Isot vaaput, lusikat, jerkbaitit ja tukeva peruke.</p><div class="link-row"><a class="mini-link" href="https://www.motonet.fi/haku?q=haukivaappu" target="_blank" rel="noopener">Haukivaappu</a><a class="mini-link" href="https://www.motonet.fi/haku?q=haukiperuke" target="_blank" rel="noopener">Peruke</a></div></article>
-      <article class="link-card"><span class="tag">Ostohaku</span><h3>Kuhalle</h3><p>Jigit, jigipäät, kuhan vaaput ja hämärään sopivat värit.</p><div class="link-row"><a class="mini-link" href="https://www.motonet.fi/haku?q=kuhajigi" target="_blank" rel="noopener">Kuhajigi</a><a class="mini-link" href="https://www.motonet.fi/haku?q=kuhavaappu" target="_blank" rel="noopener">Kuhavaappu</a></div></article>
-      <article class="link-card"><span class="tag">Ostohaku</span><h3>Ahvenelle</h3><p>Pienet jigit, lipat, lusikat ja kevyet vavat.</p><div class="link-row"><a class="mini-link" href="https://www.motonet.fi/haku?q=ahvenjigi" target="_blank" rel="noopener">Ahvenjigi</a><a class="mini-link" href="https://www.motonet.fi/haku?q=lippauistin" target="_blank" rel="noopener">Lippa</a></div></article>
       <article class="link-card"><span class="tag">Viralliset</span><h3>Luvat ja rajoitukset</h3><p>Tarkista kalastonhoitomaksu, aluekohtaiset luvat ja rauhoitusalueet ennen reissua.</p><div class="link-row"><a class="mini-link" href="https://www.eraluvat.fi/kalastus" target="_blank" rel="noopener">Eräluvat</a><a class="mini-link" href="https://kalastusrajoitus.fi/" target="_blank" rel="noopener">Kalastusrajoitus.fi</a></div></article>
       <article class="link-card"><span class="tag">Sää</span><h3>Sää ja tuuli</h3><p>Kelimittari käyttää Open-Meteota, mutta reissulle kannattaa tarkistaa myös sadetutka ja tuuliennuste.</p><div class="link-row"><a class="mini-link" href="https://www.ilmatieteenlaitos.fi/saa" target="_blank" rel="noopener">Ilmatieteen laitos</a><a class="mini-link" href="https://www.yr.no/" target="_blank" rel="noopener">Yr</a></div></article>
       <article class="link-card"><span class="tag">Kartat</span><h3>Paikan etsiminen</h3><p>Syvänteet, karikot, salmet ja kasvillisuusrajat ovat usein parempia kuin satunnainen suora ranta.</p><div class="link-row"><a class="mini-link" href="https://asiointi.maanmittauslaitos.fi/karttapaikka/" target="_blank" rel="noopener">Karttapaikka</a><a class="mini-link" href="https://www.retkikartta.fi/" target="_blank" rel="noopener">Retkikartta</a></div></article>
@@ -416,7 +418,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
 
 <footer>
   <div class="shell">
-    Sääaineisto: Open-Meteo. Kuun vaihe lasketaan selaimessa. Pisteytys on suuntaa-antava: kalastuspaikka, veden lämpö, ravintokalojen liike ja paikallinen paine voivat ratkaista enemmän kuin mikään yksittäinen mittari. Motonet-linkit ovat hakulinkkejä, koska tuotteiden nimet ja saatavuus vaihtuvat.
+    Sääaineisto: Open-Meteo. Kuun vaihe lasketaan selaimessa. Pisteytys on suuntaa-antava: kalastuspaikka, veden lämpö, ravintokalojen liike ja paikallinen paine voivat ratkaista enemmän kuin mikään yksittäinen mittari.
   </div>
 </footer>
 
@@ -462,6 +464,7 @@ const LOCATIONS = [
   {name:"Juuka - Pielinen", lat:63.2333, lon:29.2500},
   {name:"Juupajoki - Kopsamo", lat:61.7830, lon:24.4500},
   {name:"Juva - Jukajärvi", lat:61.8830, lon:27.8500},
+  {name:"Juva - Kangasjärvi", lat:62.0100, lon:27.3689},
   {name:"Jyväskylä - Päijänne", lat:62.2426, lon:25.7473},
   {name:"Jämsä - Längelmävesi", lat:61.7330, lon:24.8160},
   {name:"Jämsä - Päijänne", lat:61.8640, lon:25.1900},
@@ -509,6 +512,7 @@ const LOCATIONS = [
   {name:"Kuusamo - Kuusinkijoki", lat:66.1660, lon:29.6160},
   {name:"Kuusamo - Oulankajoki", lat:66.3660, lon:29.3160},
   {name:"Kärsämäki - Pyhäjoki", lat:63.9830, lon:25.7660},
+  {name:"Lahti - Kymijärvi (Nastolan raja)", lat:60.9696, lon:25.7993},
   {name:"Lahti - Vesijärvi", lat:60.9827, lon:25.6612},
   {name:"Lapinlahti - Onkivesi", lat:63.2660, lon:27.4000},
   {name:"Lappeenranta - Saimaa", lat:61.0587, lon:28.1887},
@@ -635,38 +639,38 @@ const SPECIES = [
 
 const LURES = {
   hauki: {
-    clear:{tag:"Kirkas vesi", name:"Luonnonvärinen haukivaappu", desc:"15-20 cm vaappu, hopea-sininen tai ahvenkuvio. Vedä hitaasti ja pidä pitkiä taukoja.", links:[["Haukivaappu","https://www.motonet.fi/haku?q=haukivaappu"]]},
-    murky:{tag:"Samea / pilvinen", name:"Ärsykeväri ja leveä uinti", desc:"Oranssi, firetiger, keltainen tai musta. Kokeile lusikkaa, spinnerbaitia tai isoa shadia.", links:[["Spinnerbait","https://www.motonet.fi/haku?q=spinnerbait"]]},
-    cold:{tag:"Kylmä vesi", name:"Hidas suspending-vaappu", desc:"Kylmässä hauki säästää energiaa. Uita hitaasti, pysäytä viehe ja anna sen jäädä iskuetäisyydelle.", links:[["Jerkbait","https://www.motonet.fi/haku?q=jerkbait"]]}
+    clear:{tag:"Kirkas vesi", name:"Luonnonvärinen haukivaappu", desc:"15-20 cm vaappu, hopea-sininen tai ahvenkuvio. Vedä hitaasti ja pidä pitkiä taukoja."},
+    murky:{tag:"Samea / pilvinen", name:"Ärsykeväri ja leveä uinti", desc:"Oranssi, firetiger, keltainen tai musta. Kokeile lusikkaa, spinnerbaitia tai isoa shadia."},
+    cold:{tag:"Kylmä vesi", name:"Hidas suspending-vaappu", desc:"Kylmässä hauki säästää energiaa. Uita hitaasti, pysäytä viehe ja anna sen jäädä iskuetäisyydelle."}
   },
   kuha: {
-    clear:{tag:"Kirkas vesi", name:"Ohut luonnonvärinen jigi", desc:"Pohjan tuntumaan 7-12 cm jigi, rauhallinen pomputus. Kirkkaalla vedellä hopea, muikku ja kuore toimivat.", links:[["Kuhajigi","https://www.motonet.fi/haku?q=kuhajigi"]]},
-    murky:{tag:"Hämärä / samea", name:"Chartreuse tai UV-jigi", desc:"Kirkas keltavihreä, pinkki tai moottoriöljy auttaa kuhaa löytämään vieheen huonossa valossa.", links:[["UV jigi","https://www.motonet.fi/haku?q=uv%20jigi"]]},
-    cold:{tag:"Kylmä vesi", name:"Pieni pohjajigi ja pitkä tauko", desc:"Kevyempi jigipää, pohjakontakti ja maltillinen nosto. Kylmän veden kuha ottaa usein varovasti.", links:[["Kuhajigi","https://www.motonet.fi/haku?q=kuhajigi"]]}
+    clear:{tag:"Kirkas vesi", name:"Ohut luonnonvärinen jigi", desc:"Pohjan tuntumaan 7-12 cm jigi, rauhallinen pomputus. Kirkkaalla vedellä hopea, muikku ja kuore toimivat."},
+    murky:{tag:"Hämärä / samea", name:"Chartreuse tai UV-jigi", desc:"Kirkas keltavihreä, pinkki tai moottoriöljy auttaa kuhaa löytämään vieheen huonossa valossa."},
+    cold:{tag:"Kylmä vesi", name:"Pieni pohjajigi ja pitkä tauko", desc:"Kevyempi jigipää, pohjakontakti ja maltillinen nosto. Kylmän veden kuha ottaa usein varovasti."}
   },
   ahven: {
-    clear:{tag:"Kirkas vesi", name:"Mikrojigi tai pieni lippa", desc:"Ahven-, särki- ja kuorevärit. Etsi parvia penkan reunoilta ja kasvillisuuden aukoista.", links:[["Ahvenjigi","https://www.motonet.fi/haku?q=ahvenjigi"]]},
-    murky:{tag:"Samea / tuulinen", name:"Pieni lusikka ja räikeä jigi", desc:"Oranssi, keltainen ja kupari näkyvät paremmin. Nopea etsintä ja pysäytykset paljastavat parven.", links:[["Mikrojigi","https://www.motonet.fi/haku?q=mikrojigi"]]},
-    cold:{tag:"Kylmä vesi", name:"Hidas mikrojigi", desc:"Pieni pyrstö, kevyt pää ja lähes paikoillaan uitto. Kokeile myös pilkkimäistä pystysuoraa liikettä.", links:[["Mikrojigi","https://www.motonet.fi/haku?q=mikrojigi"]]}
+    clear:{tag:"Kirkas vesi", name:"Mikrojigi tai pieni lippa", desc:"Ahven-, särki- ja kuorevärit. Etsi parvia penkan reunoilta ja kasvillisuuden aukoista."},
+    murky:{tag:"Samea / tuulinen", name:"Pieni lusikka ja räikeä jigi", desc:"Oranssi, keltainen ja kupari näkyvät paremmin. Nopea etsintä ja pysäytykset paljastavat parven."},
+    cold:{tag:"Kylmä vesi", name:"Hidas mikrojigi", desc:"Pieni pyrstö, kevyt pää ja lähes paikoillaan uitto. Kokeile myös pilkkimäistä pystysuoraa liikettä."}
   },
   taimen: {
-    clear:{tag:"Kirkas virta", name:"Kapea lusikka tai luonnonvaappu", desc:"Hopea, kupari ja pikkukalavärit. Heitä virran yli ja anna vieheen leikata virtaa.", links:[["Taimenuistin","https://www.motonet.fi/haku?q=taimenuistin"]]},
-    murky:{tag:"Pilvinen / hämärä", name:"Tumma vaappu tai voimakas siluetti", desc:"Musta, violetti ja kupari näkyvät siluettina. Hämärässä taimen liikkuu rohkeammin rannan tuntumaan.", links:[["Taimenvaappu","https://www.motonet.fi/haku?q=taimenvaappu"]]},
-    cold:{tag:"Viileä vesi", name:"Pieni vaappu pohjan lähellä", desc:"Viileä, hapekas vesi on taimenen etu. Kalasta virran saumoja rauhallisesti.", links:[["Pieni vaappu","https://www.motonet.fi/haku?q=pieni%20vaappu"]]}
+    clear:{tag:"Kirkas virta", name:"Kapea lusikka tai luonnonvaappu", desc:"Hopea, kupari ja pikkukalavärit. Heitä virran yli ja anna vieheen leikata virtaa."},
+    murky:{tag:"Pilvinen / hämärä", name:"Tumma vaappu tai voimakas siluetti", desc:"Musta, violetti ja kupari näkyvät siluettina. Hämärässä taimen liikkuu rohkeammin rannan tuntumaan."},
+    cold:{tag:"Viileä vesi", name:"Pieni vaappu pohjan lähellä", desc:"Viileä, hapekas vesi on taimenen etu. Kalasta virran saumoja rauhallisesti."}
   },
   sarki: {
-    clear:{tag:"Onki", name:"Kevyt koho ja pieni koukku", desc:"Mato, toukka, maissi tai taikina. Hieno siima ja kevyt koho auttavat varovaisella syönnillä.", links:[["Onkivapa","https://www.motonet.fi/haku?q=onkivapa"]]},
-    murky:{tag:"Samea vesi", name:"Tuoksuva syötti", desc:"Leipä, maissi tai valmis pohjasyötti auttaa kalaa löytämään paikan. Ruoki maltillisesti.", links:[["Pohjasyötti","https://www.motonet.fi/haku?q=pohjasy%C3%B6tti"]]},
-    cold:{tag:"Kylmä vesi", name:"Pohjasta hitaasti", desc:"Kylmässä särkikalat liikkuvat hitaasti. Pidä syötti paikallaan ja anna parven löytää se.", links:[["Pohjaonki","https://www.motonet.fi/haku?q=pohjaonki"]]}
+    clear:{tag:"Onki", name:"Kevyt koho ja pieni koukku", desc:"Mato, toukka, maissi tai taikina. Hieno siima ja kevyt koho auttavat varovaisella syönnillä."},
+    murky:{tag:"Samea vesi", name:"Tuoksuva syötti", desc:"Leipä, maissi tai valmis pohjasyötti auttaa kalaa löytämään paikan. Ruoki maltillisesti."},
+    cold:{tag:"Kylmä vesi", name:"Pohjasta hitaasti", desc:"Kylmässä särkikalat liikkuvat hitaasti. Pidä syötti paikallaan ja anna parven löytää se."}
   }
 };
 
 const FISH_INFO = {
-  hauki:{title:"Hauki", mood:"Väijyvä petokala", where:"Ruovikot, matalat lahdet, karikon reunat, kasvillisuuden aukot ja pudotusten yläreunat.", when:"Kevät ja syksy ovat vahvoja. Kesähelteellä etsi viileämpää vettä ja kalasta aamu/ilta.", start:"Iso vaappu, lusikka, shad-jigi, spinnerbait tai jerkbait. Käytä aina puruperuketta.", color:"#78a857"},
-  kuha:{title:"Kuha", mood:"Hämärän saalistaja", where:"Syvänteiden reunat, kovapohjaiset penkat, salmet ja pikkukalaparvien ympäristö.", when:"Iltahämärä, yö ja pilvinen päivä. Lämmin kesävesi aktivoi kuhaa, mutta kirkas aurinko painaa sen syvemmälle.", start:"Jigi pohjan tuntumaan, kuhan vaappu vetoon tai pystypilkki veneestä.", color:"#c9b36a"},
-  ahven:{title:"Ahven", mood:"Parvena liikkuva opportunisti", where:"Laiturit, kivikot, kasvillisuuden reunat, penkat ja pikkukalojen pinnassa näkyvät ajot.", when:"Kesällä usein koko päivän, mutta paras piikki tulee aamulla ja illalla. Kevyt tuuli auttaa.", start:"Mikrojigi, pieni lippa, pieni lusikka tai dropshot.", color:"#d88b3d"},
-  taimen:{title:"Taimen / lohi", mood:"Viileän veden vauhtikala", where:"Virran saumat, niskat, suvannot, rantamatalat kylmällä vedellä ja hapekkaat selkävedet.", when:"Viileä vesi, pilvinen keli, tuuli ja hämärä ovat eduksi. Noudata aina rauhoituksia ja alamittoja.", start:"Kapea lusikka, vaappu, perho tai pieni jigi virran mukaan uitettuna.", color:"#b8c7d0"},
-  sarki:{title:"Särkikalat", mood:"Kevyen ongen varma ilo", where:"Lämpimät lahdet, laiturit, ruovikon reunat ja pohjan tasaiset ruokailupaikat.", when:"Lämmin kausi ja tyyni tai leuto keli. Ruokinta kokoaa parvea.", start:"Koho-onki, pieni koukku, mato, toukka, maissi tai leipä.", color:"#d9d3ad"}
+  hauki:{title:"Hauki", mood:"Väijyvä petokala", where:"Ruovikot, matalat lahdet, karikon reunat, kasvillisuuden aukot ja pudotusten yläreunat.", when:"Kevät ja syksy ovat vahvoja. Kesähelteellä etsi viileämpää vettä ja kalasta aamu/ilta.", start:"Iso vaappu, lusikka, shad-jigi, spinnerbait tai jerkbait. Käytä aina puruperuketta.", color:"#78a857", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Esox_lucius1.jpg"},
+  kuha:{title:"Kuha", mood:"Hämärän saalistaja", where:"Syvänteiden reunat, kovapohjaiset penkat, salmet ja pikkukalaparvien ympäristö.", when:"Iltahämärä, yö ja pilvinen päivä. Lämmin kesävesi aktivoi kuhaa, mutta kirkas aurinko painaa sen syvemmälle.", start:"Jigi pohjan tuntumaan, kuhan vaappu vetoon tai pystypilkki veneestä.", color:"#c9b36a", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Sander_lucioperca_1.jpg"},
+  ahven:{title:"Ahven", mood:"Parvena liikkuva opportunisti", where:"Laiturit, kivikot, kasvillisuuden reunat, penkat ja pikkukalojen pinnassa näkyvät ajot.", when:"Kesällä usein koko päivän, mutta paras piikki tulee aamulla ja illalla. Kevyt tuuli auttaa.", start:"Mikrojigi, pieni lippa, pieni lusikka tai dropshot.", color:"#d88b3d", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Perca_fluviatilis2.jpg"},
+  taimen:{title:"Taimen / lohi", mood:"Viileän veden vauhtikala", where:"Virran saumat, niskat, suvannot, rantamatalat kylmällä vedellä ja hapekkaat selkävedet.", when:"Viileä vesi, pilvinen keli, tuuli ja hämärä ovat eduksi. Itämeren rannikolla vaeltava taimen ja lohi puree kesällä (kesä-elokuu) heikosti - parhaat saumat ovat joissa ja koskilla tai keväällä/syksyllä. Noudata aina rauhoituksia ja alamittoja.", start:"Kapea lusikka, vaappu, perho tai pieni jigi virran mukaan uitettuna.", color:"#b8c7d0", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Brown_trout_Salmo_trutta.jpg"},
+  sarki:{title:"Särkikalat", mood:"Kevyen ongen varma ilo", where:"Lämpimät lahdet, laiturit, ruovikon reunat ja pohjan tasaiset ruokailupaikat.", when:"Lämmin kausi ja tyyni tai leuto keli. Ruokinta kokoaa parvea.", start:"Koho-onki, pieni koukku, mato, toukka, maissi tai leipä.", color:"#d9d3ad", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Common_Roach.JPG"}
 };
 
 const locSel = document.getElementById("locationSelect");
@@ -796,10 +800,14 @@ const SPECIES_MODIFIERS = {
   hauki:c=>((c.cloud>=40?8:0)+(c.cloud<20&&!c.isPrimeTime?-6:0)+(c.temp>22?-10:0)+(c.temp<=16?4:0)+(c.wind>9?-5:0)),
   kuha:c=>((c.cloud>=50?14:0)+(c.cloud<30&&!c.isPrimeTime?-10:0)+(c.isPrimeTime?8:0)+(c.temp<4?-5:0)),
   ahven:c=>((c.wind>=1&&c.wind<=5?6:0)+(c.cloud>=30?5:0)+(c.temp>=8&&c.temp<=20?4:0)),
-  taimen:c=>((c.temp>=4&&c.temp<=14?10:0)+(c.temp>18?-12:0)+(c.wind>=2&&c.wind<=8?6:0)),
+  taimen:c=>((c.temp>=4&&c.temp<=14?10:0)+(c.temp>18?-12:0)+(c.wind>=2&&c.wind<=8?6:0)+(c.isSeaSummer?-45:0)),
   sarki:c=>((c.temp>=14?8:0)+(c.cloud<30?3:0)+(c.temp<5?-8:0))
 };
-function computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species}){
+function isBalticCoast(name){
+  return /meri|saaristo|ahvenanmaa|hanko|kaskinen|kristiinankaupunki|inkoo|kirkkonummi|loviisa|parainen|kemiönsaari|kaarina|tammisaari|pernajanlahti|kuusistonlahti|halikonlahti|porkkala|merenkurkku|suomenlahti|sipoonlahti/i.test(name||"");
+}
+function isSummerMonth(date){ const m=date.getMonth(); return m>=5&&m<=7; }
+function computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species,isSeaSummer}){
   const moon=moonPhaseInfo(new Date());
   let pressureScore=delta<=-3?95:delta<=-1?78:delta<1?58:delta<3?35:12;
   let windScore=wind<1?38:wind<=4?92:wind<=7?68:wind<=10?35:10;
@@ -807,20 +815,23 @@ function computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species}){
   let tempScore=(temp>=5&&temp<=20)?68:(temp<-5||temp>27)?25:48;
   let moonScore=moon.minDays<=1?78:moon.minDays<=3?60:45;
   let timeScore=isPrimeTime?88:45;
-  const score=pressureScore*.26+windScore*.20+cloudScore*.20+moonScore*.12+timeScore*.17+tempScore*.05;
-  const speciesBonus=Math.round((SPECIES_MODIFIERS[species]||(()=>0))({temp,cloud,wind,isPrimeTime})*.6);
-  return {score:Math.max(0,Math.min(100,Math.round(score+speciesBonus))),speciesBonus,moon};
+  let score=pressureScore*.26+windScore*.20+cloudScore*.20+moonScore*.12+timeScore*.17+tempScore*.05;
+  const speciesBonus=Math.round((SPECIES_MODIFIERS[species]||(()=>0))({temp,cloud,wind,isPrimeTime,isSeaSummer})*.6);
+  score=score+speciesBonus;
+  if(species==="taimen"&&isSeaSummer) score=Math.min(score,32);
+  return {score:Math.max(0,Math.min(100,Math.round(score))),speciesBonus,moon,isSeaSummer:!!isSeaSummer};
 }
-function computeScore(data,idx,species){
+function computeScore(data,idx,species,loc){
   const h=data.hourly;
   const pressureNow=h.pressure_msl[idx], pressureBefore=h.pressure_msl[Math.max(0,idx-6)];
   const delta=pressureNow-pressureBefore, wind=h.wind_speed_10m[idx], cloud=h.cloud_cover[idx], temp=h.temperature_2m[idx];
   const now=new Date(), sunrise=new Date(data.daily.sunrise[1]||data.daily.sunrise[0]), sunset=new Date(data.daily.sunset[1]||data.daily.sunset[0]);
   const isPrimeTime=Math.abs(now-sunrise)/60000<=90||Math.abs(now-sunset)/60000<=90;
-  const core=computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species});
-  return {score:core.score,delta,wind,cloud,temp,moon:core.moon,sunrise,sunset,isPrimeTime,pressureNow,speciesBonus:core.speciesBonus};
+  const isSeaSummer=isBalticCoast(loc&&loc.name)&&isSummerMonth(now);
+  const core=computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species,isSeaSummer});
+  return {score:core.score,delta,wind,cloud,temp,moon:core.moon,sunrise,sunset,isPrimeTime,pressureNow,speciesBonus:core.speciesBonus,isSeaSummer:core.isSeaSummer};
 }
-function scoreForHour(data,idx,species){
+function scoreForHour(data,idx,species,loc){
   const h=data.hourly;
   const delta=h.pressure_msl[idx]-h.pressure_msl[Math.max(0,idx-6)];
   const wind=h.wind_speed_10m[idx], cloud=h.cloud_cover[idx], temp=h.temperature_2m[idx];
@@ -828,12 +839,13 @@ function scoreForHour(data,idx,species){
   let dayIdx=data.daily.time.indexOf(dateStr); if(dayIdx===-1) dayIdx=1;
   const sunrise=new Date(data.daily.sunrise[dayIdx]), sunset=new Date(data.daily.sunset[dayIdx]), hourDate=new Date(h.time[idx]);
   const isPrimeTime=Math.abs(hourDate-sunrise)/60000<=90||Math.abs(hourDate-sunset)/60000<=90;
-  const core=computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species});
+  const isSeaSummer=isBalticCoast(loc&&loc.name)&&isSummerMonth(hourDate);
+  const core=computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species,isSeaSummer});
   return {time:hourDate,score:core.score,isPrimeTime};
 }
-function buildHourlyTimeline(data,startIdx,species){
+function buildHourlyTimeline(data,startIdx,species,loc){
   const endIdx=Math.min(data.hourly.time.length-1,startIdx+24), timeline=[];
-  for(let i=startIdx;i<=endIdx;i++) timeline.push(scoreForHour(data,i,species));
+  for(let i=startIdx;i<=endIdx;i++) timeline.push(scoreForHour(data,i,species,loc));
   return timeline;
 }
 function fmtTime(d){return d.toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"})}
@@ -868,6 +880,7 @@ function verdictSentence(info){
   if(info.isPrimeTime) parts.push("ajoitus osuu hämärän syönti-ikkunaan");
   let sentence=parts.length?`Tänään ${parts.join(", ")}.`:"Keli on tavallinen: ei selkeää piikkiä, mutta ei täyttä jarruakaan.";
   if(info.speciesBonus>=8) sentence+=" Olosuhteet suosivat valittua kalaa.";
+  else if(info.isSeaSummer&&info.speciesBonus<-15) sentence+=" Itämeren vaeltava taimen ja lohi ovat kesällä harvassa rannikolla - parhaat saumat löytyvät joista ja koskilta, tai odota syksyn nousua.";
   else if(info.speciesBonus<=-6) sentence+=" Valitulle kalalle tämä ei ole päivän helpoin hetki.";
   return sentence;
 }
@@ -879,7 +892,7 @@ function renderLures(species,info){
   const order=key==="cold"?["cold","murky","clear"]:key==="murky"?["murky","cold","clear"]:["clear","murky","cold"];
   grid.innerHTML=order.map(k=>{
     const l=set[k];
-    return `<article class="tip-card"><span class="tag">${l.tag}</span><h3>${l.name}</h3><p>${l.desc}</p><div class="link-row">${l.links.map(([label,url])=>`<a class="mini-link" href="${url}" target="_blank" rel="noopener">${label}</a>`).join("")}</div></article>`;
+    return `<article class="tip-card"><span class="tag">${l.tag}</span><h3>${l.name}</h3><p>${l.desc}</p></article>`;
   }).join("");
 }
 function renderRules(){
@@ -902,14 +915,15 @@ function fishSvg(color){
 }
 function renderFishInfo(id=spSel.value){
   const f=FISH_INFO[id]||FISH_INFO.ahven;
-  document.getElementById("fishInfo").innerHTML=`<span class="tag">${f.mood}</span><h3 style="font-size:32px">${f.title}</h3><div class="columns"><div><p><strong>Mistä etsiä:</strong><br>${f.where}</p></div><div><p><strong>Milloin yrittää:</strong><br>${f.when}</p></div></div><div class="checklist"><div class="check"><b>Viehe alkuun:</b><span>${f.start}</span></div><div class="check"><b>Muista:</b><span>Tarkista paikalliset rajoitukset, alamitat ja rauhoitukset ennen kalastusta.</span></div></div>`;
-  document.getElementById("fishVisual").innerHTML=fishSvg(f.color);
+  document.getElementById("fishInfo").innerHTML=`<span class="tag">${f.mood}</span><h3 style="font-size:32px">${f.title}</h3><div class="columns"><div><p><strong>Mistä etsiä:</strong><br>${f.where}</p></div><div><p><strong>Milloin yrittää:</strong><br>${f.when}</p></div></div><div class="checklist"><div class="check"><div><b>Viehe alkuun:</b><br>${f.start}</div></div><div class="check"><div><b>Muista:</b><br>Tarkista paikalliset rajoitukset, alamitat ja rauhoitukset ennen kalastusta.</div></div></div>`;
+  document.getElementById("fishVisual").innerHTML=`<img src="${f.image}" alt="${f.title}" loading="lazy" onerror="this.parentElement.innerHTML=fishSvg('${f.color}')">`;
   renderSpeciesButtons();
 }
-function computeScoreFromValues(vals,species){
-  const core=computeCoreScore({...vals,species});
+function computeScoreFromValues(vals,species,loc){
+  const isSeaSummer=isBalticCoast(loc&&loc.name)&&isSummerMonth(new Date());
+  const core=computeCoreScore({...vals,species,isSeaSummer});
   const now=new Date();
-  return {score:core.score,delta:vals.delta,wind:vals.wind,cloud:vals.cloud,temp:vals.temp,moon:core.moon,speciesBonus:core.speciesBonus,isPrimeTime:vals.isPrimeTime,pressureNow:null,windCompass:"-",sunrise:now,sunset:now};
+  return {score:core.score,delta:vals.delta,wind:vals.wind,cloud:vals.cloud,temp:vals.temp,moon:core.moon,speciesBonus:core.speciesBonus,isPrimeTime:vals.isPrimeTime,pressureNow:null,windCompass:"-",sunrise:now,sunset:now,isSeaSummer:core.isSeaSummer};
 }
 function showManualFallback(){
   document.getElementById("manualForm").classList.add("show");
@@ -931,13 +945,13 @@ async function refresh(){
   try{
     const data=await fetchWeather(loc);
     const idx=nearestHourIndex(data.hourly.time);
-    const info=computeScore(data,idx,species);
+    const info=computeScore(data,idx,species,loc);
     info.windCompass=degToCompassFi(data.hourly.wind_direction_10m[idx]);
     setGauge(info.score);
     document.getElementById("verdictText").textContent=verdictSentence(info);
     renderStrip(info);
     renderLures(species,info);
-    renderHourlyChart(buildHourlyTimeline(data,idx,species));
+    renderHourlyChart(buildHourlyTimeline(data,idx,species,loc));
     renderFishInfo(species);
     document.getElementById("updatedText").textContent=`${loc.name} · päivitetty ${new Date().toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"})}`;
   }catch(e){
@@ -945,7 +959,7 @@ async function refresh(){
     document.getElementById("scoreLabel").textContent="Käsin";
     document.getElementById("verdictText").textContent="Sään haku ei onnistunut. Syötä keli käsin alla olevaan lomakkeeseen.";
     showManualFallback();
-    renderLures(species,computeScoreFromValues({delta:-1,wind:4,cloud:50,temp:14,isPrimeTime:false},species));
+    renderLures(species,computeScoreFromValues({delta:-1,wind:4,cloud:50,temp:14,isPrimeTime:false},species,loc));
     renderFishInfo(species);
   }
 }
@@ -955,8 +969,9 @@ spSel.addEventListener("change",()=>{renderFishInfo(spSel.value);refresh()});
 document.getElementById("mCloud").addEventListener("input",e=>document.getElementById("mCloudVal").textContent=e.target.value);
 document.getElementById("mCalcBtn").addEventListener("click",()=>{
   const species=spSel.value;
+  const loc=LOCATIONS[locSel.value];
   const vals={delta:parseFloat(document.getElementById("mPressureDelta").value)||0,wind:parseFloat(document.getElementById("mWind").value)||0,cloud:parseFloat(document.getElementById("mCloud").value)||0,temp:parseFloat(document.getElementById("mTemp").value)||0,isPrimeTime:document.getElementById("mPrime").checked};
-  const info=computeScoreFromValues(vals,species);
+  const info=computeScoreFromValues(vals,species,loc);
   setGauge(info.score);
   document.getElementById("verdictText").textContent=verdictSentence(info)+" (käsin syötetty keli)";
   renderStrip(info);
