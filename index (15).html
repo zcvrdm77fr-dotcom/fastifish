@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FastFishing - kalakelien mittari ja vieheopas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #17342f;
+  --ink-soft: #45645e;
+  --lake: #2f6f73;
+  --lake-deep: #24585c;
+  --mist: #d9e8e4;
+  --paper: #f4f0e5;
+  --paper-bright: #fffdf7;
+  --line: #c9d5cf;
+  --orange: #d5752c;
+  --orange-dark: #ad571e;
+  --moss: #567647;
+  --danger: #a94635;
+  --shadow: 0 18px 50px rgba(23, 52, 47, .12);
+  --shadow-small: 0 8px 24px rgba(23, 52, 47, .09);
+  --radius: 24px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  min-width: 320px;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 8% 4%, rgba(47, 111, 115, .14), transparent 28rem),
+    linear-gradient(rgba(47, 111, 115, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 111, 115, .035) 1px, transparent 1px),
+    var(--paper);
+  background-size: auto, 34px 34px, 34px 34px, auto;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .22;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+}
+button, input, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; }
+.shell { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid rgba(201, 213, 207, .8);
+  background: rgba(244, 240, 229, .88);
+  backdrop-filter: blur(16px);
+}
+.nav { min-height: 72px; display: flex; align-items: center; gap: 32px; }
+.brand { display: flex; align-items: center; gap: 11px; flex: 0 0 auto; font-family: 'Fjalla One', sans-serif; font-size: 1.35rem; letter-spacing: .04em; text-transform: uppercase; }
+.brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+.tabs { display: flex; align-self: stretch; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  width: auto;
+  padding: 0 15px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  color: var(--ink-soft);
+  background: transparent;
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.tab-btn:hover { color: var(--ink); background: rgba(255,255,255,.4); }
+.tab-btn.active { color: var(--orange-dark); border-bottom-color: var(--orange); }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr); gap: clamp(38px, 7vw, 94px); align-items: center; padding-block: clamp(64px, 10vw, 124px) 72px; }
+.hero.hero-solo { grid-template-columns: minmax(0, 1fr); padding-block: clamp(48px, 8vw, 92px) 56px; }
+.hero.hero-solo .hero-panel { display: none; }
+.hero-copy { position: relative; }
+.hero-copy::after { content: ""; position: absolute; width: 130px; height: 10px; left: 0; bottom: -38px; border-top: 2px solid var(--orange); border-bottom: 1px solid var(--orange); transform: rotate(-2deg); opacity: .65; }
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; color: var(--orange-dark); font: 700 .77rem/1 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+.eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--orange); }
+h1, h2, h3, p { margin-top: 0; }
+h1 { max-width: 8ch; margin: 18px 0 20px; font-family: 'Fjalla One', sans-serif; font-size: clamp(4.2rem, 10vw, 7.6rem); font-weight: 400; line-height: .86; letter-spacing: -.025em; text-transform: uppercase; }
+.lead { max-width: 600px; margin-bottom: 30px; color: var(--ink-soft); font-size: clamp(1.08rem, 2vw, 1.28rem); }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn, .mini-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 11px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(255,253,247,.66);
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform .2s, border-color .2s, background .2s, color .2s, box-shadow .2s;
+}
+.btn:hover, .mini-link:hover { transform: translateY(-2px); border-color: var(--lake); box-shadow: var(--shadow-small); }
+.btn.primary { border-color: var(--orange); color: #fffaf0; background: var(--orange); }
+.btn.primary:hover { background: var(--orange-dark); }
+
+.hero-panel { position: relative; padding: 28px; border: 1px solid var(--line); border-radius: 30px 30px 30px 8px; background: rgba(255,253,247,.82); box-shadow: var(--shadow); }
+.hero-panel::before { content: ""; position: absolute; inset: 12px; z-index: -1; border: 1px solid rgba(47,111,115,.14); border-radius: 22px; transform: rotate(2deg); }
+.panel-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; font-family: 'Fjalla One', sans-serif; font-size: 1.45rem; letter-spacing: .02em; }
+.pill, .tag { display: inline-flex; width: fit-content; padding: 6px 10px; border-radius: 999px; color: var(--lake-deep); background: var(--mist); font: 700 .68rem/1 'JetBrains Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.field.place-search, .refresh { grid-column: 1 / -1; }
+.field { min-width: 0; }
+label { display: block; margin-bottom: 7px; color: var(--ink-soft); font-size: .78rem; font-weight: 700; letter-spacing: .035em; }
+input, select {
+  width: 100%;
+  min-height: 49px;
+  padding: 10px 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  outline: 0;
+  color: var(--ink);
+  background: var(--paper-bright);
+  transition: border-color .2s, box-shadow .2s;
+}
+input:focus, select:focus { border-color: var(--lake); box-shadow: 0 0 0 4px rgba(47,111,115,.13); }
+input[type="range"] { min-height: 36px; padding: 0; accent-color: var(--orange); }
+input[type="checkbox"] { width: 20px; min-height: 20px; accent-color: var(--lake); }
+.place-count, .updated { min-height: 20px; margin-top: 7px; color: var(--ink-soft); font-size: .78rem; }
+.updated { margin-top: 15px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.refresh {
+  min-height: 50px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #0d211d;
+  transition: transform .15s, box-shadow .15s, background .2s;
+}
+.refresh:hover { background: var(--lake-deep); transform: translateY(-1px); }
+.refresh:active { transform: translateY(4px); box-shadow: 0 1px 0 #0d211d; }
+
+main { padding-bottom: 70px; }
+.page { display: none; scroll-margin-top: 100px; animation: reveal .45s ease both; }
+.page.active { display: block; }
+@keyframes reveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.section-head { display: grid; grid-template-columns: minmax(220px, .65fr) minmax(300px, 1fr); gap: 30px; align-items: end; margin-bottom: 26px; padding-top: 24px; }
+.section-head h2 { margin-bottom: 0; font-family: 'Fjalla One', sans-serif; font-size: clamp(2.5rem, 5vw, 4.3rem); font-weight: 400; line-height: .95; letter-spacing: -.02em; text-transform: uppercase; }
+.section-head p { max-width: 630px; margin-bottom: 3px; color: var(--ink-soft); }
+.dashboard { display: grid; grid-template-columns: minmax(320px, .78fr) minmax(0, 1.22fr); gap: 22px; align-items: start; }
+.gauge-card, .content-card, .tip-card, .link-card, .fish-card, .grid > article {
+  border: 1px solid var(--line);
+  background: rgba(255,253,247,.84);
+  box-shadow: var(--shadow-small);
+}
+.gauge-card { position: sticky; top: 96px; padding: 32px; border-radius: var(--radius) var(--radius) 8px var(--radius); text-align: center; }
+.gauge-outer { position: relative; max-width: 360px; margin: 0 auto; aspect-ratio: 1; }
+.gauge { position: relative; z-index: 2; width: 100%; height: 100%; filter: drop-shadow(0 10px 18px rgba(23,52,47,.08)); }
+.sweep { position: absolute; inset: 12%; border-radius: 50%; background: repeating-conic-gradient(from 225deg, rgba(47,111,115,.08) 0 1deg, transparent 1deg 10deg); mask: radial-gradient(circle, transparent 0 54%, #000 55% 100%); }
+.gauge-center { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center; pointer-events: none; }
+.score-num { font-family: 'Fjalla One', sans-serif; font-size: clamp(4rem, 8vw, 6.5rem); line-height: .8; }
+.score-label { margin-top: 12px; color: var(--ink-soft); font: 700 .73rem/1 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; }
+.verdict { min-height: 52px; margin: -24px auto 0; color: var(--ink-soft); font-size: 1.05rem; }
+.content-card { min-width: 0; padding: 26px; border-radius: 8px var(--radius) var(--radius) var(--radius); }
+.strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+.stat { min-width: 0; padding: 15px; border-radius: 14px; background: var(--mist); }
+.stat .label, .hbar-time { color: var(--ink-soft); font: 700 .67rem/1.2 'JetBrains Mono', monospace; letter-spacing: .06em; text-transform: uppercase; }
+.stat .value { margin-top: 7px; font-family: 'Fjalla One', sans-serif; font-size: 1.55rem; line-height: 1; }
+.stat .sub { margin-top: 5px; color: var(--ink-soft); font-size: .76rem; }
+.best-window { margin: 16px 0; padding: 16px 18px; border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; background: #f3dfc6; }
+.hbar-chart { display: grid; grid-template-columns: repeat(12, minmax(34px, 1fr)); gap: 5px; min-height: 155px; margin: 20px 0; overflow-x: auto; }
+.hbar-col { display: grid; grid-template-rows: 1fr auto; gap: 7px; min-width: 34px; text-align: center; }
+.hbar { width: 72%; min-height: 5px; margin: auto auto 0; border-radius: 6px 6px 2px 2px; background: var(--lake); transition: transform .2s; transform-origin: bottom; }
+.hbar-col:hover .hbar { transform: scaleX(1.15); }
+.manual-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 22px; padding-top: 22px; border-top: 1px dashed var(--line); }
+.manual-form .full { grid-column: 1 / -1; }
+.checkline { display: flex; align-items: center; gap: 10px; color: var(--ink-soft); }
+
+.species-tools { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 22px; }
+.species-btn { width: auto; padding: 9px 15px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); background: rgba(255,253,247,.7); font-weight: 700; cursor: pointer; }
+.species-btn:hover, .species-btn.active { border-color: var(--ink); color: #fff; background: var(--ink); }
+.grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
+.grid > article, .tip-card, .link-card { grid-column: span 4; min-width: 0; padding: 24px; border-radius: 18px; transition: transform .2s, box-shadow .2s; }
+.grid > article:nth-child(5n + 1) { border-radius: 28px 16px 16px 16px; }
+.grid > article:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.grid h3, .fish-card h3 { margin: 13px 0 8px; font-family: 'Fjalla One', sans-serif; font-size: 1.55rem; font-weight: 400; letter-spacing: .01em; }
+.grid p { color: var(--ink-soft); }
+.link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
+.mini-link { min-height: 38px; padding: 7px 12px; font-size: .78rem; }
+.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.fish-card { overflow: hidden; border-radius: var(--radius); }
+.fish-hero { display: block; }
+.fish-body { padding: 28px; }
+.fish-visual { width: 100%; aspect-ratio: 21 / 9; background: var(--mist); overflow: hidden; }
+.fish-visual img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; display: block; }
+.checklist { display: grid; gap: 12px; padding: 0 0 4px; }
+.check { display: grid; grid-template-columns: 24px 1fr; gap: 10px; color: var(--ink-soft); }
+.check::before { content: ""; width: 9px; height: 9px; margin-top: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 5px #f3dfc6; }
+.check b { color: var(--ink); }
+
+footer { margin-top: 45px; padding: 36px 0 44px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .82rem; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+
+@media (max-width: 900px) {
+  .nav { gap: 18px; }
+  .hero { grid-template-columns: 1fr; padding-top: 56px; }
+  .hero-copy { max-width: 720px; }
+  .hero-panel { max-width: 720px; }
+  .dashboard { grid-template-columns: 1fr; }
+  .gauge-card { position: static; }
+  .grid > article, .tip-card, .link-card { grid-column: span 6; }
+}
+@media (max-width: 680px) {
+  body { font-size: 16px; }
+  .shell { width: min(100% - 24px, 1180px); }
+  .topbar { position: static; }
+  .nav { min-height: auto; padding-top: 13px; flex-direction: column; align-items: stretch; gap: 8px; }
+  .brand { padding-inline: 5px; }
+  .tabs { min-height: 50px; margin-inline: -12px; padding-inline: 12px; }
+  .tab-btn { min-height: 50px; padding-inline: 12px; }
+  .hero { gap: 54px; padding-block: 48px 52px; }
+  h1 { font-size: clamp(4rem, 24vw, 6.2rem); }
+  .hero-copy::after { bottom: -28px; }
+  .hero-panel { padding: 21px; border-radius: 22px 22px 22px 7px; }
+  .controls, .section-head, .columns { grid-template-columns: 1fr; }
+  .field, .refresh { grid-column: 1 / -1; }
+  .section-head { gap: 10px; align-items: start; }
+  .section-head h2 { font-size: 3rem; }
+  .gauge-card, .content-card { padding: 18px; }
+  .strip { grid-template-columns: 1fr 1fr; }
+  .manual-form { grid-template-columns: 1fr; }
+  .manual-form > div, .manual-form .full { grid-column: 1; }
+  .grid > article, .tip-card, .link-card { grid-column: 1 / -1; }
+  .fish-hero { display: block; }
+  .hero-actions .btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="shell nav">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M4 16c5.5-6.4 13.2-7.2 22-1-8.8 6.2-16.5 5.4-22 1Z" fill="#ffffff"/><path d="M24 15l4-4v10l-4-4" fill="#ffffff"/><circle cx="10.2" cy="15.2" r="1.8" fill="#d97725"/></svg>
+      </div>
+      <span>FastFishing</span>
+    </div>
+    <nav class="tabs" aria-label="Sivut">
+      <button class="tab-btn active" data-page="kelimittari">Kelimittari</button>
+      <button class="tab-btn" data-page="uistimet">Uistimet</button>
+      <button class="tab-btn" data-page="kalalajit">Kalalajit</button>
+      <button class="tab-btn" data-page="varusteet">Varusteet</button>
+      <button class="tab-btn" data-page="linkit">Linkit</button>
+    </nav>
+  </div>
+</div>
+
+<header class="shell hero">
+  <div class="hero-copy">
+    <div class="eyebrow">Kalapäivän suunnitteluun</div>
+    <h1>FastFishing</h1>
+    <p class="lead">Yksi sivu, josta näkee nopeasti kelin, syönti-ikkunan ja millä vieheellä kannattaisi aloittaa. Ei lupaa kalaa, mutta säästää vähän arvailua.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#kelimittari" data-go="kelimittari">Katso keli</a>
+      <a class="btn" href="#uistimet" data-go="uistimet">Mitä laittaisin siimaan?</a>
+    </div>
+  </div>
+  <aside class="hero-panel" aria-label="Kalakelin valinnat">
+    <div class="panel-title"><strong>Paikka ja kala</strong><span class="pill">sää</span></div>
+    <div class="controls">
+      <div class="field place-search">
+        <label for="locationSearch">Hae paikkaa</label>
+        <input id="locationSearch" type="search" placeholder="esim. Saimaa, Oulu, Päijänne..." autocomplete="off">
+        <div class="place-count" id="locationCount"></div>
+      </div>
+      <div class="field">
+        <label for="locationSelect">Valittu paikka</label>
+        <select id="locationSelect"></select>
+      </div>
+      <div class="field">
+        <label for="speciesSelect">Kohdekala</label>
+        <select id="speciesSelect"></select>
+      </div>
+      <button class="refresh" id="refreshBtn">Päivitä keli</button>
+    </div>
+    <div class="updated" id="updatedText">Valmis hakemaan kelitiedot.</div>
+  </aside>
+</header>
+
+<main class="shell">
+  <section id="kelimittari" class="page active">
+    <div class="section-head">
+      <h2>Kelimittari</h2>
+      <p>Suuntaa-antava arvio siitä, onko nyt järkeä lähteä rantaan vai keittää vielä kahvit.</p>
+    </div>
+    <div class="dashboard">
+      <section class="gauge-card">
+        <div class="gauge-outer">
+          <div class="sweep"></div>
+          <svg class="gauge" viewBox="0 0 300 300" aria-label="Kalakelipisteet">
+            <path id="track" d="" fill="none" stroke="#e8ecea" stroke-width="20" stroke-linecap="round"/>
+            <path id="arc" d="" fill="none" stroke="#6b9ca4" stroke-width="20" stroke-linecap="round"/>
+            <line id="needle" x1="150" y1="150" x2="150" y2="50" stroke="#23352e" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="150" cy="150" r="10" fill="#23352e"/>
+          </svg>
+          <div class="gauge-center">
+            <div>
+              <div class="score-num" id="scoreNum">--</div>
+              <div class="score-label" id="scoreLabel">Ladataan</div>
+            </div>
+          </div>
+        </div>
+        <p class="verdict" id="verdictText"></p>
+      </section>
+      <section class="content-card">
+        <div id="stripHost"><div class="stat">Haetaan sää- ja kelitietoja...</div></div>
+        <div class="best-window" id="bestWindow"></div>
+        <div id="hourlyHost"></div>
+        
+        <form class="manual-form" id="manualForm">
+          <div>
+            <label for="mPressureDelta">Paineen muutos hPa / 6 h</label>
+            <input type="number" id="mPressureDelta" value="-1" step="0.5">
+          </div>
+          <div>
+            <label for="mWind">Tuuli m/s</label>
+            <input type="number" id="mWind" value="4" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="mTemp">Lämpötila °C</label>
+            <input type="number" id="mTemp" value="14" step="0.5">
+          </div>
+          <div>
+            <label for="mCloud">Pilvisyys <span id="mCloudVal">50</span>%</label>
+            <input type="range" id="mCloud" value="50" min="0" max="100">
+          </div>
+          <div class="full checkline">
+            <input type="checkbox" id="mPrime">
+            <span>Nyt on aamu- tai iltahämärä</span>
+          </div>
+          <button class="refresh full" type="button" id="mCalcBtn">Laske käsin syötetyillä tiedoilla</button>
+        </form>
+      </section>
+    </div>
+  </section>
+
+  <section id="uistimet" class="page">
+    <div class="section-head">
+      <h2>Uistimet ja vieheet</h2>
+      <p>Valitse kohdekala alta. Löydät kolme aloitusvaihtoehtoa kelin mukaan ja hakulinkit sopiviin viehetyyppeihin.</p>
+    </div>
+    <div class="species-tools" id="lureSpeciesButtons"></div>
+    <div class="grid" id="lureGrid"></div>
+    <div class="section-head" style="margin-top:40px">
+      <h2>Nyrkkisäännöt</h2>
+      <p>Näillä pääsee alkuun, vaikka järvi tai joki olisi uusi.</p>
+    </div>
+    <div class="grid" id="lureRules"></div>
+  </section>
+
+  <section id="kalalajit" class="page">
+    <div class="section-head">
+      <h2>Kalalajit</h2>
+      <p>Missä kala yleensä luuraa ja millä kannattaa aloittaa ennen kuin rasia leviää laiturille.</p>
+    </div>
+    <div class="species-tools" id="speciesButtons"></div>
+    <div class="fish-hero">
+      <article class="fish-card large">
+        <div class="fish-visual" aria-hidden="true" id="fishVisual"></div>
+        <div class="fish-body" id="fishInfo"></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="varusteet" class="page">
+    <div class="section-head">
+      <h2>Varusteet ja taktiikat</h2>
+      <p>Pieni muistilista ennen kuin lähdet rannalle tai veneelle.</p>
+    </div>
+    <div class="grid">
+      <article class="tip-card"><span class="tag">Pakkaa mukaan</span><h3>Peruspaketti rannalle</h3><p>Monipuolinen rasia syntyy muutamasta lusikasta, vaapusta, lipasta, jigistä, perukkeista, pihdeistä ja mittanauhasta.</p></article>
+      <article class="tip-card"><span class="tag">Solmut</span><h3>Harjoittele kaksi solmua</h3><p>Viehesolmu ja perukkeen liitos riittävät useimpiin tilanteisiin. Testaa solmu aina vetämällä ennen ensimmäistä heittoa.</p><div class="link-row"><a class="mini-link" href="https://www.youtube.com/results?search_query=viehesolmu+kalastus" target="_blank" rel="noopener">Viehesolmu</a><a class="mini-link" href="https://www.youtube.com/results?search_query=perukkeen+liitos+kalastus" target="_blank" rel="noopener">Perukkeen liitos</a></div></article>
+      <article class="tip-card"><span class="tag">Turvallisuus</span><h3>Vesillä ensin järki</h3><p>Pelastusliivit, sääennuste, varavirta puhelimelle ja pimeällä otsalamppu ovat halvempia kuin huono yllätys.</p></article>
+      <article class="tip-card"><span class="tag">Lukeminen</span><h3>Katso tuulen puoli</h3><p>Tuuli työntää ravintoa rannoille ja karikoille. Kokeile ensin tuulen pieksemää reunaa, sitten suojaisampaa kohtaa.</p></article>
+      <article class="tip-card"><span class="tag">Rytmi</span><h3>Vaihda vain yhtä asiaa</h3><p>Jos ei tärppää, vaihda ensin nopeutta, sitten syvyyttä ja vasta lopuksi väriä. Näin opit, mikä oikeasti vaikutti.</p></article>
+      <article class="tip-card"><span class="tag">Vastuullisuus</span><h3>Mittaa, vapauta, ota kohtuudella</h3><p>Tarkista alamitat, rauhoitukset ja paikalliset rajoitukset. Isot emokalat kannattaa usein päästää jatkamaan sukua.</p></article>
+    </div>
+  </section>
+
+  <section id="linkit" class="page">
+    <div class="section-head">
+      <h2>Hyötylinkit</h2>
+      <p>Ostohakuja, sääpalveluja ja virallisia linkkejä samassa nipussa.</p>
+    </div>
+    <div class="grid">
+      <article class="link-card"><span class="tag">Viralliset</span><h3>Luvat ja rajoitukset</h3><p>Tarkista kalastonhoitomaksu, aluekohtaiset luvat ja rauhoitusalueet ennen reissua.</p><div class="link-row"><a class="mini-link" href="https://www.eraluvat.fi/kalastus" target="_blank" rel="noopener">Eräluvat</a><a class="mini-link" href="https://kalastusrajoitus.fi/" target="_blank" rel="noopener">Kalastusrajoitus.fi</a></div></article>
+      <article class="link-card"><span class="tag">Sää</span><h3>Sää ja tuuli</h3><p>Kelimittari käyttää Open-Meteota, mutta reissulle kannattaa tarkistaa myös sadetutka ja tuuliennuste.</p><div class="link-row"><a class="mini-link" href="https://www.ilmatieteenlaitos.fi/saa" target="_blank" rel="noopener">Ilmatieteen laitos</a><a class="mini-link" href="https://www.yr.no/" target="_blank" rel="noopener">Yr</a></div></article>
+      <article class="link-card"><span class="tag">Kartat</span><h3>Paikan etsiminen</h3><p>Syvänteet, karikot, salmet ja kasvillisuusrajat ovat usein parempia kuin satunnainen suora ranta.</p><div class="link-row"><a class="mini-link" href="https://asiointi.maanmittauslaitos.fi/karttapaikka/" target="_blank" rel="noopener">Karttapaikka</a><a class="mini-link" href="https://www.retkikartta.fi/" target="_blank" rel="noopener">Retkikartta</a></div></article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="shell">
+    Sääaineisto: Open-Meteo. Kuun vaihe lasketaan selaimessa. Pisteytys on suuntaa-antava: kalastuspaikka, veden lämpö, ravintokalojen liike ja paikallinen paine voivat ratkaista enemmän kuin mikään yksittäinen mittari.
+    <a href="tietosuoja.html" style="color:inherit; text-decoration:underline;">Tietosuojaseloste</a>
+  </div>
+</footer>
+
+<script>
+const LOCATIONS = [
+  {name:"Ahvenanmaa - Maarianhamina", lat:60.0973, lon:19.9348},
+  {name:"Akaa - Kirkkojärvi", lat:61.1700, lon:23.8670},
+  {name:"Alajärvi - Lappajärvi", lat:63.0000, lon:23.8150},
+  {name:"Alavieska - Kalajoki", lat:64.1660, lon:24.2830},
+  {name:"Alavus - Kuorasjärvi", lat:62.6160, lon:23.3660},
+  {name:"Asikkala - Päijänne / Vääksy", lat:61.1723, lon:25.5474},
+  {name:"Askola - Porvoonjoki", lat:60.5170, lon:25.4830},
+  {name:"Enontekiö - Kilpisjärvi", lat:69.0453, lon:20.7984},
+  {name:"Espoo - Laajalahti", lat:60.2055, lon:24.7570},
+  {name:"Eurajoki - Eurajoki / meri", lat:61.2000, lon:21.7333},
+  {name:"Evijärvi - Evijärvi", lat:63.4170, lon:23.4830},
+  {name:"Forssa - Loimijoki", lat:60.8146, lon:23.6217},
+  {name:"Haapajärvi - Kalajoki", lat:63.7500, lon:25.3160},
+  {name:"Haapavesi - Pyhäjoki", lat:64.1330, lon:25.3830},
+  {name:"Hailuoto - Perämeri", lat:65.0094, lon:24.7136},
+  {name:"Halsua - Halsuanjärvi", lat:63.4830, lon:24.1000},
+  {name:"Hamina - Itäinen Suomenlahti", lat:60.5697, lon:27.1979},
+  {name:"Hankasalmi - Kynsivesi", lat:62.3830, lon:26.4500},
+  {name:"Hanko - Hangon merialue", lat:59.8333, lon:22.9500},
+  {name:"Hartola - Jääsjärvi", lat:61.5830, lon:26.0170},
+  {name:"Hattula - Vanajavesi", lat:61.0500, lon:24.3660},
+  {name:"Hauho - Hauhonselkä", lat:61.1660, lon:24.5500},
+  {name:"Hausjärvi - Hikiänjoki", lat:60.8500, lon:24.9170},
+  {name:"Heinola - Kymijoki / Ruotsalainen", lat:61.2056, lon:26.0381},
+  {name:"Heinävesi - Kermajärvi", lat:62.4330, lon:28.6330},
+  {name:"Helsinki - Suomenlahti", lat:60.1699, lon:24.9384},
+  {name:"Hirvensalmi - Puulavesi", lat:61.6333, lon:26.8000},
+  {name:"Hyrynsalmi - Emäjoki", lat:64.6667, lon:28.5333},
+  {name:"Hyvinkää - Vantaanjoki", lat:60.6330, lon:24.8670},
+  {name:"Hämeenlinna - Vanajavesi", lat:60.9959, lon:24.4643},
+  {name:"Iisalmi - Porovesi", lat:63.5592, lon:27.1907},
+  {name:"Iitti - Kymijoki", lat:60.8939, lon:26.3387},
+  {name:"Ii - Iijoki", lat:65.3174, lon:25.3731},
+  {name:"Ikaalinen - Kyrösjärvi", lat:61.7697, lon:23.0658},
+  {name:"Ilmajoki - Kyrönjoki", lat:62.7330, lon:22.5660},
+  {name:"Ilomantsi - Koitajoki", lat:62.6716, lon:30.9328},
+  {name:"Ilomantsi - Koitere", lat:62.8830, lon:30.4160},
+  {name:"Imatra - Vuoksi", lat:61.1697, lon:28.7641},
+  {name:"Inari - Inarijärvi", lat:68.9059, lon:27.0286},
+  {name:"Inari - Juutuanjoki", lat:68.9000, lon:26.9660},
+  {name:"Inari - Näätämöjoki", lat:69.5330, lon:28.9160},
+  {name:"Inkoo - Saaristo", lat:60.0450, lon:24.0040},
+  {name:"Isojoki - Isojoki", lat:62.1000, lon:21.9330},
+  {name:"Isokyrö - Kyrönjoki", lat:63.0000, lon:22.3160},
+  {name:"Ivalo - Ivalojoki", lat:68.6560, lon:27.5389},
+  {name:"Joensuu - Pyhäselkä", lat:62.6010, lon:29.7636},
+  {name:"Jokioinen - Jokioistenjoki", lat:60.8120, lon:23.4830},
+  {name:"Joroinen - Sysmäjärvi", lat:62.1830, lon:27.8160},
+  {name:"Joutsa - Suontee", lat:61.7330, lon:26.1160},
+  {name:"Juuka - Pielinen", lat:63.2333, lon:29.2500},
+  {name:"Juupajoki - Kopsamo", lat:61.7830, lon:24.4500},
+  {name:"Juva - Jukajärvi", lat:61.8830, lon:27.8500},
+  {name:"Juva - Kangasjärvi", lat:62.0100, lon:27.3689},
+  {name:"Jyväskylä - Päijänne", lat:62.2426, lon:25.7473},
+  {name:"Jämsä - Längelmävesi", lat:61.7330, lon:24.8160},
+  {name:"Jämsä - Päijänne", lat:61.8640, lon:25.1900},
+  {name:"Kaarina - Kuusistonlahti", lat:60.4072, lon:22.3694},
+  {name:"Kaavi - Kaavinjärvi", lat:63.1000, lon:28.5170},
+  {name:"Kajaani - Oulujärvi", lat:64.2273, lon:27.7285},
+  {name:"Kalajoki - Perämeri", lat:64.2600, lon:23.9500},
+  {name:"Kangasala - Roine", lat:61.4631, lon:24.0764},
+  {name:"Kangasniemi - Kyyvesi", lat:62.0160, lon:27.0500},
+  {name:"Kangasniemi - Puulavesi", lat:61.9830, lon:26.6330},
+  {name:"Kannonkoski - Kivijärvi", lat:62.9660, lon:25.2660},
+  {name:"Kannus - Kannonjärvi", lat:63.9000, lon:23.9000},
+  {name:"Karijoki - Karijoenjoki", lat:62.3000, lon:21.9000},
+  {name:"Karkkila - Pyhäjärvi", lat:60.5340, lon:24.2100},
+  {name:"Karstula - Pääjärvi", lat:62.8830, lon:24.8160},
+  {name:"Kaskinen - Selkämeri", lat:62.3830, lon:21.2160},
+  {name:"Kauhajoki - Kyrönjoki", lat:62.4160, lon:22.1830},
+  {name:"Kauhava - Lapuanjoki", lat:63.1000, lon:23.0670},
+  {name:"Kaustinen - Perhonjoki", lat:63.5500, lon:23.6830},
+  {name:"Keitele - Nilakka", lat:63.1830, lon:26.3500},
+  {name:"Kemijärvi - Kemijärvi", lat:66.7133, lon:27.4306},
+  {name:"Keminmaa - Kemijoki", lat:65.8000, lon:24.5330},
+  {name:"Kemiönsaari - Saaristomeri", lat:60.1600, lon:22.7300},
+  {name:"Kemi - Perämeri", lat:65.7360, lon:24.5637},
+  {name:"Kempele - Liminganlahti", lat:64.9170, lon:25.5000},
+  {name:"Keuruu - Keurusselkä", lat:62.2609, lon:24.7064},
+  {name:"Kihniö - Kirkkojärvi", lat:62.1830, lon:23.1830},
+  {name:"Kinnula - Kinnulanjärvi", lat:63.3830, lon:24.9330},
+  {name:"Kirkkonummi - Porkkala", lat:60.1238, lon:24.4385},
+  {name:"Kitee - Puruvesi", lat:61.9660, lon:29.5330},
+  {name:"Kitee - Pyhäjärvi", lat:62.1000, lon:30.1500},
+  {name:"Kittilä - Jerisjärvi", lat:67.9160, lon:24.0330},
+  {name:"Kittilä - Ounasjoki", lat:67.6533, lon:24.9110},
+  {name:"Kiuruvesi - Kiuruvesi", lat:63.6500, lon:26.6160},
+  {name:"Kivijärvi - Kivijärvi", lat:63.1160, lon:24.5830},
+  {name:"Kokkola - Perämeri", lat:63.8385, lon:23.1307},
+  {name:"Kolari - Tornionjoki", lat:67.3305, lon:23.7779},
+  {name:"Konnevesi - Konnevesi", lat:62.6330, lon:26.2830},
+  {name:"Kontiolahti - Höytiäinen", lat:62.7830, lon:29.7000},
+  {name:"Korpilahti - Päijänne", lat:62.0160, lon:25.5660},
+  {name:"Korsnäs - Merenkurkku", lat:62.7830, lon:21.1830},
+  {name:"Kotka - Kymijoki / meri", lat:60.4664, lon:26.9458},
+  {name:"Kouvola - Kymijoki", lat:60.8667, lon:26.7042},
+  {name:"Kristiinankaupunki - Selkämeri", lat:62.2660, lon:21.3660},
+  {name:"Kruunupyy - Kruunupyynjoki", lat:63.7170, lon:23.0170},
+  {name:"Kuhmoinen - Päijänne", lat:61.5660, lon:25.1830},
+  {name:"Kuhmo - Lammasjärvi", lat:64.1333, lon:29.5167},
+  {name:"Kuhmo - Ontojärvi", lat:64.0830, lon:29.2500},
+  {name:"Kuopio - Kallavesi", lat:62.8924, lon:27.6770},
+  {name:"Kuopio - Nilsiä / Juankosken reitti", lat:63.2170, lon:28.1000},
+  {name:"Kuopio - Syväri", lat:63.1660, lon:28.0500},
+  {name:"Kuortane - Kuortaneenjärvi", lat:62.8160, lon:23.5160},
+  {name:"Kurikka - Kyrönjoki", lat:62.6160, lon:22.4000},
+  {name:"Kustavi - Vuosnainen", lat:60.5456, lon:21.3586},
+  {name:"Kuusamo - Kitkajärvi", lat:65.9667, lon:29.1833},
+  {name:"Kuusamo - Kuusinkijoki", lat:66.1660, lon:29.6160},
+  {name:"Kuusamo - Oulankajoki", lat:66.3660, lon:29.3160},
+  {name:"Kyyjärvi - Kyyjärvi", lat:63.0330, lon:24.5670},
+  {name:"Kärkölä - Vähäjärvi", lat:60.9000, lon:25.2670},
+  {name:"Kärsämäki - Pyhäjoki", lat:63.9830, lon:25.7660},
+  {name:"Lahti - Kymijärvi (Nastolan raja)", lat:60.9696, lon:25.7993},
+  {name:"Lahti - Vesijärvi", lat:60.9827, lon:25.6612},
+  {name:"Laihia - Laihianjoki", lat:63.0000, lon:22.0170},
+  {name:"Lapinjärvi - Lapinjärvi", lat:60.6330, lon:26.2000},
+  {name:"Lapinlahti - Onkivesi", lat:63.2660, lon:27.4000},
+  {name:"Lappeenranta - Saimaa", lat:61.0587, lon:28.1887},
+  {name:"Lapua - Lapuanjoki", lat:62.9693, lon:23.0088},
+  {name:"Laukaa - Lievestuoreenjärvi", lat:62.2660, lon:26.2000},
+  {name:"Lempäälä - Pyhäjärvi", lat:61.3167, lon:23.7500},
+  {name:"Leppävirta - Unnukka", lat:62.4830, lon:27.7830},
+  {name:"Lestijärvi - Lestijärvi", lat:63.5160, lon:24.6660},
+  {name:"Lieksa - Pielinen", lat:63.3167, lon:30.0167},
+  {name:"Lieto - Aurajoki", lat:60.5101, lon:22.4618},
+  {name:"Liminka - Liminganlahti", lat:64.8000, lon:25.4000},
+  {name:"Liperi - Pyhäselkä", lat:62.5330, lon:29.3830},
+  {name:"Lohja - Lohjanjärvi", lat:60.2513, lon:24.0678},
+  {name:"Loppi - Punelia", lat:60.7160, lon:24.2330},
+  {name:"Loviisa - Pernajanlahti", lat:60.4566, lon:26.2251},
+  {name:"Luhanka - Päijänne", lat:61.7670, lon:25.6830},
+  {name:"Luoto - Luodon saaristo", lat:63.7500, lon:22.7000},
+  {name:"Maalahti - Maalahdenjoki", lat:62.8830, lon:21.5670},
+  {name:"Merijärvi - Merijärvi", lat:64.3170, lon:24.4000},
+  {name:"Merikarvia - Merikarvianjoki", lat:61.8583, lon:21.5000},
+  {name:"Mikkeli - Saimaa", lat:61.6886, lon:27.2723},
+  {name:"Muhos - Oulujoki", lat:64.8160, lon:25.9830},
+  {name:"Muonio - Muonionjoki", lat:67.9583, lon:23.6833},
+  {name:"Mustasaari - Merenkurkku", lat:63.1144, lon:21.6822},
+  {name:"Muurame - Muuratjärvi", lat:62.1160, lon:25.6000},
+  {name:"Myrskylä - Myrskylänjoki", lat:60.6670, lon:25.9830},
+  {name:"Mäntsälä - Mäntsälänjoki", lat:60.6330, lon:25.3170},
+  {name:"Mänttä-Vilppula - Keurusselkä", lat:62.0309, lon:24.6275},
+  {name:"Mäntyharju - Juolasvesi", lat:61.4160, lon:26.8330},
+  {name:"Naantali - Saaristomeri", lat:60.4669, lon:22.0264},
+  {name:"Nivala - Kalajoki", lat:63.9160, lon:24.9660},
+  {name:"Nokia - Pyhäjärvi", lat:61.4773, lon:23.5086},
+  {name:"Nurmes - Pielinen", lat:63.5421, lon:29.1397},
+  {name:"Nurmijärvi - Vantaanjoki", lat:60.4670, lon:24.7830},
+  {name:"Närpiö - Selkämeri", lat:62.4660, lon:21.3330},
+  {name:"Orimattila - Porvoonjoki", lat:60.8000, lon:25.7330},
+  {name:"Orivesi - Längelmävesi", lat:61.6830, lon:24.3660},
+  {name:"Oulainen - Pyhäjoki", lat:64.2660, lon:24.8160},
+  {name:"Oulu - Perämeri / Oulujoki", lat:65.0121, lon:25.4651},
+  {name:"Outokumpu - Juojärvi", lat:62.7160, lon:28.8000},
+  {name:"Padasjoki - Lummene", lat:61.4160, lon:25.0330},
+  {name:"Padasjoki - Päijänne", lat:61.3508, lon:25.2761},
+  {name:"Paltamo - Oulujärvi", lat:64.4000, lon:27.8333},
+  {name:"Parainen - saaristo", lat:60.3000, lon:22.3000},
+  {name:"Parikkala - Simpelejärvi", lat:61.5500, lon:29.5000},
+  {name:"Parkano - Kirkkojärvi", lat:62.0170, lon:23.0170},
+  {name:"Pedersöre - Perämeri", lat:63.8000, lon:22.7670},
+  {name:"Pelkosenniemi - Kemijoki", lat:67.1108, lon:27.5106},
+  {name:"Pello - Tornionjoki", lat:66.7735, lon:23.9622},
+  {name:"Pertunmaa - Peruvesi", lat:61.4330, lon:26.4660},
+  {name:"Petäjävesi - Petäjävesi", lat:62.2500, lon:25.1830},
+  {name:"Pieksämäki - Pieksänjärvi", lat:62.3000, lon:27.1333},
+  {name:"Pielavesi - Nilakka", lat:63.2160, lon:26.6160},
+  {name:"Pielavesi - Pielavesi", lat:63.2333, lon:26.7500},
+  {name:"Pietarsaari - Luodon saaristo", lat:63.6749, lon:22.7026},
+  {name:"Pihtipudas - Kolima", lat:63.3833, lon:25.5667},
+  {name:"Polvijärvi - Höytiäinen", lat:62.8670, lon:29.3830},
+  {name:"Pori - Kokemäenjoki", lat:61.4851, lon:21.7972},
+  {name:"Pornainen - Porvoonjoki", lat:60.4830, lon:25.4500},
+  {name:"Porvoo - Porvoonjoki", lat:60.3923, lon:25.6651},
+  {name:"Posio - Livojärvi", lat:66.1086, lon:28.1719},
+  {name:"Posio - Simojärvi", lat:66.0880, lon:27.6630},
+  {name:"Pudasjärvi - Iijoki", lat:65.3830, lon:26.9160},
+  {name:"Pukkila - Porvoonjoki", lat:60.5000, lon:25.6670},
+  {name:"Punkalaidun - Punkalaitumenjoki", lat:61.1500, lon:22.9830},
+  {name:"Puumala - Lietvesi", lat:61.5330, lon:28.0500},
+  {name:"Puumala - Saimaa", lat:61.5264, lon:28.1782},
+  {name:"Pyhäjoki - Pyhäjoki / Meri", lat:64.4660, lon:24.2500},
+  {name:"Pyhäjärvi - Pyhäjärvi", lat:63.6830, lon:25.9830},
+  {name:"Pyhäntä - Pyhäntäjärvi", lat:64.0830, lon:26.0170},
+  {name:"Pälkäne - Mallasvesi", lat:61.3330, lon:24.2660},
+  {name:"Raahe - Perämeri", lat:64.6833, lon:24.4833},
+  {name:"Raasepori - Karjaanjoki", lat:60.0750, lon:23.6670},
+  {name:"Rantasalmi - Haukivesi", lat:62.0667, lon:28.3000},
+  {name:"Ranua - Simojoki", lat:65.9167, lon:26.5167},
+  {name:"Rauma - Selkämeri", lat:61.1280, lon:21.5113},
+  {name:"Rautalampi - Rautalammin reitti", lat:62.6670, lon:26.4830},
+  {name:"Rautavaara - Kangasjärvi", lat:63.6330, lon:28.2830},
+  {name:"Reisjärvi - Reisjärvi", lat:63.7000, lon:24.4500},
+  {name:"Riihimäki - Vantaanjoki", lat:60.7330, lon:24.7670},
+  {name:"Ristiina - Yövesi", lat:61.5000, lon:27.2500},
+  {name:"Ristijärvi - Hyrynjärvi", lat:64.5000, lon:28.2830},
+  {name:"Rovaniemi - Kemijoki", lat:66.5039, lon:25.7294},
+  {name:"Ruokolahti - Karjalanjärvi", lat:61.3500, lon:28.7160},
+  {name:"Ruokolahti - Saimaa", lat:61.2833, lon:28.8333},
+  {name:"Ruovesi - Näsijärvi", lat:61.9849, lon:24.0571},
+  {name:"Ruovesi - Tarjanne", lat:62.0500, lon:23.9500},
+  {name:"Rääkkylä - Oriveden reitti", lat:62.1830, lon:29.8670},
+  {name:"Saarijärvi - Mahlunjärvi", lat:62.7500, lon:25.1000},
+  {name:"Saarijärvi - Pyhäjärvi", lat:62.7049, lon:25.2536},
+  {name:"Salla - Naruskajoki", lat:67.1160, lon:29.1830},
+  {name:"Salo - Halikonlahti", lat:60.3833, lon:23.1333},
+  {name:"Sastamala - Rautavesi", lat:61.3406, lon:22.9099},
+  {name:"Savitaipale - Kuolimo", lat:61.2000, lon:27.6830},
+  {name:"Savonlinna - Pihlajavesi", lat:61.8688, lon:28.8864},
+  {name:"Savukoski - Kemijoki", lat:67.2910, lon:28.1660},
+  {name:"Seinäjoki - Kyrönjoki", lat:62.7903, lon:22.8403},
+  {name:"Sievi - Kalajoki", lat:63.9000, lon:24.5000},
+  {name:"Siikajoki - Siikajoki", lat:64.8330, lon:24.7170},
+  {name:"Siikalatva - Pyhäjoki", lat:64.1500, lon:25.9000},
+  {name:"Siilinjärvi - Kallavesi", lat:63.0833, lon:27.6667},
+  {name:"Simo - Simojoki", lat:65.6330, lon:25.0330},
+  {name:"Sipoo - Sipoonlahti", lat:60.3775, lon:25.2691},
+  {name:"Siuntio - Siuntionjoki", lat:60.2170, lon:24.1830},
+  {name:"Sodankylä - Kitinen", lat:67.4167, lon:26.6000},
+  {name:"Somero - Painio", lat:60.6160, lon:23.6330},
+  {name:"Sonkajärvi - Sonkajärvi", lat:63.8660, lon:27.5330},
+  {name:"Sotkamo - Nuasjärvi", lat:64.1330, lon:28.4170},
+  {name:"Sulkava - Saimaa", lat:61.7877, lon:28.3728},
+  {name:"Suomenniemi - Kuolimo", lat:61.3160, lon:27.4500},
+  {name:"Suomussalmi - Kiantajärvi", lat:64.8861, lon:28.9078},
+  {name:"Suomussalmi - Vuokkijärvi", lat:64.7160, lon:29.5660},
+  {name:"Suonenjoki - Iisvesi", lat:62.6250, lon:27.1222},
+  {name:"Sysmä - Päijänne", lat:61.5000, lon:25.6833},
+  {name:"Säkylä - Pyhäjärvi", lat:61.0450, lon:22.3380},
+  {name:"Taipalsaari - Saimaa", lat:61.1660, lon:28.0660},
+  {name:"Taivalkoski - Iijoki", lat:65.5667, lon:28.2500},
+  {name:"Tammela - Pyhäjärvi", lat:60.7830, lon:23.7660},
+  {name:"Tammisaari - saaristo", lat:59.9736, lon:23.4339},
+  {name:"Tampere - Näsijärvi / Pyhäjärvi", lat:61.4978, lon:23.7610},
+  {name:"Tervola - Kemijoki", lat:66.0830, lon:24.8170},
+  {name:"Tervo - Tervonselkä", lat:62.9170, lon:26.7330},
+  {name:"Teuva - Teuvanjoki", lat:62.4830, lon:21.7500},
+  {name:"Tohmajärvi - Kiteenjoki", lat:62.1830, lon:30.3830},
+  {name:"Toholampi - Kirkkojärvi", lat:63.7500, lon:24.2330},
+  {name:"Toivakka - Päijänne", lat:62.1000, lon:26.0830},
+  {name:"Tornio - Tornionjoki", lat:65.8481, lon:24.1466},
+  {name:"Turku - Aurajoki / Saaristomeri", lat:60.4518, lon:22.2666},
+  {name:"Tuusula - Tuusulanjärvi", lat:60.4280, lon:25.0430},
+  {name:"Tyrnävä - Tyrnävänjoki", lat:64.7830, lon:25.6170},
+  {name:"Urjala - Nuutajärvi", lat:61.0830, lon:23.5330},
+  {name:"Utajärvi - Oulujoki", lat:64.7670, lon:26.4000},
+  {name:"Utsjoki - Kevojoki", lat:69.5660, lon:26.9660},
+  {name:"Utsjoki - Nuorgam", lat:70.0830, lon:27.8660},
+  {name:"Utsjoki - Tenojoki", lat:69.9086, lon:27.0284},
+  {name:"Uurainen - Uuraisjärvi", lat:62.5670, lon:25.7170},
+  {name:"Uusikaarlepyy - Perämeri", lat:63.5160, lon:22.5160},
+  {name:"Uusikaupunki - Selkämeri", lat:60.8004, lon:21.4084},
+  {name:"Vaala - Oulujärvi", lat:64.5500, lon:26.8330},
+  {name:"Vaasa - Merenkurkku", lat:63.0951, lon:21.6165},
+  {name:"Valkeakoski - Vanajavesi", lat:61.2642, lon:24.0319},
+  {name:"Valtimo - Valtimonjoki", lat:63.6330, lon:28.8170},
+  {name:"Vantaa - Vantaanjoki", lat:60.2941, lon:25.0400},
+  {name:"Varkaus - Haukivesi / Unnukka", lat:62.3153, lon:27.8730},
+  {name:"Veteli - Räyringinjärvi", lat:63.4830, lon:24.0170},
+  {name:"Vieremä - Iisalmen reitti", lat:63.6670, lon:26.8500},
+  {name:"Vihti - Hiidenvesi", lat:60.3660, lon:24.1660},
+  {name:"Viitasaari - Keitele", lat:63.0667, lon:25.8667},
+  {name:"Viitasaari - Muurasjärvi", lat:63.3000, lon:25.2660},
+  {name:"Vimpeli - Vimpelinjärvi", lat:63.1830, lon:23.8170},
+  {name:"Virrat - Toisvesi", lat:62.2476, lon:23.7805},
+  {name:"Virrat - Vaskivesi", lat:62.2000, lon:23.7660},
+  {name:"Vähäkyrö - Kyrönjoki", lat:63.0500, lon:22.1000},
+  {name:"Vöyri - Vöyrinjoki", lat:63.1000, lon:21.8500},
+  {name:"Ylistaro - Kyrönjoki", lat:62.9500, lon:22.5160},
+  {name:"Ylitornio - Tornionjoki", lat:66.3160, lon:23.6660},
+  {name:"Ylivieska - Kalajoki", lat:64.0660, lon:24.5330},
+  {name:"Ylöjärvi - Näsijärvi", lat:61.5563, lon:23.5961},
+  {name:"Ypäjä - Loimijoki", lat:60.7500, lon:23.0830},
+  {name:"Ähtäri - Ähtärinjärvi", lat:62.5540, lon:24.0619},
+  {name:"Äänekoski - Keitele", lat:62.6000, lon:25.7333}
+];
+
+const SPECIES = [
+  {id:"hauki", name:"Hauki"},
+  {id:"kuha", name:"Kuha"},
+  {id:"ahven", name:"Ahven"},
+  {id:"taimen", name:"Taimen / lohi"},
+  {id:"sarki", name:"Särkikalat"}
+];
+
+const LURES = {
+  hauki: {
+    clear:{tag:"Kirkas vesi", name:"Luonnonvärinen haukivaappu", desc:"15-20 cm vaappu, hopea-sininen tai ahvenkuvio. Vedä hitaasti ja pidä pitkiä taukoja."},
+    murky:{tag:"Samea / pilvinen", name:"Ärsykeväri ja leveä uinti", desc:"Oranssi, firetiger, keltainen tai musta. Kokeile lusikkaa, spinnerbaitia tai isoa shadia."},
+    cold:{tag:"Kylmä vesi", name:"Hidas suspending-vaappu", desc:"Kylmässä hauki säästää energiaa. Uita hitaasti, pysäytä viehe ja anna sen jäädä iskuetäisyydelle."}
+  },
+  kuha: {
+    clear:{tag:"Kirkas vesi", name:"Ohut luonnonvärinen jigi", desc:"Pohjan tuntumaan 7-12 cm jigi, rauhallinen pomputus. Kirkkaalla vedellä hopea, muikku ja kuore toimivat."},
+    murky:{tag:"Hämärä / samea", name:"Chartreuse tai UV-jigi", desc:"Kirkas keltavihreä, pinkki tai moottoriöljy auttaa kuhaa löytämään vieheen huonossa valossa."},
+    cold:{tag:"Kylmä vesi", name:"Pieni pohjajigi ja pitkä tauko", desc:"Kevyempi jigipää, pohjakontakti ja maltillinen nosto. Kylmän veden kuha ottaa usein varovasti."}
+  },
+  ahven: {
+    clear:{tag:"Kirkas vesi", name:"Mikrojigi tai pieni lippa", desc:"Ahven-, särki- ja kuorevärit. Etsi parvia penkan reunoilta ja kasvillisuuden aukoista."},
+    murky:{tag:"Samea / tuulinen", name:"Pieni lusikka ja räikeä jigi", desc:"Oranssi, keltainen ja kupari näkyvät paremmin. Nopea etsintä ja pysäytykset paljastavat parven."},
+    cold:{tag:"Kylmä vesi", name:"Hidas mikrojigi", desc:"Pieni pyrstö, kevyt pää ja lähes paikoillaan uitto. Kokeile myös pilkkimäistä pystysuoraa liikettä."}
+  },
+  taimen: {
+    clear:{tag:"Kirkas virta", name:"Kapea lusikka tai luonnonvaappu", desc:"Hopea, kupari ja pikkukalavärit. Heitä virran yli ja anna vieheen leikata virtaa."},
+    murky:{tag:"Pilvinen / hämärä", name:"Tumma vaappu tai voimakas siluetti", desc:"Musta, violetti ja kupari näkyvät siluettina. Hämärässä taimen liikkuu rohkeammin rannan tuntumaan."},
+    cold:{tag:"Viileä vesi", name:"Pieni vaappu pohjan lähellä", desc:"Viileä, hapekas vesi on taimenen etu. Kalasta virran saumoja rauhallisesti."}
+  },
+  sarki: {
+    clear:{tag:"Onki", name:"Kevyt koho ja pieni koukku", desc:"Mato, toukka, maissi tai taikina. Hieno siima ja kevyt koho auttavat varovaisella syönnillä."},
+    murky:{tag:"Samea vesi", name:"Tuoksuva syötti", desc:"Leipä, maissi tai valmis pohjasyötti auttaa kalaa löytämään paikan. Ruoki maltillisesti."},
+    cold:{tag:"Kylmä vesi", name:"Pohjasta hitaasti", desc:"Kylmässä särkikalat liikkuvat hitaasti. Pidä syötti paikallaan ja anna parven löytää se."}
+  }
+};
+
+const FISH_INFO = {
+  hauki:{title:"Hauki", mood:"Väijyvä petokala", where:"Ruovikot, matalat lahdet, karikon reunat, kasvillisuuden aukot ja pudotusten yläreunat.", when:"Kevät ja syksy ovat vahvoja. Kesähelteellä etsi viileämpää vettä ja kalasta aamu/ilta.", start:"Iso vaappu, lusikka, shad-jigi, spinnerbait tai jerkbait. Käytä aina puruperuketta.", color:"#78a857", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Esox_lucius1.jpg"},
+  kuha:{title:"Kuha", mood:"Hämärän saalistaja", where:"Syvänteiden reunat, kovapohjaiset penkat, salmet ja pikkukalaparvien ympäristö.", when:"Iltahämärä, yö ja pilvinen päivä. Lämmin kesävesi aktivoi kuhaa, mutta kirkas aurinko painaa sen syvemmälle.", start:"Jigi pohjan tuntumaan, kuhan vaappu vetoon tai pystypilkki veneestä.", color:"#c9b36a", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Sander_lucioperca_1.jpg"},
+  ahven:{title:"Ahven", mood:"Parvena liikkuva opportunisti", where:"Laiturit, kivikot, kasvillisuuden reunat, penkat ja pikkukalojen pinnassa näkyvät ajot.", when:"Kesällä usein koko päivän, mutta paras piikki tulee aamulla ja illalla. Kevyt tuuli auttaa.", start:"Mikrojigi, pieni lippa, pieni lusikka tai dropshot.", color:"#d88b3d", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Perca_fluviatilis2.jpg"},
+  taimen:{title:"Taimen / lohi", mood:"Viileän veden vauhtikala", where:"Virran saumat, niskat, suvannot, rantamatalat kylmällä vedellä ja hapekkaat selkävedet.", when:"Viileä vesi, pilvinen keli, tuuli ja hämärä ovat eduksi. Itämeren rannikolla vaeltava taimen ja lohi puree kesällä (kesä-elokuu) heikosti - parhaat saumat ovat joissa ja koskilla tai keväällä/syksyllä. Noudata aina rauhoituksia ja alamittoja.", start:"Kapea lusikka, vaappu, perho tai pieni jigi virran mukaan uitettuna.", color:"#b8c7d0", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Brown_trout_Salmo_trutta.jpg"},
+  sarki:{title:"Särkikalat", mood:"Kevyen ongen varma ilo", where:"Lämpimät lahdet, laiturit, ruovikon reunat ja pohjan tasaiset ruokailupaikat.", when:"Lämmin kausi ja tyyni tai leuto keli. Ruokinta kokoaa parvea.", start:"Koho-onki, pieni koukku, mato, toukka, maissi tai leipä.", color:"#d9d3ad", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Common_Roach.JPG"}
+};
+
+const locSel = document.getElementById("locationSelect");
+const spSel = document.getElementById("speciesSelect");
+const searchInput = document.getElementById("locationSearch");
+const locCountEl = document.getElementById("locationCount");
+
+// Initialize Selects
+function initSelects() {
+  locSel.innerHTML = "";
+  LOCATIONS.forEach((l,i) => locSel.add(new Option(l.name, i)));
+  spSel.innerHTML = "";
+  SPECIES.forEach(s => spSel.add(new Option(s.name, s.id)));
+  
+  // Etsitään Naantali oletukseksi, jos löytyy
+  const defaultIdx = LOCATIONS.findIndex(l => l.name.includes("Naantali"));
+  if (defaultIdx !== -1) locSel.value = defaultIdx;
+}
+initSelects();
+
+// Hakukentän logiikka
+searchInput.addEventListener("input", (e) => {
+  const term = e.target.value.toLowerCase();
+  locSel.innerHTML = "";
+  let matchFound = false;
+  let count = 0;
+
+  LOCATIONS.forEach((l, i) => {
+    if (l.name.toLowerCase().includes(term)) {
+      locSel.add(new Option(l.name, i)); // Käytetään alkuperäistä indeksiä (i), jotta refresh() löytää datan
+      count++;
+      if (!matchFound) {
+        locSel.value = i;
+        matchFound = true;
+      }
+    }
+  });
+
+  if (term === "") {
+    LOCATIONS.forEach((l, i) => locSel.add(new Option(l.name, i)));
+    locCountEl.textContent = "";
+  } else {
+    locCountEl.textContent = count > 0 ? `Löytyi ${count} paikkaa` : "Ei tuloksia";
+  }
+});
+
+
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+  document.querySelector(".hero").classList.toggle("hero-solo", id!=="kelimittari");
+  const page = document.getElementById(id);
+  if(page) page.scrollIntoView({block:"start"});
+}
+document.querySelectorAll("[data-page]").forEach(btn=>btn.addEventListener("click",()=>showPage(btn.dataset.page)));
+document.querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();showPage(a.dataset.go)}));
+
+function degToCompassFi(deg){
+  const dirs=["P","KO","I","KA","E","LO","L","LU"];
+  return dirs[Math.round(deg/45)%8];
+}
+function moonPhase(date){
+  const synodic=29.53058867, known=Date.UTC(2000,0,6,18,14,0);
+  let phase=((date.getTime()-known)/86400000%synodic)/synodic;
+  if(phase<0) phase+=1;
+  return phase;
+}
+function moonPhaseInfo(date){
+  const phase=moonPhase(date);
+  const daysToNew=Math.min(phase,1-phase)*29.53;
+  const daysToFull=Math.abs(phase-.5)*29.53;
+  const minDays=Math.min(daysToNew,daysToFull);
+  let name="Vähenevä sirppi", icon="☾";
+  if(phase<.03||phase>.97){name="Uusikuu";icon="●"}
+  else if(phase<.22){name="Kasvava sirppi";icon="☽"}
+  else if(phase<.28){name="Puolikuu kasvava";icon="◐"}
+  else if(phase<.47){name="Kasvava kupera";icon="◐"}
+  else if(phase<.53){name="Täysikuu";icon="○"}
+  else if(phase<.72){name="Vähenevä kupera";icon="◑"}
+  else if(phase<.78){name="Puolikuu vähenevä";icon="◑"}
+  return {phase,minDays,name,icon};
+}
+function scoreLabel(score){
+  if(score>=75) return {text:"Erinomainen", color:"#426f33"};
+  if(score>=55) return {text:"Hyvä", color:"#2e656b"};
+  if(score>=35) return {text:"Kohtalainen", color:"#d97725"};
+  return {text:"Heikko", color:"#a94635"};
+}
+function setGauge(score){
+  score=Math.max(0,Math.min(100,Math.round(score)));
+  const start=-135,end=135,total=end-start,R=120,cx=150,cy=150;
+  const polar=a=>{const r=(a-90)*Math.PI/180;return [cx+R*Math.cos(r),cy+R*Math.sin(r)]};
+  const arcPath=(a0,a1)=>{const [x0,y0]=polar(a0),[x1,y1]=polar(a1);return `M ${x0} ${y0} A ${R} ${R} 0 ${(a1-a0)>180?1:0} 1 ${x1} ${y1}`};
+  const angle=start+(score/100)*total;
+  document.getElementById("track").setAttribute("d",arcPath(start,end));
+  document.getElementById("arc").setAttribute("d",arcPath(start,angle));
+  document.getElementById("needle").setAttribute("transform",`rotate(${angle} 150 150)`);
+  const lbl=scoreLabel(score);
+  document.getElementById("scoreNum").textContent=score;
+  document.getElementById("scoreNum").style.color=lbl.color;
+  document.getElementById("scoreLabel").textContent=lbl.text;
+  document.getElementById("scoreLabel").style.color=lbl.color;
+  document.getElementById("arc").setAttribute("stroke",lbl.color);
+}
+function pressureTrendText(delta){
+  if(delta<=-1) return {text:`Laskee ${Math.abs(delta).toFixed(1)} hPa / 6 h`, cls:"trend-down"};
+  if(delta>=1) return {text:`Nousee ${delta.toFixed(1)} hPa / 6 h`, cls:"trend-up"};
+  return {text:"Vakaa", cls:"trend-flat"};
+}
+async function fetchWeather(loc){
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&hourly=temperature_2m,pressure_msl,wind_speed_10m,wind_direction_10m,cloud_cover&daily=sunrise,sunset&past_days=1&forecast_days=2&timezone=Europe%2FHelsinki&wind_speed_unit=ms`;
+  const controller=new AbortController();
+  const timeoutId=setTimeout(()=>controller.abort(),6500);
+  try{
+    const res=await fetch(url,{signal:controller.signal});
+    clearTimeout(timeoutId);
+    if(!res.ok) throw new Error("Sään haku epäonnistui");
+    return await res.json();
+  }catch(err){clearTimeout(timeoutId);throw err}
+}
+function nearestHourIndex(times){
+  const now=new Date();
+  let best=0,bestDiff=Infinity;
+  times.forEach((t,i)=>{const d=Math.abs(new Date(t)-now);if(d<bestDiff){bestDiff=d;best=i}});
+  return best;
+}
+const SPECIES_MODIFIERS = {
+  hauki:c=>((c.cloud>=40?8:0)+(c.cloud<20&&!c.isPrimeTime?-6:0)+(c.temp>22?-10:0)+(c.temp<=16?4:0)+(c.wind>9?-5:0)),
+  kuha:c=>((c.cloud>=50?14:0)+(c.cloud<30&&!c.isPrimeTime?-10:0)+(c.isPrimeTime?8:0)+(c.temp<4?-5:0)),
+  ahven:c=>((c.wind>=1&&c.wind<=5?6:0)+(c.cloud>=30?5:0)+(c.temp>=8&&c.temp<=20?4:0)),
+  taimen:c=>((c.temp>=4&&c.temp<=14?10:0)+(c.temp>18?-12:0)+(c.wind>=2&&c.wind<=8?6:0)+(c.isSeaSummer?-45:0)),
+  sarki:c=>((c.temp>=14?8:0)+(c.cloud<30?3:0)+(c.temp<5?-8:0))
+};
+function isBalticCoast(name){
+  return /meri|saaristo|ahvenanmaa|hanko|kaskinen|kristiinankaupunki|inkoo|kirkkonummi|loviisa|parainen|kemiönsaari|kaarina|tammisaari|pernajanlahti|kuusistonlahti|halikonlahti|porkkala|merenkurkku|suomenlahti|sipoonlahti/i.test(name||"");
+}
+function isSummerMonth(date){ const m=date.getMonth(); return m>=5&&m<=7; }
+function computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species,isSeaSummer}){
+  const moon=moonPhaseInfo(new Date());
+  let pressureScore=delta<=-3?95:delta<=-1?78:delta<1?58:delta<3?35:12;
+  let windScore=wind<1?38:wind<=4?92:wind<=7?68:wind<=10?35:10;
+  let cloudScore=cloud<20?(isPrimeTime?65:32):cloud<70?62:82;
+  let tempScore=(temp>=5&&temp<=20)?68:(temp<-5||temp>27)?25:48;
+  let moonScore=moon.minDays<=1?78:moon.minDays<=3?60:45;
+  let timeScore=isPrimeTime?88:45;
+  let score=pressureScore*.26+windScore*.20+cloudScore*.20+moonScore*.12+timeScore*.17+tempScore*.05;
+  const speciesBonus=Math.round((SPECIES_MODIFIERS[species]||(()=>0))({temp,cloud,wind,isPrimeTime,isSeaSummer})*.6);
+  score=score+speciesBonus;
+  if(species==="taimen"&&isSeaSummer) score=Math.min(score,32);
+  return {score:Math.max(0,Math.min(100,Math.round(score))),speciesBonus,moon,isSeaSummer:!!isSeaSummer};
+}
+function computeScore(data,idx,species,loc){
+  const h=data.hourly;
+  const pressureNow=h.pressure_msl[idx], pressureBefore=h.pressure_msl[Math.max(0,idx-6)];
+  const delta=pressureNow-pressureBefore, wind=h.wind_speed_10m[idx], cloud=h.cloud_cover[idx], temp=h.temperature_2m[idx];
+  const now=new Date(), sunrise=new Date(data.daily.sunrise[1]||data.daily.sunrise[0]), sunset=new Date(data.daily.sunset[1]||data.daily.sunset[0]);
+  const isPrimeTime=Math.abs(now-sunrise)/60000<=90||Math.abs(now-sunset)/60000<=90;
+  const isSeaSummer=isBalticCoast(loc&&loc.name)&&isSummerMonth(now);
+  const core=computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species,isSeaSummer});
+  return {score:core.score,delta,wind,cloud,temp,moon:core.moon,sunrise,sunset,isPrimeTime,pressureNow,speciesBonus:core.speciesBonus,isSeaSummer:core.isSeaSummer};
+}
+function scoreForHour(data,idx,species,loc){
+  const h=data.hourly;
+  const delta=h.pressure_msl[idx]-h.pressure_msl[Math.max(0,idx-6)];
+  const wind=h.wind_speed_10m[idx], cloud=h.cloud_cover[idx], temp=h.temperature_2m[idx];
+  const dateStr=h.time[idx].slice(0,10);
+  let dayIdx=data.daily.time.indexOf(dateStr); if(dayIdx===-1) dayIdx=1;
+  const sunrise=new Date(data.daily.sunrise[dayIdx]), sunset=new Date(data.daily.sunset[dayIdx]), hourDate=new Date(h.time[idx]);
+  const isPrimeTime=Math.abs(hourDate-sunrise)/60000<=90||Math.abs(hourDate-sunset)/60000<=90;
+  const isSeaSummer=isBalticCoast(loc&&loc.name)&&isSummerMonth(hourDate);
+  const core=computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species,isSeaSummer});
+  return {time:hourDate,score:core.score,isPrimeTime};
+}
+function buildHourlyTimeline(data,startIdx,species,loc){
+  const endIdx=Math.min(data.hourly.time.length-1,startIdx+24), timeline=[];
+  for(let i=startIdx;i<=endIdx;i++) timeline.push(scoreForHour(data,i,species,loc));
+  return timeline;
+}
+function fmtTime(d){return d.toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"})}
+function renderHourlyChart(timeline){
+  const host=document.getElementById("hourlyHost");
+  const maxScore=Math.max(...timeline.map(t=>t.score));
+  const bestIdx=timeline.findIndex(t=>t.score===maxScore);
+  document.getElementById("bestWindow").innerHTML=`Paras hetki seuraavan vuorokauden aikana: <strong>${fmtTime(timeline[bestIdx].time)}</strong> (${timeline[bestIdx].score} p.)`;
+  host.innerHTML=`<div class="hbar-chart">${timeline.map((t,i)=>{
+    const lbl=scoreLabel(t.score), show=t.time.getMinutes()===0&&t.time.getHours()%3===0;
+    return `<div class="hbar-col" title="${fmtTime(t.time)} - ${t.score} p."><div class="hbar ${i===bestIdx?"hbar-best":""}" style="height:${Math.max(6,t.score)}%;background:${lbl.color}"></div><div class="hbar-time">${show?fmtTime(t.time):""}</div></div>`;
+  }).join("")}</div>`;
+}
+function renderStrip(info){
+  const trend=pressureTrendText(info.delta);
+  document.getElementById("stripHost").innerHTML=`<div class="strip">
+    <div class="stat"><div class="label">Ilmanpaine</div><div class="value">${info.pressureNow?info.pressureNow.toFixed(0):"--"} hPa</div><div class="sub ${trend.cls}">${trend.text}</div></div>
+    <div class="stat"><div class="label">Tuuli</div><div class="value">${info.wind.toFixed(1)} m/s</div><div class="sub">Suunta: ${info.windCompass||"-"}</div></div>
+    <div class="stat"><div class="label">Pilvisyys</div><div class="value">${info.cloud.toFixed(0)}%</div><div class="sub">${info.cloud<20?"Kirkas":info.cloud<70?"Puolipilvinen":"Pilvinen"}</div></div>
+    <div class="stat"><div class="label">Lämpötila</div><div class="value">${info.temp.toFixed(1)}°C</div><div class="sub">Ilman lämpötila</div></div>
+    <div class="stat"><div class="label">Kuu</div><div class="value">${info.moon.icon}</div><div class="sub">${info.moon.name}</div></div>
+    <div class="stat"><div class="label">Vuorokaudenaika</div><div class="value" style="font-size:20px">${info.isPrimeTime?"Prime time":"Peruskeli"}</div><div class="sub">Nousu ${fmtTime(info.sunrise)} · lasku ${fmtTime(info.sunset)}</div></div>
+  </div>`;
+}
+function verdictSentence(info){
+  const parts=[];
+  if(info.delta<=-1) parts.push("laskeva ilmanpaine voi piristää syöntiä");
+  else if(info.delta>=1) parts.push("nouseva paine voi hiljentää aktiivisuutta");
+  if(info.wind>=1&&info.wind<=7) parts.push("tuuli on kalastukseen sopiva");
+  if(info.cloud>=20) parts.push("pilvisyys pehmentää valoa");
+  if(info.moon.minDays<=3) parts.push(`kuu on lähellä ${info.moon.phase<.5?"uutta":"täyttä"} vaihetta`);
+  if(info.isPrimeTime) parts.push("ajoitus osuu hämärän syönti-ikkunaan");
+  let sentence=parts.length?`Tänään ${parts.join(", ")}.`:"Keli on tavallinen: ei selkeää piikkiä, mutta ei täyttä jarruakaan.";
+  if(info.speciesBonus>=8) sentence+=" Olosuhteet suosivat valittua kalaa.";
+  else if(info.isSeaSummer&&info.speciesBonus<-15) sentence+=" Itämeren vaeltava taimen ja lohi ovat kesällä harvassa rannikolla - parhaat saumat löytyvät joista ja koskilta, tai odota syksyn nousua.";
+  else if(info.speciesBonus<=-6) sentence+=" Valitulle kalalle tämä ei ole päivän helpoin hetki.";
+  return sentence;
+}
+function conditionKey(info){return info.temp<8?"cold":info.cloud>=40?"murky":"clear"}
+function renderLures(species,info){
+  const grid=document.getElementById("lureGrid");
+  const set=LURES[species]||LURES.ahven;
+  const key=conditionKey(info);
+  const order=key==="cold"?["cold","murky","clear"]:key==="murky"?["murky","cold","clear"]:["clear","murky","cold"];
+  grid.innerHTML=order.map(k=>{
+    const l=set[k];
+    return `<article class="tip-card"><span class="tag">${l.tag}</span><h3>${l.name}</h3><p>${l.desc}</p></article>`;
+  }).join("");
+}
+function renderRules(){
+  document.getElementById("lureRules").innerHTML=[
+    ["Kirkas vesi","Luonnollinen väri, pienempi profiili ja pidemmät tauot. Kala näkee hyvin ja ehtii epäillä."],
+    ["Samea vesi","Lisää kontrastia, ääntä tai välkettä. Firetiger, oranssi, chartreuse ja musta ovat hyviä testejä."],
+    ["Kylmä vesi","Hidasta. Pienempi liike, pidempi tauko ja kalastus lähellä pohjaa tai suojapaikkaa."],
+    ["Lämmin vesi","Etsi happea: tuulen puoli, virtaus, varjo, syvänteen reuna ja aamu/ilta."],
+    ["Ei tärppiä?","Vaihda ensin syvyys ja nopeus. Väri on usein vasta kolmas säätö."],
+    ["Peruke","Hauelle aina puruperuke. Kuhalle ja ahvenelle ohuempi fluorocarbon voi parantaa syöntiä kirkkaassa vedessä."]
+  ].map(([h,p])=>`<article class="tip-card"><span class="tag">Nyrkkisääntö</span><h3>${h}</h3><p>${p}</p></article>`).join("");
+}
+function renderSpeciesButtons(){
+  const host=document.getElementById("speciesButtons");
+  host.innerHTML=SPECIES.map(s=>`<button class="species-btn ${s.id===spSel.value?"active":""}" data-fish="${s.id}">${s.name}</button>`).join("");
+  host.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{spSel.value=b.dataset.fish;renderFishInfo(b.dataset.fish);refresh()}));
+}
+function renderLureSpeciesButtons(){
+  const host=document.getElementById("lureSpeciesButtons");
+  if(!host) return;
+  host.innerHTML=SPECIES.map(s=>`<button class="species-btn ${s.id===spSel.value?"active":""}" data-fish="${s.id}">${s.name}</button>`).join("");
+  host.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{spSel.value=b.dataset.fish;renderFishInfo(b.dataset.fish);refresh()}));
+}
+function fishSvg(color){
+  return `<svg viewBox="0 0 420 220" role="img" aria-label="Kala"><path d="M58 112C124 30 252 29 344 103c16-19 32-35 52-48v116c-20-13-36-29-52-48C250 194 126 194 58 112Z" fill="${color}"/><path d="M96 112c44-42 121-56 190-19" stroke="#ffffff" stroke-opacity=".45" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M176 73l44-45 12 61M178 148l54 46 6-70" fill="${color}" opacity=".78"/><circle cx="104" cy="104" r="8" fill="#1f2924"/><path d="M334 103c-11 8-11 13 0 20" stroke="#1f2924" stroke-opacity=".28" stroke-width="7" fill="none" stroke-linecap="round"/></svg>`;
+}
+function renderFishInfo(id=spSel.value){
+  const f=FISH_INFO[id]||FISH_INFO.ahven;
+  document.getElementById("fishInfo").innerHTML=`<span class="tag">${f.mood}</span><h3 style="font-size:32px">${f.title}</h3><div class="columns"><div><p><strong>Mistä etsiä:</strong><br>${f.where}</p></div><div><p><strong>Milloin yrittää:</strong><br>${f.when}</p></div></div><div class="checklist"><div class="check"><div><b>Viehe alkuun:</b><br>${f.start}</div></div><div class="check"><div><b>Muista:</b><br>Tarkista paikalliset rajoitukset, alamitat ja rauhoitukset ennen kalastusta.</div></div></div>`;
+  document.getElementById("fishVisual").innerHTML=`<img src="${f.image}" alt="${f.title}" loading="lazy" onerror="this.parentElement.innerHTML=fishSvg('${f.color}')">`;
+  renderSpeciesButtons();
+  renderLureSpeciesButtons();
+}
+function computeScoreFromValues(vals,species,loc){
+  const isSeaSummer=isBalticCoast(loc&&loc.name)&&isSummerMonth(new Date());
+  const core=computeCoreScore({...vals,species,isSeaSummer});
+  const now=new Date();
+  return {score:core.score,delta:vals.delta,wind:vals.wind,cloud:vals.cloud,temp:vals.temp,moon:core.moon,speciesBonus:core.speciesBonus,isPrimeTime:vals.isPrimeTime,pressureNow:null,windCompass:"-",sunrise:now,sunset:now,isSeaSummer:core.isSeaSummer};
+}
+function showManualFallback(){
+  document.getElementById("manualForm").classList.add("show");
+  document.getElementById("stripHost").innerHTML=`<div class="stat"><div class="label">Verkko</div><div class="value">Käsinsyöttö</div><div class="sub">Automaattinen sää ei auennut. Voit silti laskea kelin käsin.</div></div>`;
+  document.getElementById("hourlyHost").innerHTML="";
+  document.getElementById("bestWindow").textContent="";
+}
+async function refresh(){
+  // Varmistetaan että käytetään oikeaa lokaatiota
+  const locIndex = locSel.value;
+  const loc=LOCATIONS[locIndex]; 
+  const species=spSel.value;
+  
+  if(!loc) return;
+
+  document.getElementById("stripHost").innerHTML=`<div class="stat"><div class="label">Ladataan</div><div class="value">Hetki...</div><div class="sub">Haetaan sää- ja kelitietoja.</div></div>`;
+  document.getElementById("manualForm").classList.remove("show");
+  document.getElementById("scoreLabel").textContent="Ladataan";
+  try{
+    const data=await fetchWeather(loc);
+    const idx=nearestHourIndex(data.hourly.time);
+    const info=computeScore(data,idx,species,loc);
+    info.windCompass=degToCompassFi(data.hourly.wind_direction_10m[idx]);
+    setGauge(info.score);
+    document.getElementById("verdictText").textContent=verdictSentence(info);
+    renderStrip(info);
+    renderLures(species,info);
+    renderHourlyChart(buildHourlyTimeline(data,idx,species,loc));
+    renderFishInfo(species);
+    document.getElementById("updatedText").textContent=`${loc.name} · päivitetty ${new Date().toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"})}`;
+  }catch(e){
+    setGauge(0);
+    document.getElementById("scoreLabel").textContent="Käsin";
+    document.getElementById("verdictText").textContent="Sään haku ei onnistunut. Syötä keli käsin alla olevaan lomakkeeseen.";
+    showManualFallback();
+    renderLures(species,computeScoreFromValues({delta:-1,wind:4,cloud:50,temp:14,isPrimeTime:false},species,loc));
+    renderFishInfo(species);
+  }
+}
+document.getElementById("refreshBtn").addEventListener("click",refresh);
+locSel.addEventListener("change",refresh);
+spSel.addEventListener("change",()=>{renderFishInfo(spSel.value);refresh()});
+document.getElementById("mCloud").addEventListener("input",e=>document.getElementById("mCloudVal").textContent=e.target.value);
+document.getElementById("mCalcBtn").addEventListener("click",()=>{
+  const species=spSel.value;
+  const loc=LOCATIONS[locSel.value];
+  const vals={delta:parseFloat(document.getElementById("mPressureDelta").value)||0,wind:parseFloat(document.getElementById("mWind").value)||0,cloud:parseFloat(document.getElementById("mCloud").value)||0,temp:parseFloat(document.getElementById("mTemp").value)||0,isPrimeTime:document.getElementById("mPrime").checked};
+  const info=computeScoreFromValues(vals,species,loc);
+  setGauge(info.score);
+  document.getElementById("verdictText").textContent=verdictSentence(info)+" (käsin syötetty keli)";
+  renderStrip(info);
+  renderLures(species,info);
+  document.getElementById("updatedText").textContent=`Käsin syötetty keli · ${new Date().toLocaleTimeString("fi-FI",{hour:"2-digit",minute:"2-digit"})}`;
+});
+renderRules();
+renderFishInfo(spSel.value);
+setGauge(0);
+refresh();
+</script>
+</body>
+</html>
