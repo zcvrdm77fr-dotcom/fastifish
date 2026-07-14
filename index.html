@@ -198,6 +198,16 @@ main { padding-bottom: 70px; }
 .grid > article:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
 .grid h3, .fish-card h3 { margin: 13px 0 8px; font-family: 'Fjalla One', sans-serif; font-size: 1.55rem; font-weight: 400; letter-spacing: .01em; }
 .grid p { color: var(--ink-soft); }
+
+.nearby-section { padding-block: 8px 12px; }
+.nearby-section .section-head { grid-template-columns: 1fr; margin-bottom: 18px; padding-top: 8px; }
+.spot-card { display: flex; flex-direction: column; gap: 10px; }
+.spot-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.spot-score { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; color: #fffaf0; font: 700 1.05rem/1 'JetBrains Mono', monospace; }
+.spot-dist { color: var(--ink-soft); font: 700 .74rem/1 'JetBrains Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
+.spot-card .btn { align-self: flex-start; padding: 9px 15px; min-height: 40px; font-size: .85rem; }
+.nearby-loading, .nearby-error { color: var(--ink-soft); }
+.nearby-error .btn { margin-top: 10px; }
 .link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
 .mini-link { min-height: 38px; padding: 7px 12px; font-size: .78rem; }
 .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
@@ -305,6 +315,14 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
     <div class="updated" id="updatedText">Valmis hakemaan kelitiedot.</div>
   </aside>
 </header>
+
+<section id="nearbySection" class="shell nearby-section" hidden>
+  <div class="section-head">
+    <h2>Lähelläsi</h2>
+    <p id="nearbyStatus">Haetaan sijaintiasi selaimelta...</p>
+  </div>
+  <div class="grid" id="nearbyGrid"></div>
+</section>
 
 <main class="shell">
   <section id="kelimittari" class="page active">
@@ -758,6 +776,21 @@ const spSel = document.getElementById("speciesSelect");
 const searchInput = document.getElementById("locationSearch");
 const locCountEl = document.getElementById("locationCount");
 
+// Sijainnit, jotka eivät ole valmislistalla (esim. suoraan GPS-koordinaateista)
+const DYNAMIC_LOCATIONS = {};
+function resolveLocation(key){
+  if (Object.prototype.hasOwnProperty.call(DYNAMIC_LOCATIONS, key)) return DYNAMIC_LOCATIONS[key];
+  return LOCATIONS[key];
+}
+function addDynamicLocation(loc){
+  const key = `geo:${loc.lat.toFixed(4)},${loc.lon.toFixed(4)}`;
+  DYNAMIC_LOCATIONS[key] = loc;
+  if (!locSel.querySelector(`option[value="${key}"]`)) {
+    locSel.add(new Option(loc.name, key), 0);
+  }
+  return key;
+}
+
 // Initialize Selects
 function initSelects() {
   locSel.innerHTML = "";
@@ -797,6 +830,130 @@ searchInput.addEventListener("input", (e) => {
   }
 });
 
+
+function haversineKm(lat1,lon1,lat2,lon2){
+  const R=6371, toRad=d=>d*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+function offsetCoord(lat,lon,distanceKm,bearingDeg){
+  const R=6371, brng=bearingDeg*Math.PI/180;
+  const lat1=lat*Math.PI/180, lon1=lon*Math.PI/180;
+  const lat2=Math.asin(Math.sin(lat1)*Math.cos(distanceKm/R)+Math.cos(lat1)*Math.sin(distanceKm/R)*Math.cos(brng));
+  const lon2=lon1+Math.atan2(Math.sin(brng)*Math.sin(distanceKm/R)*Math.cos(lat1),Math.cos(distanceKm/R)-Math.sin(lat1)*Math.sin(lat2));
+  return {lat:lat2*180/Math.PI, lon:((lon2*180/Math.PI+540)%360)-180};
+}
+function bearingLabelFi(deg){
+  const dirs=["pohjoiseen","koilliseen","itään","kaakkoon","etelään","lounaaseen","länteen","luoteeseen"];
+  return dirs[Math.round(((deg%360)+360)%360/45)%8];
+}
+async function fetchWeatherBatch(locs){
+  const lats=locs.map(l=>l.lat).join(","), lons=locs.map(l=>l.lon).join(",");
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&hourly=temperature_2m,pressure_msl,wind_speed_10m,wind_direction_10m,cloud_cover&daily=sunrise,sunset&past_days=1&forecast_days=2&timezone=Europe%2FHelsinki&wind_speed_unit=ms`;
+  const controller=new AbortController();
+  const timeoutId=setTimeout(()=>controller.abort(),9000);
+  try{
+    const res=await fetch(url,{signal:controller.signal});
+    clearTimeout(timeoutId);
+    if(!res.ok) throw new Error("Sään haku epäonnistui");
+    const json=await res.json();
+    return Array.isArray(json)?json:[json];
+  }catch(err){clearTimeout(timeoutId);throw err}
+}
+async function reverseGeocode(lat,lon){
+  const controller=new AbortController();
+  const timeoutId=setTimeout(()=>controller.abort(),5000);
+  try{
+    const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=13&accept-language=fi`;
+    const res=await fetch(url,{signal:controller.signal,headers:{"Accept":"application/json"}});
+    clearTimeout(timeoutId);
+    if(!res.ok) return null;
+    const data=await res.json();
+    const a=data.address||{};
+    return a.village||a.town||a.city||a.municipality||a.hamlet||a.suburb||a.county||data.name||null;
+  }catch(err){clearTimeout(timeoutId);return null}
+}
+const NEARBY_SHOW_COUNT=6;
+function renderNearbyError(msg){
+  document.getElementById("nearbyStatus").textContent=msg;
+  document.getElementById("nearbyGrid").innerHTML="";
+}
+function fmtKm(km){ return km<1?"< 1 km":`${Math.round(km)} km`; }
+function renderNearbySpots(spots){
+  const grid=document.getElementById("nearbyGrid");
+  document.getElementById("nearbyStatus").textContent="Suoraan Open-Meteon säädatasta lasketut kelipisteet juuri nyt lähialueellasi.";
+  grid.innerHTML=spots.map((s,i)=>{
+    const lbl=scoreLabel(s.score);
+    return `<article class="tip-card spot-card">
+      <div class="spot-top">
+        <div><span class="tag">${fmtKm(s.distance)}</span><h3>${s.name}</h3></div>
+        <div class="spot-score" style="background:${lbl.color}">${s.score}</div>
+      </div>
+      <p>${lbl.text} keli juuri nyt${s.isPrimeTime?" · hämärän syönti-ikkuna päällä":""}.</p>
+      <button class="btn primary" data-spot="${i}">Käytä tätä paikkaa</button>
+    </article>`;
+  }).join("");
+  grid.querySelectorAll("button[data-spot]").forEach(b=>b.addEventListener("click",()=>{
+    const s=spots[b.dataset.spot];
+    const key=addDynamicLocation({name:s.name, lat:s.lat, lon:s.lon});
+    locSel.value=key;
+    refresh();
+    showPage("kelimittari");
+  }));
+}
+async function loadNearbySpots(userLat,userLon){
+  // Käyttäjän oma tarkka sijainti + rengas pisteitä sen ympärillä - kaikki suoraan
+  // koordinaateista, ei riipu siitä onko paikka valmiissa listassa.
+  const points=[{name:"Oma sijaintisi", lat:userLat, lon:userLon, distance:0}];
+  const ringKm=7;
+  for(let b=0; b<360; b+=45){
+    const c=offsetCoord(userLat,userLon,ringKm,b);
+    points.push({name:`${ringKm} km ${bearingLabelFi(b)}`, lat:c.lat, lon:c.lon, distance:ringKm});
+  }
+
+  // Lähin paikka oletukseksi mittariin heti
+  const key=addDynamicLocation(points[0]);
+  locSel.value=key;
+  refresh();
+
+  document.getElementById("nearbyStatus").textContent="Haetaan säätietoja lähialueeltasi Open-Meteolta...";
+  try{
+    const dataArr=await fetchWeatherBatch(points);
+    const species=spSel.value;
+    const scored=points.map((p,i)=>{
+      const data=dataArr[i];
+      const idx=nearestHourIndex(data.hourly.time);
+      const info=computeScore(data,idx,species,p);
+      return {...p,score:info.score,isPrimeTime:info.isPrimeTime};
+    }).sort((a,b)=>b.score-a.score).slice(0,NEARBY_SHOW_COUNT);
+
+    // Yritetään hakea oikeat paikannimet (parhaan mukaan, ei pakollinen)
+    document.getElementById("nearbyStatus").textContent="Tarkennetaan paikannimiä...";
+    await Promise.all(scored.map(async (s,i)=>{
+      if(i>0) await new Promise(r=>setTimeout(r,300*i)); // kevyt viivytys Nominatimin käyttöehtojen vuoksi
+      const name=await reverseGeocode(s.lat,s.lon);
+      if(name) s.name = s.distance===0 ? name : `${name} · ${s.name}`;
+    }));
+
+    renderNearbySpots(scored);
+  }catch(err){
+    renderNearbyError("Lähialueen kelien laskenta ei onnistunut juuri nyt. Voit silti valita paikan käsin yllä.");
+  }
+}
+function initGeoLocation(){
+  const section=document.getElementById("nearbySection");
+  if(!("geolocation" in navigator)) return;
+  section.hidden=false;
+  navigator.geolocation.getCurrentPosition(
+    pos=>loadNearbySpots(pos.coords.latitude,pos.coords.longitude),
+    ()=>{
+      document.getElementById("nearbyStatus").textContent="Sijaintia ei saatu käyttöön. Voit silti valita paikan yllä olevasta listasta.";
+      document.getElementById("nearbyGrid").innerHTML="";
+    },
+    {enableHighAccuracy:false, timeout:8000, maximumAge:600000}
+  );
+}
 
 function showPage(id){
   document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
@@ -1022,7 +1179,7 @@ function showManualFallback(){
 async function refresh(){
   // Varmistetaan että käytetään oikeaa lokaatiota
   const locIndex = locSel.value;
-  const loc=LOCATIONS[locIndex]; 
+  const loc=resolveLocation(locIndex);
   const species=spSel.value;
   
   if(!loc) return;
@@ -1057,7 +1214,7 @@ spSel.addEventListener("change",()=>{renderFishInfo(spSel.value);refresh()});
 document.getElementById("mCloud").addEventListener("input",e=>document.getElementById("mCloudVal").textContent=e.target.value);
 document.getElementById("mCalcBtn").addEventListener("click",()=>{
   const species=spSel.value;
-  const loc=LOCATIONS[locSel.value];
+  const loc=resolveLocation(locSel.value);
   const vals={delta:parseFloat(document.getElementById("mPressureDelta").value)||0,wind:parseFloat(document.getElementById("mWind").value)||0,cloud:parseFloat(document.getElementById("mCloud").value)||0,temp:parseFloat(document.getElementById("mTemp").value)||0,isPrimeTime:document.getElementById("mPrime").checked};
   const info=computeScoreFromValues(vals,species,loc);
   setGauge(info.score);
@@ -1070,6 +1227,7 @@ renderRules();
 renderFishInfo(spSel.value);
 setGauge(0);
 refresh();
+initGeoLocation();
 </script>
 </body>
 </html>
