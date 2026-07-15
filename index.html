@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WENSSGS6RJ');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FastFishing - kalakelien mittari ja vieheopas</title>
@@ -1954,7 +1963,7 @@ async function searchWorldwide(rawTerm, term, localCount) {
 
     if (localCount === 0 && firstKey !== null) locSel.value = firstKey;
 
-    const foundLabel = currentLang === 'fi' ? `Löytyi ${localCount} paikkaa` : `Found ${localCount} places`;
+    const foundLabel = currentLang === 'fi' ? `Löytyi ${localCount} paikkaa` : `Found ${localCount} spots`;
     const worldLabel = added > 0
       ? (currentLang === 'fi' ? `+ ${added} tulosta maailmalta` : `+ ${added} worldwide results`)
       : (currentLang === 'fi' ? "Ei tuloksia maailmaltakaan" : "No worldwide results either");
@@ -2345,7 +2354,7 @@ function scoreLabel(score){
   } else {
     if(score>=75) return {text:"Excellent", color:"#426f33"};
     if(score>=55) return {text:"Good", color:"#2e656b"};
-    if(score>=35) return {text:"Fair", color:"#d97725"};
+    if(score>=35) return {text:"Fair", color:"#2e656b"};
     return {text:"Poor", color:"#a94635"};
   }
 }
