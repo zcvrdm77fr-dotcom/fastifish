@@ -1,0 +1,16 @@
+{
+  "name": "fastfishing",
+  "version": "1.0.0",
+  "description": "FastFishing - kalakelien mittari ja vieheopas",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "echo 'Static app ready'",
+    "lint": "echo 'No linting needed'",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
