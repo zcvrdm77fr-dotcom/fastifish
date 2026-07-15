@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FastFishing - Tietosuojaseloste</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ----- sama pohja kuin index.html ----- */
+        :root {
+            --ink: #17342f;
+            --ink-soft: #45645e;
+            --lake: #2f6f73;
+            --lake-deep: #24585c;
+            --mist: #d9e8e4;
+            --paper: #f4f0e5;
+            --paper-bright: #fffdf7;
+            --line: #c9d5cf;
+            --orange: #d5752c;
+            --orange-dark: #ad571e;
+            --moss: #567647;
+            --danger: #a94635;
+            --shadow: 0 18px 50px rgba(23, 52, 47, .12);
+            --shadow-small: 0 8px 24px rgba(23, 52, 47, .09);
+            --radius: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            min-width: 320px;
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 8% 4%, rgba(47, 111, 115, .14), transparent 28rem),
+                linear-gradient(rgba(47, 111, 115, .035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(47, 111, 115, .035) 1px, transparent 1px),
+                var(--paper);
+            background-size: auto, 34px 34px, 34px 34px, auto;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 17px;
+            line-height: 1.55;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: .22;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+        }
+
+        .shell {
+            width: min(1180px, calc(100% - 40px));
+            margin-inline: auto;
+        }
+
+        /* ----- topbar ----- */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            border-bottom: 1px solid rgba(201, 213, 207, .8);
+            background: rgba(244, 240, 229, .88);
+            backdrop-filter: blur(16px);
+        }
+        .nav {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            flex: 0 0 auto;
+            font-family: 'Fjalla One', sans-serif;
+            font-size: 1.35rem;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--ink);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+        }
+        .brand a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .tabs {
+            display: flex;
+            align-self: stretch;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-btn {
+            width: auto;
+            padding: 0 15px;
+            border: 0;
+            border-bottom: 3px solid transparent;
+            border-radius: 0;
+            color: var(--ink-soft);
+            background: transparent;
+            font-size: .88rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: color .2s, border-color .2s, background .2s;
+        }
+        .tab-btn:hover {
+            color: var(--ink);
+            background: rgba(255, 255, 255, .4);
+        }
+        .tab-btn.active {
+            color: var(--orange-dark);
+            border-bottom-color: var(--orange);
+        }
+
+        /* ----- hero / otsikko ----- */
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr);
+            gap: clamp(38px, 7vw, 94px);
+            align-items: center;
+            padding-block: clamp(64px, 10vw, 124px) 72px;
+        }
+        .hero-copy {
+            position: relative;
+        }
+        .hero-copy::after {
+            content: "";
+            position: absolute;
+            width: 130px;
+            height: 10px;
+            left: 0;
+            bottom: -38px;
+            border-top: 2px solid var(--orange);
+            border-bottom: 1px solid var(--orange);
+            transform: rotate(-2deg);
+            opacity: .65;
+        }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--orange-dark);
+            font: 700 .77rem/1 'JetBrains Mono', monospace;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+        .eyebrow::before {
+            content: "";
+            width: 26px;
+            height: 2px;
+            background: var(--orange);
+        }
+        h1 {
+            max-width: 12ch;
+            margin: 18px 0 20px;
+            font-family: 'Fjalla One', sans-serif;
+            font-size: clamp(4.2rem, 10vw, 7.6rem);
+            font-weight: 400;
+            line-height: .86;
+            letter-spacing: -.025em;
+            text-transform: uppercase;
+        }
+        .lead {
+            max-width: 600px;
+            margin-bottom: 30px;
+            color: var(--ink-soft);
+            font-size: clamp(1.08rem, 2vw, 1.28rem);
+        }
+
+        .hero-panel {
+            position: relative;
+            padding: 32px;
+            border: 1px solid var(--line);
+            border-radius: 30px 30px 30px 8px;
+            background: rgba(255, 253, 247, .82);
+            box-shadow: var(--shadow);
+        }
+        .hero-panel::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            z-index: -1;
+            border: 1px solid rgba(47, 111, 115, .14);
+            border-radius: 22px;
+            transform: rotate(2deg);
+        }
+        .panel-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            font-family: 'Fjalla One', sans-serif;
+            font-size: 1.45rem;
+            letter-spacing: .02em;
+        }
+        .pill {
+            display: inline-flex;
+            width: fit-content;
+            padding: 6px 10px;
+            border-radius: 999px;
+            color: var(--lake-deep);
+            background: var(--mist);
+            font: 700 .68rem/1 'JetBrains Mono', monospace;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 11px 18px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--ink);
+            background: rgba(255, 253, 247, .66);
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform .2s, border-color .2s, background .2s, color .2s, box-shadow .2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--lake);
+            box-shadow: var(--shadow-small);
+        }
+        .btn.primary {
+            border-color: var(--orange);
+            color: #fffaf0;
+            background: var(--orange);
+        }
+        .btn.primary:hover {
+            background: var(--orange-dark);
+        }
+
+        /* ----- sisältö ----- */
+        main {
+            padding-bottom: 70px;
+        }
+
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-block: 28px 14px;
+        }
+
+        .privacy-card {
+            border: 1px solid var(--line);
+            border-radius: 18px 18px 8px 18px;
+            background: rgba(255, 253, 247, .84);
+            box-shadow: var(--shadow-small);
+            padding: 28px 30px;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .privacy-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        .privacy-card .tag {
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: var(--mist);
+            color: var(--lake-deep);
+            font: 700 .68rem/1.4 'JetBrains Mono', monospace;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .privacy-card h2 {
+            margin: 0 0 12px;
+            font-family: 'Fjalla One', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 400;
+            letter-spacing: .01em;
+        }
+        .privacy-card p,
+        .privacy-card li {
+            color: var(--ink-soft);
+            margin: 0 0 8px;
+        }
+        .privacy-card ul {
+            padding-left: 20px;
+            margin: 8px 0 0;
+        }
+        .privacy-card ul li {
+            margin-bottom: 5px;
+        }
+        .privacy-card a {
+            color: var(--orange-dark);
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        .privacy-card a:hover {
+            color: var(--orange);
+        }
+
+        .privacy-card.full {
+            grid-column: 1 / -1;
+        }
+
+        .contact-block {
+            margin-top: 20px;
+            padding: 22px 26px;
+            border-radius: 14px;
+            background: var(--mist);
+            border-left: 5px solid var(--orange);
+        }
+        .contact-block strong {
+            color: var(--ink);
+        }
+
+        .section-head {
+            display: grid;
+            grid-template-columns: minmax(220px, .65fr) minmax(300px, 1fr);
+            gap: 30px;
+            align-items: end;
+            margin-bottom: 26px;
+            padding-top: 24px;
+        }
+        .section-head h2 {
+            margin-bottom: 0;
+            font-family: 'Fjalla One', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4.3rem);
+            font-weight: 400;
+            line-height: .95;
+            letter-spacing: -.02em;
+            text-transform: uppercase;
+        }
+        .section-head p {
+            max-width: 630px;
+            margin-bottom: 3px;
+            color: var(--ink-soft);
+        }
+
+        /* ----- footer ----- */
+        footer {
+            margin-top: 45px;
+            padding: 36px 0 44px;
+            border-top: 1px solid var(--line);
+            color: var(--ink-soft);
+            font-size: .82rem;
+        }
+        footer a {
+            color: inherit;
+            text-decoration: underline;
+        }
+
+        /* ----- responsive ----- */
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding-top: 56px;
+            }
+            .hero-copy {
+                max-width: 720px;
+            }
+            .hero-panel {
+                max-width: 720px;
+            }
+            .privacy-grid {
+                grid-template-columns: 1fr;
+            }
+            .privacy-card.full {
+                grid-column: 1;
+            }
+        }
+        @media (max-width: 680px) {
+            body {
+                font-size: 16px;
+            }
+            .shell {
+                width: min(100% - 24px, 1180px);
+            }
+            .topbar {
+                position: static;
+            }
+            .nav {
+                min-height: auto;
+                padding-top: 13px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .brand {
+                padding-inline: 5px;
+            }
+            .tabs {
+                min-height: 50px;
+                margin-inline: -12px;
+                padding-inline: 12px;
+            }
+            .tab-btn {
+                min-height: 50px;
+                padding-inline: 12px;
+            }
+            .hero {
+                gap: 54px;
+                padding-block: 48px 52px;
+            }
+            h1 {
+                font-size: clamp(4rem, 24vw, 6.2rem);
+            }
+            .hero-copy::after {
+                bottom: -28px;
+            }
+            .hero-panel {
+                padding: 21px;
+                border-radius: 22px 22px 22px 7px;
+            }
+            .section-head {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                align-items: start;
+            }
+            .section-head h2 {
+                font-size: 3rem;
+            }
+            .privacy-card {
+                padding: 20px 18px;
+            }
+            .privacy-card h2 {
+                font-size: 1.4rem;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOPBAR ===== -->
+    <div class="topbar">
+        <div class="shell nav">
+            <div class="brand">
+                <div class="brand-mark" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+                        <path d="M4 16c5.5-6.4 13.2-7.2 22-1-8.8 6.2-16.5 5.4-22 1Z" fill="#ffffff" />
+                        <path d="M24 15l4-4v10l-4-4" fill="#ffffff" />
+                        <circle cx="10.2" cy="15.2" r="1.8" fill="#d97725" />
+                    </svg>
+                </div>
+                <a href="index.html">FastFishing</a>
+            </div>
+            <nav class="tabs" aria-label="Sivut">
+                <a class="tab-btn" href="index.html">Kelimittari</a>
+                <a class="tab-btn" href="index.html#uistimet">Uistimet</a>
+                <a class="tab-btn" href="index.html#kalalajit">Kalalajit</a>
+                <a class="tab-btn" href="index.html#varusteet">Varusteet</a>
+                <a class="tab-btn" href="index.html#linkit">Linkit</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- ===== HERO ===== -->
+    <header class="shell hero">
+        <div class="hero-copy">
+            <div class="eyebrow">Yksityisyys</div>
+            <h1>Tietosuoja</h1>
+            <p class="lead">FastFishing kunnioittaa yksityisyyttäsi. Tällä sivulla kerromme läpinäkyvästi, mitä tietoja keräämme, mihin niitä käytämme ja mitä oikeuksia sinulla on.</p>
+            <a class="btn primary" href="#tietosuoja-sisalto">Lue seloste</a>
+        </div>
+        <aside class="hero-panel" aria-label="Yhteenveto">
+            <div class="panel-title"><strong>Lyhyesti</strong><span class="pill">tietosuoja</span></div>
+            <p style="margin:0;color:var(--ink-soft);font-size:1.05rem;">
+                Keräämme vain sivuston toiminnan kannalta tarpeellisia tietoja: IP-osoitteen, selaintiedot, evästeet ja anonyymit käyttötilastot.
+                Emme myy tietoja kolmansille osapuolille. Google AdSense näyttää mainoksia ja Google Analytics kerää anonyymejä kävijätilastoja, molemmat evästeiden avulla – nämä aktivoituvat vasta suostumuksellasi, ja voit hallita asetuksia itse.
+            </p>
+        </aside>
+    </header>
+
+    <!-- ===== SISÄLTÖ ===== -->
+    <main class="shell" id="tietosuoja-sisalto">
+        <div class="section-head">
+            <h2>Tietosuojaseloste</h2>
+            <p>Alla on kuvattu yksityiskohtaisesti, mitä tietoja kerätään ja mihin niitä käytetään. Seloste on laadittu EU:n tietosuoja-asetuksen (GDPR) mukaisesti.</p>
+        </div>
+
+        <div class="privacy-grid">
+
+            <!-- 1 -->
+            <article class="privacy-card full">
+                <span class="tag">1</span>
+                <h2>Rekisterinpitäjä</h2>
+                <p>Tämän sivuston ja siihen liittyvän tietojenkäsittelyn rekisterinpitäjä on:</p>
+                <div class="contact-block">
+                    📧 <a href="mailto:fastfish.official@gmail.com">fastfish.official@gmail.com</a>
+                </div>
+                <p style="margin-top:12px;">Kaikki tätä tietosuojaselostetta koskevat kysymykset ja pyynnöt voi osoittaa yllä olevaan sähköpostiosoitteeseen.</p>
+            </article>
+
+            <!-- 2 -->
+            <article class="privacy-card">
+                <span class="tag">2</span>
+                <h2>Kerättävät tiedot</h2>
+                <p>Keräämme sivuston käytön yhteydessä seuraavia tietoja:</p>
+                <ul>
+                    <li><strong>IP-osoite</strong> – tietoturvan varmistamiseen ja palvelun tekniseen toimintaan.</li>
+                    <li><strong>Selaintiedot</strong> (esim. käyttäjäagentti) – sivuston tekniseen optimointiin.</li>
+                    <li><strong>Evästeet (cookies)</strong> – käyttökokemuksen parantamiseen, mainosten näyttämiseen (Google AdSense) ja kävijäseurantaan (Google Analytics). Nämä ladataan vain suostumuksellasi.</li>
+                    <li><strong>Sivuston käyttötiedot</strong> (anonymisoituja, Google Analyticsin kautta) – kävijätilastojen analysointiin, esim. suosituimmat sivut ja käytetyt laitetyypit.</li>
+                </ul>
+            </article>
+
+            <!-- 2 -->
+            <article class="privacy-card">
+                <span class="tag">3</span>
+                <h2>Käyttötarkoitukset</h2>
+                <p>Kerättyjä tietoja käytetään seuraaviin tarkoituksiin:</p>
+                <ul>
+                    <li><strong>Sivuston toiminnan varmistaminen</strong> – teknisten vikojen korjaaminen ja sujuva käyttö.</li>
+                    <li><strong>Palvelun kehittäminen</strong> – käyttäjäkokemuksen parantaminen analysoimalla suosituimpia osioita.</li>
+                    <li><strong>Kävijätilastojen analysointi</strong> (Google Analytics) – kävijämäärien ja sivuston käytön ymmärtäminen.</li>
+                    <li><strong>Mainosten näyttäminen</strong> – Google AdSense -mainokset, jotka perustuvat käyttäjän aiempiin vierailuihin.</li>
+                </ul>
+            </article>
+
+            <!-- 3 -->
+            <article class="privacy-card full">
+                <span class="tag">4</span>
+                <h2>Google AdSense, Google Analytics &amp; kolmannen osapuolen evästeet</h2>
+                <p>Tällä sivustolla käytetään Google AdSense -mainontaa sekä Google Analytics -kävijäseurantaa. Kolmannen osapuolen toimittajat, mukaan lukien Google, käyttävät evästeitä mainosten näyttämiseen ja kävijätilastojen keräämiseen.</p>
+                <ul>
+                    <li>Googlen mainosevästeiden avulla Google ja sen kumppanit voivat näyttää käyttäjille mainoksia, jotka perustuvat heidän vierailuihinsa tällä ja/tai muilla verkkosivustoilla.</li>
+                    <li><strong>Google Analytics</strong> kerää anonymisoituja tietoja sivuston käytöstä (esim. vieraillut sivut, laitetyyppi, suunnilleen sijainti), jotta voimme ymmärtää, miten sivustoa käytetään ja kehittää sitä. IP-osoite lyhennetään/anonymisoidaan ennen tallennusta.</li>
+                    <li>Sekä mainos- että analytiikkaevästeet ladataan vasta, kun hyväksyt ne evästebannerista. Jos valitset "Hylkää", nämä evästeet eivät aktivoidu.</li>
+                    <li>Käyttäjät voivat poistaa <strong>personoidun mainonnan</strong> käytöstä käymällä osoitteessa <a href="https://www.aboutads.info" target="_blank" rel="noopener">www.aboutads.info</a> tai <a href="https://adssettings.google.com" target="_blank" rel="noopener">Google Ads Settings</a>.</li>
+                    <li>Käyttäjät voivat estää Google Analyticsin seurannan kokonaan asentamalla <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analyticsin selainlisäosan</a>.</li>
+                </ul>
+                <p style="margin-top:12px;"><strong>Tietojen siirto EU/ETA-alueen ulkopuolelle:</strong> Google Analytics ja Google AdSense voivat siirtää käsittelemäänsä dataa EU/ETA-alueen ulkopuolelle, muun muassa Yhdysvaltoihin, osana Googlen globaalia infrastruktuuria. Siirrot perustuvat Googlen käyttämiin EU:n komission hyväksymiin vakiosopimuslausekkeisiin (Standard Contractual Clauses) sekä Google Ads Data Processing Termsiin. Lisätietoa Googlen tietosuojakäytännöistä: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</p>
+            </article>
+
+            <!-- 5 -->
+            <article class="privacy-card">
+                <span class="tag">5</span>
+                <h2>Tietojen säilytys &amp; suojaaminen</h2>
+                <p>Säilytämme tietoja vain niin kauan kuin se on tarpeellista, ja säilytysaika vaihtelee tietotyypin mukaan:</p>
+                <ul>
+                    <li><strong>Google Analytics -tiedot</strong> (esim. käyntitiedot, laitetiedot): säilytys noin 14 kuukautta, jonka jälkeen ne poistuvat automaattisesti Googlen oletusasetusten mukaisesti.</li>
+                    <li><strong>Google AdSense -mainosevästeet</strong>: säilytysaika määräytyy Googlen omien käytäntöjen mukaan, tyypillisesti enintään 24 kuukautta evästeen asettamisesta.</li>
+                    <li><strong>Palvelinlokit / IP-osoitteet</strong>: säilytetään tietoturvan varmistamiseksi enintään muutamia kuukausia, ellei pidempi säilytys ole tarpeen väärinkäytösten selvittämiseksi.</li>
+                </ul>
+                <p style="margin-top:12px;">Sivusto on suojattu yleisin teknisin menetelmin luvattomalta käytöltä. Tietoja ei luovuteta ulkopuolisille markkinointitarkoituksiin.</p>
+            </article>
+
+            <!-- 6 -->
+            <article class="privacy-card">
+                <span class="tag">6</span>
+                <h2>Käyttäjän oikeudet</h2>
+                <p>Sinulla on oikeus:</p>
+                <ul>
+                    <li><strong>Tarkastaa</strong> omat henkilötietosi.</li>
+                    <li><strong>Pyytää</strong> virheellisten tietojen korjaamista.</li>
+                    <li><strong>Pyytää</strong> tietojen poistamista.</li>
+                    <li><strong>Vastustaa</strong> henkilötietojesi käsittelyä tietyissä tilanteissa, esimerkiksi suoramarkkinointiin liittyen.</li>
+                    <li><strong>Pyytää</strong> tietojen siirtämistä järjestelmästä toiseen (tiedon siirrettävyys), siltä osin kuin se on sovellettavissa.</li>
+                    <li><strong>Peruuttaa</strong> evästeisiin liittyvä suostumus selaimesi asetusten kautta tai sivustomme evästeasetuksia käyttämällä.</li>
+                    <li><strong>Tehdä valitus valvontaviranomaiselle</strong>, jos koet, että henkilötietojesi käsittely rikkoo tietosuojalainsäädäntöä. Suomessa toimivaltainen valvontaviranomainen on Tietosuojavaltuutetun toimisto (<a href="https://tietosuoja.fi" target="_blank" rel="noopener">tietosuoja.fi</a>).</li>
+                </ul>
+            </article>
+
+            <!-- 7 -->
+            <article class="privacy-card full">
+                <span class="tag">7</span>
+                <h2>Yhteydenotot</h2>
+                <p>Jos sinulla on kysyttävää tästä tietosuojaselosteesta, voit ottaa yhteyttä ylläpitoon sähköpostitse.</p>
+                <div class="contact-block">
+                    <strong>📧 Sähköposti:</strong>
+                    <a href="mailto:fastfish.official@gmail.com">fastfish.official@gmail.com</a>
+                </div>
+                <p style="margin-top:18px;">Vastaamme yhteydenottoihin mahdollisimman pian, viimeistään 30 päivän kuluessa.</p>
+            </article>
+
+        </div>
+
+        <p style="margin-top:40px;color:var(--ink-soft);font-size:.92rem;border-top:1px solid var(--line);padding-top:24px;">
+            Tätä tietosuojaselostetta päivitetään tarvittaessa. Viimeisin versio on aina nähtävillä tällä sivulla.
+            <br />
+            <strong>Viimeksi päivitetty:</strong> 15.7.2026
+        </p>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="shell">
+            Sääaineisto: Open-Meteo. Kuun vaihe lasketaan selaimessa. Pisteytys on suuntaa-antava: kalastuspaikka, veden lämpö, ravintokalojen liike ja paikallinen paine voivat ratkaista enemmän kuin mikään yksittäinen mittari.
+            <a href="tietosuoja.html" style="color:inherit;text-decoration:underline;">Tietosuojaseloste</a>
+        </div>
+    </footer>
+
+</body>
+</html>
