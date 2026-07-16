@@ -7,6 +7,7 @@
 <meta name="description" content="FastFishing näyttää reaaliaikaisen kalakelin, parhaat kalastusajat ja vieheopas suomalaisille kalastuspaikoille - katso paine, tuuli ja lämpötila yhdellä silmäyksellä.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.open-meteo.com">
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
@@ -41,7 +42,32 @@
   gtag('js', new Date());
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
+<script>
+  // Ladataan GTM vasta kun pääsäie on vapaa tai käyttäjä alkaa olla vuorovaikutuksessa,
+  // jotta se ei kilpaile alkulatauksen kriittisten resurssien kanssa.
+  (function () {
+    var loaded = false;
+    function loadGTM() {
+      if (loaded) return;
+      loaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ';
+      document.head.appendChild(s);
+      ['scroll', 'keydown', 'mousemove', 'touchstart', 'click'].forEach(function (evt) {
+        window.removeEventListener(evt, loadGTM, { passive: true });
+      });
+    }
+    ['scroll', 'keydown', 'mousemove', 'touchstart', 'click'].forEach(function (evt) {
+      window.addEventListener(evt, loadGTM, { passive: true, once: true });
+    });
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadGTM, { timeout: 3500 });
+    } else {
+      setTimeout(loadGTM, 3000);
+    }
+  })();
+</script>
 <style>
 :root {
   --ink: #17342f;
@@ -784,6 +810,8 @@ body.device-phone .columns {
      vasta kun käyttäjä on hyväksynyt evästeet ("cookie_consent" = "all"), ks. sivun lopun <script>. -->
 </head>
 <body>
+
+<div id="consentBanner" class="consent-banner hidden"></div>
 
 <div class="topbar">
   <div class="shell nav">
@@ -1689,20 +1717,15 @@ function loadAdSense() {
 }
 
 function renderConsentBanner(lang = currentLang) {
-  let banner = document.getElementById("consentBanner");
+  const banner = document.getElementById("consentBanner");
   const consentVal = storage.getItem('cookie_consent');
   if (consentVal) {
-    if (banner) banner.remove();
+    if (banner) banner.classList.add("hidden");
     if (consentVal === 'all') loadAdSense();
     return;
   }
-  
-  if (!banner) {
-    banner = document.createElement("div");
-    banner.id = "consentBanner";
-    banner.className = "consent-banner";
-    document.body.appendChild(banner);
-  }
+  if (!banner) return;
+  banner.classList.remove("hidden");
   
   const trans = CONSENT_TRANS[lang];
   banner.innerHTML = `
@@ -1725,7 +1748,7 @@ function renderConsentBanner(lang = currentLang) {
         'analytics_storage': 'denied'
       });
     }
-    banner.remove();
+    banner.classList.add("hidden");
   });
   
   document.getElementById("consentAccept").addEventListener("click", () => {
@@ -1739,7 +1762,7 @@ function renderConsentBanner(lang = currentLang) {
       });
     }
     loadAdSense();
-    banner.remove();
+    banner.classList.add("hidden");
     initGeoLocation();
   });
 }
