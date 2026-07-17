@@ -256,6 +256,11 @@ main { padding-bottom: 70px; }
 .species-tools { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 22px; }
 .species-btn { width: auto; padding: 9px 15px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); background: rgba(255,253,247,.7); font-weight: 700; cursor: pointer; }
 .species-btn:hover, .species-btn.active { border-color: var(--ink); color: #fff; background: var(--ink); }
+.depth-btn.active { border-color: var(--orange); background: var(--orange); }
+.conditions-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 26px; }
+.condition-chip { display: flex; flex-direction: column; gap: 2px; padding: 10px 16px; border-radius: 14px; background: var(--paper-bright); border: 1px solid var(--line); box-shadow: var(--shadow-small); min-width: 128px; }
+.condition-chip .cc-label { font: 700 .64rem/1 'JetBrains Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.condition-chip .cc-value { font-family: 'Fjalla One', sans-serif; font-size: 1.05rem; letter-spacing: .01em; color: var(--ink); }
 .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
 .grid > article, .tip-card, .link-card { grid-column: span 4; min-width: 0; padding: 24px; border-radius: 18px; transition: transform .2s, box-shadow .2s; }
 .grid > article:nth-child(5n + 1) { border-radius: 28px 16px 16px 16px; }
@@ -941,6 +946,12 @@ body.device-phone .columns {
       <p>Valitse kohdekala alta. Löydät kolme aloitusvaihtoehtoa kelin mukaan ja hakulinkit sopiviin viehetyyppeihin.</p>
     </div>
     <div class="species-tools" id="lureSpeciesButtons"></div>
+    <div class="conditions-bar" id="conditionsBar"></div>
+    <div class="section-head" style="margin-top:8px;margin-bottom:14px" id="depthHead">
+      <h3 id="depthTitle" style="font-family:'Fjalla One',sans-serif;text-transform:uppercase;font-size:1.15rem;margin-bottom:6px">Syvyys</h3>
+      <p id="depthDesc" style="margin:0">Valitse mistä syvyydestä kalastat, niin vinkki mukautuu.</p>
+    </div>
+    <div class="species-tools" id="depthTools"></div>
     <div class="grid" id="lureGrid"></div>
     <div class="section-head" style="margin-top:40px">
       <h2>Nyrkkisäännöt</h2>
@@ -1399,7 +1410,14 @@ const UI_TRANS = {
     lure_type_spinner: "Lippa",
     lure_type_surface: "Pintaviehe",
     lure_type_wobbler: "Vaappu",
-    lure_search: "Hae vieheitä"
+    lure_search: "Hae vieheitä",
+    depth_title: "Syvyys",
+    depth_desc: "Valitse mistä syvyydestä kalastat, niin vinkki mukautuu.",
+    cc_water: "Veden tila",
+    cc_time: "Vuorokaudenaika",
+    cc_moon: "Kuunvaihe",
+    cc_depth_tip_title: "Syvyysvinkki",
+    cc_time_tip_title: "Vuorokaudenajan vinkki"
   },
   en: {
     title: "FastFishing - Bite Index and Lure Guide",
@@ -1469,7 +1487,14 @@ const UI_TRANS = {
     lure_type_spinner: "Spinner",
     lure_type_surface: "Topwater lure",
     lure_type_wobbler: "Wobbler",
-    lure_search: "Search lures"
+    lure_search: "Search lures",
+    depth_title: "Depth",
+    depth_desc: "Pick the depth you're fishing at and the tip below will adapt.",
+    cc_water: "Water condition",
+    cc_time: "Time of day",
+    cc_moon: "Moon phase",
+    cc_depth_tip_title: "Depth tip",
+    cc_time_tip_title: "Time-of-day tip"
   }
 };
 
@@ -1546,6 +1571,35 @@ const LURES_TRANS = {
     }
   }
 };
+
+const DEPTH_TRANS = {
+  fi: {
+    shallow: {label:"Pinta (0-1,5 m)", tip:"Kokeile pintavieheitä, pieniä vaappuja tai lippoja aivan pinnan tuntumassa. Toimii parhaiten lämpimällä säällä, hämärässä tai kun kala näkyy syömässä pinnassa."},
+    mid: {label:"Välivesi (1,5-4 m)", tip:"Useimmiten paras aloitusvyöhyke. Suspari, keskisyvä vaappu tai kevyt jigi kattaa suurimman osan tilanteista ja veden kerroksista."},
+    deep: {label:"Pohja (yli 4 m)", tip:"Käytä painavampaa jigipäätä, pystypilkkiä tai syvännevaappua ja pidä viehe lähellä pohjaa. Tärkeää etenkin kylmällä vedellä ja kirkkaalla auringolla, kun kala painuu syvemmälle."}
+  },
+  en: {
+    shallow: {label:"Surface (0-1.5 m)", tip:"Try topwater lures, small wobblers, or spinners right near the surface. Works best in warm weather, at dusk/dawn, or when fish are visibly feeding up top."},
+    mid: {label:"Mid-water (1.5-4 m)", tip:"Usually the best zone to start. A suspending jerkbait, mid-diving wobbler, or light jig covers most situations and water layers."},
+    deep: {label:"Bottom (over 4 m)", tip:"Use a heavier jig head, vertical jig, or a deep-diving wobbler and keep the lure close to the bottom. Especially important in cold water and bright sun, when fish sit deeper."}
+  }
+};
+
+const TIME_TRANS = {
+  fi: {
+    dawn: {label:"Aamuhämärä", tip:"Yksi vuorokauden parhaista hetkistä. Kala liikkuu usein matalammalla ja on rohkeampi - kokeile ensin nopeampaa, äänekästä tai pinnan lähellä kulkevaa viehettä."},
+    day: {label:"Päivä", tip:"Kirkas päivänvalo painaa kalan usein syvemmälle tai varjoihin. Pienempi, luonnonvärinen viehe ja rauhallisempi vetotyyli toimii yleensä paremmin."},
+    dusk: {label:"Iltahämärä", tip:"Toinen vahva syöntihetki. Vaihda tarvittaessa hieman tummempaan tai ärsykkeellisempään väriin auringon laskiessa ja hidasta vetoa illan pimetessä."},
+    night: {label:"Yö", tip:"Isot kalat, kuten kuha ja hauki, voivat liikkua matalikoilla yöllä. Tumma silhuetti, ääntä tai värinää tekevä viehe ja hidas, tasainen veto toimivat parhaiten."}
+  },
+  en: {
+    dawn: {label:"Dawn", tip:"One of the best windows of the day. Fish often sit shallower and bite more aggressively - try a faster, noisier, or shallow-running lure first."},
+    day: {label:"Daytime", tip:"Bright daylight often pushes fish deeper or into shade. A smaller, natural-colored lure with a calmer retrieve usually works better."},
+    dusk: {label:"Dusk", tip:"Another strong feeding window. Switch to a slightly darker or more attractor-style color as the sun sets, and slow the retrieve as it gets darker."},
+    night: {label:"Night", tip:"Larger fish like zander and pike can move onto shallow flats at night. A dark silhouette lure with sound or vibration and a slow, steady retrieve works best."}
+  }
+};
+
 
 const FISH_INFO_TRANS = {
   fi: {
@@ -1640,6 +1694,8 @@ let currentLang = storage.getItem('user_language') || 'fi';
 let SPECIES = SPECIES_TRANS[currentLang];
 let LURES = LURES_TRANS[currentLang];
 let FISH_INFO = FISH_INFO_TRANS[currentLang];
+let selectedDepth = storage.getItem('lure_depth') || 'mid';
+let lastInfo = null;
 
 function renderTips() {
   const tips = TIPS_TRANS[currentLang];
@@ -1853,6 +1909,12 @@ function setLanguage(lang, saveToLocalStorage = true) {
     const p = lureRulesSection.querySelector("p");
     if (p) p.textContent = trans.lure_rules_desc;
   }
+
+  const depthTitle = document.getElementById("depthTitle");
+  if (depthTitle) depthTitle.textContent = trans.depth_title;
+  const depthDesc = document.getElementById("depthDesc");
+  if (depthDesc) depthDesc.textContent = trans.depth_desc;
+  renderDepthSelector();
   
   // Manual form
   const labelPD = document.querySelector("label[for='mPressureDelta']");
@@ -2657,15 +2719,69 @@ function verdictSentence(info){
   }
 }
 function conditionKey(info){return info.temp<8?"cold":info.cloud>=40?"murky":"clear"}
+function detectTimeOfDay(info){
+  const now=new Date();
+  if(info && info.sunrise instanceof Date && info.sunset instanceof Date && info.sunrise.getTime()!==info.sunset.getTime()){
+    const dawnStart=new Date(info.sunrise.getTime()-90*60000), dawnEnd=new Date(info.sunrise.getTime()+90*60000);
+    const duskStart=new Date(info.sunset.getTime()-90*60000), duskEnd=new Date(info.sunset.getTime()+90*60000);
+    if(now>=dawnStart&&now<=dawnEnd) return "dawn";
+    if(now>=duskStart&&now<=duskEnd) return "dusk";
+    if(now>info.sunrise&&now<info.sunset) return "day";
+    return "night";
+  }
+  const h=now.getHours();
+  if(h>=4&&h<8) return "dawn";
+  if(h>=8&&h<19) return "day";
+  if(h>=19&&h<23) return "dusk";
+  return "night";
+}
+function renderConditionsBar(species,info){
+  const bar=document.getElementById("conditionsBar");
+  if(!bar) return;
+  const trans=UI_TRANS[currentLang];
+  const set=LURES[species]||LURES.ahven;
+  const key=conditionKey(info);
+  const waterLabel=(set[key]&&set[key].tag)||"-";
+  const timeKey=detectTimeOfDay(info);
+  const timeLabel=TIME_TRANS[currentLang][timeKey].label;
+  let moonHtml="";
+  if(info&&info.moon){
+    moonHtml=`<div class="condition-chip"><span class="cc-label">${trans.cc_moon}</span><span class="cc-value">${info.moon.icon} ${info.moon.name}</span></div>`;
+  }
+  bar.innerHTML=`<div class="condition-chip"><span class="cc-label">${trans.cc_water}</span><span class="cc-value">${waterLabel}</span></div><div class="condition-chip"><span class="cc-label">${trans.cc_time}</span><span class="cc-value">${timeLabel}</span></div>${moonHtml}`;
+}
+function renderDepthSelector(){
+  const host=document.getElementById("depthTools");
+  if(!host) return;
+  const d=DEPTH_TRANS[currentLang];
+  const order=["shallow","mid","deep"];
+  host.innerHTML=order.map(k=>`<button class="species-btn depth-btn ${k===selectedDepth?"active":""}" data-depth="${k}">${d[k].label}</button>`).join("");
+  host.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+    selectedDepth=b.dataset.depth;
+    storage.setItem('lure_depth',selectedDepth);
+    renderDepthSelector();
+    const species=spSel.value;
+    const loc=resolveLocation(locSel.value);
+    renderLures(species, lastInfo || computeScoreFromValues({delta:-1,wind:4,cloud:50,temp:14,isPrimeTime:false},species,loc));
+  }));
+}
 function renderLures(species,info){
   const grid=document.getElementById("lureGrid");
   const set=LURES[species]||LURES.ahven;
   const key=conditionKey(info);
   const order=key==="cold"?["cold","murky","clear"]:key==="murky"?["murky","cold","clear"]:["clear","murky","cold"];
-  grid.innerHTML=order.map(k=>{
+  const trans=UI_TRANS[currentLang];
+  const depthInfo=DEPTH_TRANS[currentLang][selectedDepth]||DEPTH_TRANS[currentLang].mid;
+  const timeInfo=TIME_TRANS[currentLang][detectTimeOfDay(info)];
+  const cards=order.map(k=>{
     const l=set[k];
     return `<article class="tip-card"><span class="tag">${l.tag}</span><h3>${l.name}</h3><p>${l.desc}</p></article>`;
-  }).join("");
+  });
+  cards.push(`<article class="tip-card"><span class="tag">${trans.cc_depth_tip_title}</span><h3>${depthInfo.label}</h3><p>${depthInfo.tip}</p></article>`);
+  cards.push(`<article class="tip-card"><span class="tag">${trans.cc_time_tip_title}</span><h3>${timeInfo.label}</h3><p>${timeInfo.tip}</p></article>`);
+  grid.innerHTML=cards.join("");
+  renderDepthSelector();
+  renderConditionsBar(species,info);
 }
 function renderRules(){
   const rules = currentLang === 'fi' ? [
@@ -2763,6 +2879,7 @@ async function refresh(){
     setGauge(info.score);
     document.getElementById("verdictText").textContent=verdictSentence(info);
     renderStrip(info);
+    lastInfo=info;
     renderLures(species,info);
     renderHourlyChart(buildHourlyTimeline(data,idx,species,loc));
     renderFishInfo(species);
@@ -2772,7 +2889,8 @@ async function refresh(){
     document.getElementById("scoreLabel").textContent=manualLabel;
     document.getElementById("verdictText").textContent=errorLabel;
     showManualFallback();
-    renderLures(species,computeScoreFromValues({delta:-1,wind:4,cloud:50,temp:14,isPrimeTime:false},species,loc));
+    lastInfo=computeScoreFromValues({delta:-1,wind:4,cloud:50,temp:14,isPrimeTime:false},species,loc);
+    renderLures(species,lastInfo);
     renderFishInfo(species);
   }
 }
@@ -2789,6 +2907,7 @@ document.getElementById("mCalcBtn").addEventListener("click",()=>{
   const manualLabel = currentLang === 'fi' ? 'käsin syötetty keli' : 'manually entered weather';
   document.getElementById("verdictText").textContent=verdictSentence(info)+` (${manualLabel})`;
   renderStrip(info);
+  lastInfo=info;
   renderLures(species,info);
   const manualTitle = currentLang === 'fi' ? 'Käsin syötetty keli' : 'Manually entered weather';
   document.getElementById("updatedText").textContent=`${manualTitle} · ${new Date().toLocaleTimeString(currentLang === 'fi' ? "fi-FI" : "en-US",{hour:"2-digit",minute:"2-digit"})}`;
