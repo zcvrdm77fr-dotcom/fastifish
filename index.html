@@ -201,6 +201,12 @@ input[type="range"] { min-height: 36px; padding: 0; accent-color: var(--orange);
 input[type="checkbox"] { width: 20px; min-height: 20px; accent-color: var(--lake); }
 .place-count, .updated { min-height: 20px; margin-top: 7px; color: var(--ink-soft); font-size: .78rem; }
 .updated { margin-top: 15px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.hero-result { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line); background: rgba(217,232,228,.55); }
+.hero-result-score { flex: 0 0 auto; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; background: var(--paper-bright); border: 2px solid var(--lake); font-family: 'Fjalla One', sans-serif; font-size: 1.35rem; color: var(--lake-deep); }
+.hero-result-label { font: 700 .68rem/1 'JetBrains Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 3px; }
+.hero-result-verdict { font-size: .88rem; color: var(--ink); }
+.hero-result-link { display: inline-block; margin-top: 8px; font: 700 .74rem/1 'JetBrains Mono', monospace; letter-spacing: .04em; color: var(--orange-dark); text-decoration: none; }
+.hero-result-link:hover { text-decoration: underline; }
 .refresh {
   min-height: 50px;
   padding: 12px 18px;
@@ -267,6 +273,13 @@ main { padding-bottom: 70px; }
 .grid > article:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
 .grid h3, .fish-card h3 { margin: 13px 0 8px; font-family: 'Fjalla One', sans-serif; font-size: 1.55rem; font-weight: 400; letter-spacing: .01em; }
 .grid p { color: var(--ink-soft); }
+.tip-card-now { grid-column: span 12; position: relative; padding-top: 44px; border-color: var(--orange); background: linear-gradient(180deg, rgba(213,117,44,.08), transparent 55%), rgba(255,253,247,.9); box-shadow: 0 0 0 1px var(--orange), var(--shadow-small); }
+.tip-card-now .tag { background: var(--orange); color: #fff; }
+.now-badge { position: absolute; top: 16px; right: 16px; display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; background: var(--ink); color: #fffdf7; font: 700 .66rem/1 'JetBrains Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
+@media (max-width: 680px) {
+  .now-badge { position: static; margin-bottom: 10px; }
+  .tip-card-now { padding-top: 16px; }
+}
 
 .nearby-section { padding-block: 8px 12px; }
 .nearby-section .section-head { grid-template-columns: 1fr; margin-bottom: 18px; padding-top: 8px; }
@@ -325,8 +338,10 @@ main { padding-bottom: 70px; }
 .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .fish-card { overflow: hidden; border-radius: var(--radius); }
 .fish-hero { display: block; }
-.fish-body { padding: 28px; }
+.fish-card.large { display: grid; grid-template-columns: minmax(230px, 360px) 1fr; align-items: stretch; }
+.fish-body { padding: 28px; display: flex; flex-direction: column; justify-content: center; }
 .fish-visual { width: 100%; aspect-ratio: 21 / 9; background: var(--mist); overflow: hidden; }
+.fish-card.large .fish-visual { height: 100%; aspect-ratio: auto; min-height: 260px; }
 .fish-visual img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; display: block; }
 .checklist { display: grid; gap: 12px; padding: 0 0 4px; }
 .check { display: grid; grid-template-columns: 24px 1fr; gap: 10px; color: var(--ink-soft); }
@@ -344,6 +359,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
   .dashboard { grid-template-columns: 1fr; }
   .gauge-card { position: static; }
   .grid > article, .tip-card, .link-card { grid-column: span 6; }
+  .fish-card.large { grid-template-columns: 1fr; }
+  .fish-card.large .fish-visual { height: auto; aspect-ratio: 16 / 9; min-height: 0; }
 }
 @media (max-width: 680px) {
   body { font-size: 16px; }
@@ -367,6 +384,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
   .manual-form > div, .manual-form .full { grid-column: 1; }
   .grid > article, .tip-card, .link-card { grid-column: 1 / -1; }
   .fish-hero { display: block; }
+  .fish-card.large { display: flex; flex-direction: column; }
+  .fish-card.large .fish-body { order: 1; padding: 18px; }
+  .fish-card.large .fish-visual { order: 2; aspect-ratio: 16 / 9; max-height: none; }
   .hero-actions .btn { width: 100%; }
   .nearby-map-wrap { height: 260px; border-radius: 18px; }
 }
@@ -800,11 +820,29 @@ body.device-phone .link-card {
   padding: 16px !important;
   border-radius: 14px !important;
 }
+body.device-phone .tip-card-now {
+  padding: 16px !important;
+}
+body.device-phone .now-badge {
+  position: static !important;
+  margin-bottom: 10px !important;
+}
 body.device-phone .fish-card {
   border-radius: 16px !important;
 }
+body.device-phone .fish-card.large {
+  display: flex !important;
+  flex-direction: column !important;
+}
 body.device-phone .fish-body {
   padding: 16px !important;
+  order: 1 !important;
+}
+body.device-phone .fish-card.large .fish-visual {
+  order: 2 !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  max-height: none !important;
 }
 body.device-phone .columns {
   grid-template-columns: 1fr !important;
@@ -870,6 +908,14 @@ body.device-phone .columns {
       <button class="refresh" id="refreshBtn">Päivitä keli</button>
     </div>
     <div class="updated" id="updatedText">Valmis hakemaan kelitiedot.</div>
+    <div class="hero-result" id="heroResult" hidden>
+      <div class="hero-result-score" id="heroResultScore">--</div>
+      <div>
+        <div class="hero-result-label" id="heroResultLabel"></div>
+        <div class="hero-result-verdict" id="heroResultVerdict"></div>
+        <a class="hero-result-link" href="#kelimittari" data-go="kelimittari" id="heroResultLink">Katso koko keli ja parhaat ajat ↓</a>
+      </div>
+    </div>
   </aside>
 </header>
 
@@ -1417,7 +1463,8 @@ const UI_TRANS = {
     cc_time: "Vuorokaudenaika",
     cc_moon: "Kuunvaihe",
     cc_depth_tip_title: "Syvyysvinkki",
-    cc_time_tip_title: "Vuorokaudenajan vinkki"
+    cc_time_tip_title: "Vuorokaudenajan vinkki",
+    lure_now_badge: "Suositus juuri nyt"
   },
   en: {
     title: "FastFishing - Bite Index and Lure Guide",
@@ -1494,7 +1541,8 @@ const UI_TRANS = {
     cc_time: "Time of day",
     cc_moon: "Moon phase",
     cc_depth_tip_title: "Depth tip",
-    cc_time_tip_title: "Time-of-day tip"
+    cc_time_tip_title: "Time-of-day tip",
+    lure_now_badge: "Recommended right now"
   }
 };
 
@@ -2773,9 +2821,12 @@ function renderLures(species,info){
   const trans=UI_TRANS[currentLang];
   const depthInfo=DEPTH_TRANS[currentLang][selectedDepth]||DEPTH_TRANS[currentLang].mid;
   const timeInfo=TIME_TRANS[currentLang][detectTimeOfDay(info)];
-  const cards=order.map(k=>{
+  const cards=order.map((k,i)=>{
     const l=set[k];
-    return `<article class="tip-card"><span class="tag">${l.tag}</span><h3>${l.name}</h3><p>${l.desc}</p></article>`;
+    const isNow=i===0;
+    const cls=isNow?"tip-card tip-card-now":"tip-card";
+    const badge=isNow?`<span class="now-badge">${trans.lure_now_badge}</span>`:"";
+    return `<article class="${cls}">${badge}<span class="tag">${l.tag}</span><h3>${l.name}</h3><p>${l.desc}</p></article>`;
   });
   cards.push(`<article class="tip-card"><span class="tag">${trans.cc_depth_tip_title}</span><h3>${depthInfo.label}</h3><p>${depthInfo.tip}</p></article>`);
   cards.push(`<article class="tip-card"><span class="tag">${trans.cc_time_tip_title}</span><h3>${timeInfo.label}</h3><p>${timeInfo.tip}</p></article>`);
@@ -2851,6 +2902,16 @@ function showManualFallback(){
   document.getElementById("hourlyHost").innerHTML="";
   document.getElementById("bestWindow").textContent="";
 }
+function updateHeroResult(info){
+  const box=document.getElementById("heroResult");
+  if(!box) return;
+  const lbl=scoreLabel(info.score);
+  document.getElementById("heroResultScore").textContent=Math.round(info.score);
+  document.getElementById("heroResultLabel").textContent=lbl.text;
+  document.getElementById("heroResultVerdict").textContent=verdictSentence(info);
+  document.getElementById("heroResultLink").textContent=currentLang==='fi'?"Katso koko keli ja parhaat ajat ↓":"See full bite index and best times ↓";
+  box.hidden=false;
+}
 async function refresh(){
   // Varmistetaan että käytetään oikeaa lokaatiota
   const locIndex = locSel.value;
@@ -2883,6 +2944,7 @@ async function refresh(){
     renderLures(species,info);
     renderHourlyChart(buildHourlyTimeline(data,idx,species,loc));
     renderFishInfo(species);
+    updateHeroResult(info);
     document.getElementById("updatedText").textContent=`${loc.name} · ${updatedLabel} ${new Date().toLocaleTimeString(currentLang === 'fi' ? "fi-FI" : "en-US",{hour:"2-digit",minute:"2-digit"})}`;
   }catch(e){
     setGauge(0);
@@ -2892,6 +2954,7 @@ async function refresh(){
     lastInfo=computeScoreFromValues({delta:-1,wind:4,cloud:50,temp:14,isPrimeTime:false},species,loc);
     renderLures(species,lastInfo);
     renderFishInfo(species);
+    document.getElementById("heroResult").hidden=true;
   }
 }
 document.getElementById("refreshBtn").addEventListener("click",refresh);
@@ -2909,6 +2972,7 @@ document.getElementById("mCalcBtn").addEventListener("click",()=>{
   renderStrip(info);
   lastInfo=info;
   renderLures(species,info);
+  updateHeroResult(info);
   const manualTitle = currentLang === 'fi' ? 'Käsin syötetty keli' : 'Manually entered weather';
   document.getElementById("updatedText").textContent=`${manualTitle} · ${new Date().toLocaleTimeString(currentLang === 'fi' ? "fi-FI" : "en-US",{hour:"2-digit",minute:"2-digit"})}`;
 });
