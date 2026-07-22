@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tietoa meistä - FastFishing</title>
+<meta name="description" content="Kuka FastFishingin takana on ja miksi sivusto tehtiin - lyhyt esittely harrastusprojektin taustoista.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
+<style>
+:root {
+  --ink: #17342f;
+  --ink-soft: #45645e;
+  --lake: #2f6f73;
+  --lake-deep: #24585c;
+  --mist: #d9e8e4;
+  --paper: #f4f0e5;
+  --paper-bright: #fffdf7;
+  --line: #c9d5cf;
+  --orange: #d5752c;
+  --orange-dark: #ad571e;
+  --orange-darker: #8a4517;
+  --shadow: 0 18px 50px rgba(23, 52, 47, .12);
+  --shadow-small: 0 8px 24px rgba(23, 52, 47, .09);
+  --radius: 24px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  min-width: 320px;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 8% 4%, rgba(47, 111, 115, .14), transparent 28rem),
+    linear-gradient(rgba(47, 111, 115, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 111, 115, .035) 1px, transparent 1px),
+    var(--paper);
+  background-size: auto, 34px 34px, 34px 34px, auto;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+}
+a { color: inherit; }
+.shell { width: min(760px, calc(100% - 40px)); margin-inline: auto; }
+.topbar { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid rgba(201, 213, 207, .8); background: rgba(244, 240, 229, .88); backdrop-filter: blur(16px); }
+.nav { width: min(1180px, calc(100% - 40px)); margin-inline: auto; min-height: 72px; display: flex; align-items: center; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 11px; text-decoration: none; flex: 0 0 auto; font-family: 'Fjalla One', sans-serif; font-size: 1.35rem; letter-spacing: .04em; text-transform: uppercase; color: var(--ink); }
+.brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); }
+.back-link { margin-left: auto; font: 700 .78rem/1 'JetBrains Mono', monospace; letter-spacing: .04em; color: var(--lake-deep); text-decoration: none; }
+.back-link:hover { text-decoration: underline; }
+main { padding-block: 56px 80px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 14px; color: var(--orange-dark); font: 700 .77rem/1 'JetBrains Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+.eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--orange); }
+h1 { margin: 0 0 22px; font-family: 'Fjalla One', sans-serif; font-size: clamp(2.6rem, 6vw, 3.6rem); font-weight: 400; line-height: .95; letter-spacing: -.02em; text-transform: uppercase; }
+h2 { margin: 40px 0 12px; font-family: 'Fjalla One', sans-serif; font-size: 1.5rem; font-weight: 400; letter-spacing: -.01em; }
+p { margin: 0 0 16px; color: var(--ink-soft); }
+.lead { font-size: 1.15rem; color: var(--ink); }
+.card { margin-top: 34px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,253,247,.84); box-shadow: var(--shadow-small); }
+.card p:last-child { margin-bottom: 0; }
+.signature { margin-top: 44px; padding-top: 20px; border-top: 1px dashed var(--line); color: var(--ink-soft); font-size: .92rem; }
+.signature strong { display: block; color: var(--ink); font-family: 'Fjalla One', sans-serif; font-size: 1.05rem; font-weight: 400; letter-spacing: .01em; }
+.todo { color: var(--orange-dark); background: #f3dfc6; padding: 1px 6px; border-radius: 4px; font-size: .85em; }
+footer { margin-top: 60px; padding: 36px 0 44px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .82rem; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="nav">
+    <a class="brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M4 16c5.5-6.4 13.2-7.2 22-1-8.8 6.2-16.5 5.4-22 1Z" fill="#ffffff"/><path d="M24 15l4-4v10l-4-4" fill="#ffffff"/><circle cx="10.2" cy="15.2" r="1.8" fill="#d97725"/></svg>
+      </span>
+      <span>FastFishing</span>
+    </a>
+    <a class="back-link" href="index.html">← Takaisin kelimittariin</a>
+  </div>
+</div>
+
+<main class="shell">
+  <div class="eyebrow">Kuka tämän tekee</div>
+  <h1>Tietoa meistä</h1>
+  <p class="lead">FastFishing on yhden ihmisen harrastusprojekti - ei kalastusalan yritys, ei toimitusta, ei sponsoreita. Tässä lyhyesti, miksi sivusto on olemassa ja kuka sitä pitää yllä.</p>
+
+  <h2>Miksi tein tämän</h2>
+  <p>Ennen kalareissua tuli aina avattua montaa eri välilehteä: ilmanpaine yhdestä sovelluksesta, tuuliennuste toisesta, kuunvaihe kolmannesta - ja silti jäi arvailun varaan, kannattaako lähteä juuri sinä päivänä. FastFishing syntyi omaan käyttöön tehdystä pikku työkalusta, joka niputtaa nämä muuttujat yhdeksi arvioksi. Päätin julkaista sen, koska sama ongelma on varmasti tuttu monelle muullekin.</p>
+
+  <h2>Kuka sivustoa pitää yllä</h2>
+  <p>Ylläpitäjä on pitkän linjan harrastuskalastaja, ei ammattiopas eikä kalabiologi. Pisteytysmalli ja vieheohjeet pohjautuvat omaan kokemukseen ja yleisesti saatavilla olevaan tietoon sään ja ilmanpaineen vaikutuksesta kalojen syöntiaktiivisuuteen - ei virallisiin tutkimuksiin tai alan koulutukseen.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">Miten luotettavana tietoa kannattaa pitää</h2>
+    <p>Kelimittarin pisteytys on suuntaa-antava heuristiikka, ei tae kalaonnesta. Se on yksi lisätyökalu oman harkinnan tueksi - ei korvaa paikallistuntemusta, kaikuluotainta tai sitä, että käy itse veden äärellä katsomassa mitä tapahtuu. Jos jokin sivuston tieto vaikuttaa väärältä tai vanhentuneelta, siitä saa mielellään palautetta.</p>
+  </div>
+
+  <h2>Ota yhteyttä</h2>
+  <p>Kysymykset, korjausehdotukset ja palaute: <span class="todo">[lisää tähän sähköpostiosoite tai yhteydenottolomakkeen linkki]</span></p>
+
+  <div class="signature">
+    <strong><span class="todo">[Nimi tai nimimerkki tähän]</span></strong>
+    FastFishingin ylläpitäjä
+  </div>
+</main>
+
+<footer>
+  <div class="shell">
+    FastFishing on riippumaton harrastusprojekti. Sääaineisto: Open-Meteo.
+    <a href="tietosuoja.html" style="color:inherit; text-decoration:underline;">Tietosuojaseloste</a>
+  </div>
+</footer>
+
+</body>
+</html>
