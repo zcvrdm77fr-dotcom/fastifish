@@ -5,6 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FastFishing - kalakelien mittari ja vieheopas</title>
 <meta name="description" content="FastFishing näyttää reaaliaikaisen kalakelin, parhaat kalastusajat ja vieheopas suomalaisille kalastuspaikoille - katso paine, tuuli ja lämpötila yhdellä silmäyksellä.">
+<!-- HUOM: vaihda alla oleva osoite oikeaan verkkotunnukseesi ennen julkaisua -->
+<link rel="canonical" href="https://www.fastfishin.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FastFishing">
+<meta property="og:title" content="FastFishing - kalakelien mittari ja vieheopas">
+<meta property="og:description" content="Reaaliaikainen kalakelin mittari, parhaat kalastusajat ja vieheopas suomalaisille kalastuspaikoille.">
+<meta property="og:url" content="https://www.fastfishin.com/">
+<meta property="og:locale" content="fi_FI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FastFishing - kalakelien mittari ja vieheopas">
+<meta name="twitter:description" content="Reaaliaikainen kalakelin mittari, parhaat kalastusajat ja vieheopas suomalaisille kalastuspaikoille.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "FastFishing",
+  "url": "https://www.fastfishin.com/",
+  "description": "Kalakelin mittari, joka yhdistää sään, ilmanpaineen muutoksen ja kellonajan arvioidakseen parhaat kalastusajat suomalaisilla kalastuspaikoilla.",
+  "applicationCategory": "SportsApplication",
+  "operatingSystem": "Any (selainpohjainen)",
+  "inLanguage": ["fi", "en"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Mihin FastFishingin kalakelipisteytys perustuu?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pisteytys yhdistää ilmanpaineen muutoksen viimeisen kuuden tunnin ajalta, tuulen nopeuden, pilvisyyden, veden ja ilman lämpötilan sekä sen, osuuko ajankohta aamu- tai iltahämärään. Säädata haetaan Open-Meteo-palvelusta, ja kunkin kalalajin kohdalla painotukset on säädetty lajille tyypillisen käyttäytymisen mukaan."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Voiko kelimittariin luottaa täysin?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ei sellaisenaan - pisteytys on suuntaa-antava apuväline, ei tae saaliista. Paikkakohtaiset tekijät kuten veden lämpötilakerrostuma, ravintokalojen liikkeet ja kalastuspaine vaikuttavat usein enemmän kuin mikä tahansa yksittäinen sääparametri. Työkalu kannattaa yhdistää omaan paikallistuntemukseen."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Miksi sivulla näkyy sekä automaattinen sää että käsin syötettävä lomake?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Automaattinen haku hakee ennusteen valitulle järvelle tai joelle Open-Meteon rajapinnasta. Käsin syötettävä lomake on tarkoitettu tilanteisiin, joissa haluat testata omaa mittaustasi laiturilta - esimerkiksi kun paikallinen sää poikkeaa lähimmän sääaseman ennusteesta."
+      }
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.open-meteo.com">
@@ -1055,6 +1111,63 @@ body.device-phone .columns {
           <button class="refresh full" type="button" id="mCalcBtn">Laske käsin syötetyillä tiedoilla</button>
         </form>
       </section>
+    </div>
+
+    <div class="content-card" style="margin-top:32px">
+      <h2>Miten kalakelipisteytys lasketaan</h2>
+      <p>
+        FastFishingin kelimittari ei arvo satunnaislukua, vaan yhdistää neljä
+        säämuuttujaa, joiden vaikutuksesta kalojen syöntiaktiivisuuteen on
+        vuosikymmenten kokemusperäistä näyttöä suomalaisilta kalavesiltä:
+        ilmanpaineen muutoksen viimeisen kuuden tunnin ajalta, tuulen
+        nopeuden ja suunnan, pilvisyyden sekä veden ja ilman lämpötilan.
+        Näiden lisäksi pisteytys huomioi, osuuko ajankohta aamu- tai
+        iltahämärään, jolloin monet petokalat syövät aktiivisimmin.
+      </p>
+      <p>
+        Säädata haetaan automaattisesti <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>-palvelusta valitulle
+        järvelle tai joelle. Kunkin kalalajin - hauen, ahvenen, kuhan ja
+        taimenen - painotukset eroavat toisistaan, koska esimerkiksi kuha on
+        herkempi paineenmuutokselle kuin hauki, ja ahven reagoi usein
+        voimakkaammin lämpötilan nousuun keväällä. Jos haluat testata omaa
+        mittaustasi laiturilta tai venereissulta, käsin syötettävä lomake
+        yllä laskee saman pisteytyksen sinun antamillasi luvuilla.
+      </p>
+      <p>
+        <strong>Tärkeä huomio:</strong> pisteytys on suuntaa-antava apuväline,
+        ei lupaus saaliista. Paikkakohtaiset tekijät - veden
+        lämpötilakerrostuma, ravintokalojen liikkeet, kalastuspaine ja
+        pohjanmuodot - ratkaisevat käytännössä usein enemmän kuin mikään
+        yksittäinen sääparametri. Työkalu kannattaa yhdistää omaan
+        paikallistuntemukseen, ei korvata sitä.
+      </p>
+
+      <h3>Usein kysyttyä</h3>
+      <div class="checklist">
+        <div class="check">
+          <div>
+            <b>Onko kelimittari maksullinen?</b><br>
+            Ei. Kelimittari, uistinoppaat ja kalalajitiedot ovat kaikille
+            avoimia ja ilmaisia käyttää ilman rekisteröitymistä.
+          </div>
+        </div>
+        <div class="check">
+          <div>
+            <b>Kuinka usein säädata päivittyy?</b><br>
+            Ennuste haetaan aina, kun vaihdat paikkaa tai painat
+            "Päivitä keli" -painiketta, ja se perustuu Open-Meteon
+            tuoreimpaan saatavilla olevaan ennustemalliin.
+          </div>
+        </div>
+        <div class="check">
+          <div>
+            <b>Toimiiko mittari kaikilla Suomen järvillä ja joilla?</b><br>
+            Paikkalistalta löytyy satoja suomalaisia kalavesiä. Jos oma
+            vesistösi puuttuu, voit silti syöttää sään käsin lomakkeeseen
+            ja saada saman pisteytyksen.
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
