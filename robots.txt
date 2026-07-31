@@ -1,4 +1,3 @@
-# HUOM: vaihda Sitemap-rivin osoite omaan verkkotunnukseesi ennen julkaisua.
 User-agent: *
 Allow: /
 
