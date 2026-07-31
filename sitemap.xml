@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- HUOM: vaihda https://www.fastfishin.com alla olevaan omaan verkkotunnukseesi ennen julkaisua,
-     ja päivitä <lastmod>-päivät todellisiksi julkaisu-/muokkauspäiviksi. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.fastfishin.com/</loc>
