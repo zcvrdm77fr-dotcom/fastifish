@@ -1921,16 +1921,110 @@ const SPECIES_TRANS = {
     {id:"kuha", name:"Kuha"},
     {id:"ahven", name:"Ahven"},
     {id:"taimen", name:"Taimen / lohi"},
-    {id:"sarki", name:"Särkikalat"}
+    {id:"sarki", name:"Särkikalat"},
+    {id:"karppi", name:"Karppi"},
+    {id:"monni", name:"Monni"},
+    {id:"mustebassi", name:"Mustebassi"},
+    {id:"barbo", name:"Toutain"}
   ],
   en: [
     {id:"hauki", name:"Pike"},
     {id:"kuha", name:"Zander"},
     {id:"ahven", name:"Perch"},
     {id:"taimen", name:"Trout / Salmon"},
-    {id:"sarki", name:"Coarse Fish / Roach"}
+    {id:"sarki", name:"Coarse Fish / Roach"},
+    {id:"karppi", name:"Carp"},
+    {id:"monni", name:"Wels Catfish"},
+    {id:"mustebassi", name:"Black Bass"},
+    {id:"barbo", name:"Barbel"}
   ]
 };
+
+// Karkea arvio siitä, missä maissa kutakin kalalajia yleisesti tavataan (ISO 3166-1
+// alpha-2 -maakoodit). Tarkoitus on rajata kalalajivalikko todennäköisiin lajeihin
+// käyttäjän sijainnin perusteella - EI tyhjentävä tai tieteellisesti tarkka lista,
+// vaan käytännön nyrkkisääntö. Maat, joita ei löydy tästä taulukosta, näyttävät
+// edelleen koko lajivalikoiman (turvallinen oletus). Listaa voi laajentaa lisäämällä
+// uusia maakoodeja kunkin lajin taulukkoon.
+const SPECIES_COUNTRY_MAP = {
+  // Hauki (Pike) - laajalti Euroopassa, Pohjois-Amerikassa; ei Australiassa/Uudessa-Seelannissa
+  hauki:  ["FI","SE","NO","DK","EE","LV","LT","DE","NL","BE","FR","ES","IT","AT","CH","PL","CZ","SK","HU","RO","GB","IE","US","CA"],
+  // Kuha (Zander/Pikeperch) - Keski- ja Itä-Eurooppa sekä istutettuna monin paikoin Länsi-Euroopassa
+  kuha:   ["FI","SE","DE","NL","BE","FR","IT","PL","CZ","SK","HU","RO","AT","DK","EE","LV","LT","GB"],
+  // Ahven (Perch) - hyvin laajalle levinnyt Euroopassa, myös Pohjois-Amerikan "yellow perch" ja Australian/Uuden-Seelannin istutuskannat
+  ahven:  ["FI","SE","NO","DK","EE","LV","LT","DE","NL","BE","FR","ES","IT","AT","CH","PL","CZ","SK","HU","RO","GB","IE","US","CA","AU","NZ","PT"],
+  // Taimen/lohi (Trout/Salmon) - lähes maailmanlaajuinen istutusten ansiosta
+  taimen: ["FI","SE","NO","DK","EE","LV","LT","DE","NL","BE","FR","ES","IT","AT","CH","PL","CZ","SK","HU","RO","GB","IE","US","CA","AU","NZ","PT"],
+  // Särkikalat (Coarse fish/Roach) - Euroopassa yleisiä, harvinaisempia/vieraslajeja muualla
+  sarki:  ["FI","SE","NO","DK","EE","LV","LT","DE","NL","BE","FR","IT","AT","PL","CZ","SK","HU","RO","GB","IE","AU"],
+  // Maakohtaiset lisälajit ja -laajennukset. Toistaiseksi tehty valmiiksi: Ranska, Portugali
+  // (lisätään muita maita myöhemmin yksi kerrallaan, jotta sisältö - viehevinkit, kalatiedot
+  // jne - ehditään kirjoittaa kunnolla kummallakin kielellä).
+  // Karppi - Ranskassa erittäin suosittu ja runsas kohdelaji; Portugalissa yleinen padoissa ja joissa
+  karppi: ["FR","PT"],
+  // Monni (Silure/Wels-monni) - kotiutunut vahvasti mm. Ranskan Rhôneen, Saôneen ja Seineen sekä Portugalin Tejo-jokeen
+  monni: ["FR","PT"],
+  // Mustebassi (Black bass / Micropterus salmoides) - suosittu urheilukalastuslaji Etelä- ja Keski-Ranskan
+  // järvissä sekä erityisesti Portugalin Alqueva-tekojärvellä, joka tunnetaan maailmanlaajuisesti bassivetenä
+  mustebassi: ["FR","PT"],
+  // Toutain/Barbo (Iberian barbel, Luciobarbus spp.) - Portugalin joki- ja patoalueiden perinteinen kohdelaji
+  barbo: ["PT"]
+};
+
+// Käyttäjän GPS-sijainnista päätelty maakoodi (esim. "FR"). Null = ei tiedossa,
+// jolloin näytetään aina koko lajivalikoima.
+let detectedCountryCode = null;
+
+// Lajit, jotka näytetään aina oletuksena (myös silloin kun sijaintia/maata ei tunnisteta).
+// Maakohtaiset lisälajit (esim. karppi Ranskassa) näkyvät vain kun maa on tunnistettu.
+const BASE_SPECIES_IDS = ["hauki","kuha","ahven","taimen","sarki"];
+
+// Palauttaa kielikohtaisen lajilistan suodatettuna maan mukaan. Jos maa on tuntematon,
+// näytetään perussarja (5 alkuperäistä lajia). Jos maa on tunnistettu mutta suodatus
+// tyhjentäisi listan kokonaan, palataan turvallisesti perussarjaan.
+function getSpeciesForCountry(lang, countryCode) {
+  const all = SPECIES_TRANS[lang];
+  const baseOnly = all.filter(s => BASE_SPECIES_IDS.includes(s.id));
+  if (!countryCode) return baseOnly;
+  const filtered = all.filter(s => {
+    const countries = SPECIES_COUNTRY_MAP[s.id];
+    return !countries || countries.includes(countryCode);
+  });
+  return filtered.length ? filtered : baseOnly;
+}
+
+// Hakee karkean maakoodin Nominatimin reverse-geokoodauksesta (kevyt zoom=3, eli
+// vain maatason tarkkuus - ei tarvitse kylä-/kaupunkitasoa tähän tarkoitukseen).
+async function detectCountryCode(lat, lon) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=3&accept-language=en`;
+    const res = await fetch(url, {signal: controller.signal, headers:{"Accept":"application/json"}});
+    clearTimeout(timeoutId);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const cc = data && data.address && data.address.country_code;
+    return cc ? cc.toUpperCase() : null;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    return null;
+  }
+}
+
+// Päivittää lajivalikon (ja kaikki sitä käyttävät näkymät) tunnistetun maan mukaan.
+function applyCountrySpeciesFilter() {
+  if (typeof spSel === "undefined" || !spSel) return;
+  const currentFishId = spSel.value;
+  SPECIES = getSpeciesForCountry(currentLang, detectedCountryCode);
+  spSel.innerHTML = "";
+  SPECIES.forEach(s => spSel.add(new Option(s.name, s.id)));
+  if (currentFishId && SPECIES.some(s => s.id === currentFishId)) {
+    spSel.value = currentFishId;
+  }
+  renderFishInfo(spSel.value);
+  if (typeof refresh === "function") refresh();
+}
 
 const LURES_TRANS = {
   fi: {
@@ -1958,6 +2052,26 @@ const LURES_TRANS = {
       clear:{tag:"Kaikki kelit", name:"Kevyt onkilaite", desc:"Pieni herkkä koho, ohut siima, pieni koukku ja syötiksi kärpäsentoukka tai mato."},
       murky:{tag:"Samea vesi", name:"Tuoksuva pohjaonki", desc:"Pohjaonki varustettuna maissilla, madolla tai mäskitahnalla, joka houkuttelee tuoksullaan."},
       cold:{tag:"Kylmä vesi", name:"Erittäin pieni mikrosyötti", desc:"Käytä kaikkein pienimpiä kärpäsentoukkia tai leivänmurua aivan pohjan tuntumassa."}
+    },
+    karppi: {
+      clear:{tag:"Kirkas vesi", name:"Hiuskoukku ja boili", desc:"Pieni 12-16 mm boili tai tiikeripähkinä hiuskoukussa, ohut siima ja pitkä syöttöaika. Karppi on kirkkaassa vedessä varovainen."},
+      murky:{tag:"Samea vesi", name:"Tuoksuva pop-up ja mäskitys", desc:"Kirkasvärinen pop-up-boili (esim. ananas tai mansikka) kellutettuna hieman pohjasta, runsas mäskitys houkuttimeksi."},
+      cold:{tag:"Kylmä vesi (kevätsyksy)", name:"Pieni syötti ja pitkä odotus", desc:"Pienempi syötti kuten maissi tai pelletti, syvänteen tai auringonpuoleisen rannan läheltä. Karppi syö hitaasti kylmässä vedessä."}
+    },
+    monni: {
+      clear:{tag:"Kirkas vesi", name:"Iso vaappu tai isohko jigi", desc:"15-25 cm tummasävyinen vaappu tai musta/violetti softbait syötettynä hitaasti pohjan tuntumassa syvänteiden reunoilla."},
+      murky:{tag:"Samea vesi", name:"Clonk-houkutus ja luonnonsyötti", desc:"Perinteinen clonking-tekniikka (äänihoukutus) yhdistettynä isoon luonnonsyöttiin, kuten kokonaiseen kalaan tai isoon maamatokimppuun."},
+      cold:{tag:"Kylmä vesi / talvi", name:"Hidas pohjasyötti", desc:"Monni on kylmässä vedessä hidas ja passiivinen - tarjoile syvänteessä hitaasti liikkuva tai paikallaan pysyvä luonnonsyötti."}
+    },
+    mustebassi: {
+      clear:{tag:"Kirkas vesi", name:"Luonnollinen soft plastic -syötti", desc:"Vihertävä tai luonnonvärinen worm tai creature bait keveällä texas-riggauksella, pitkillä tauoilla kasvillisuuden reunalla."},
+      murky:{tag:"Samea vesi", name:"Isokokoinen ärsykevärinen spinnerbait", desc:"Musta-sininen tai firetiger-värinen spinnerbait tai chatterbait, jonka tärinä auttaa bassia löytämään syötin sameassa vedessä."},
+      cold:{tag:"Kylmä vesi (kevätsyksy)", name:"Hidas jig ja pieni syötti", desc:"Pieni jig-and-pig tai droptshot-rigattu pienempi soft plastic hitaasti syvänteen pohjaa pitkin, mustebassi on kylmässä vedessä laiska."}
+    },
+    barbo: {
+      clear:{tag:"Kirkas vesi", name:"Pieni luonnonsyötti pohjassa", desc:"Kastemato tai maissi kevyellä pohjasiimalla virtaavan veden alavirran puolella, kun toutain näkee syötin kaukaa."},
+      murky:{tag:"Samea vesi", name:"Tuoksuva pellettisyötti", desc:"Pellettiseos tai mäskitahna houkuttimena, syötti pysyy pohjassa virran hidastumakohdassa."},
+      cold:{tag:"Kylmä vesi (talvi)", name:"Pieni, hidas pohjasyötti", desc:"Toutain vetäytyy syvempiin patoaltaisiin talvella - tarjoile pieni syötti hitaasti aivan pohjan tuntumassa."}
     }
   },
   en: {
@@ -1985,6 +2099,26 @@ const LURES_TRANS = {
       clear:{tag:"All Conditions", name:"Light Float Rig", desc:"Small sensitive float, thin line, tiny hook baited with a maggot, earthworm, or corn."},
       murky:{tag:"Murky Water", name:"Scented Bottom Ledger", desc:"Bottom ledger rig baited with corn, worm, or groundbait paste that attracts fish by smell."},
       cold:{tag:"Cold Water", name:"Extremely Small Micro Bait", desc:"Use the smallest maggots or breadcrumbs presented right on the bottom."}
+    },
+    karppi: {
+      clear:{tag:"Clear Water", name:"Hair Rig & Small Boilie", desc:"A small 12-16 mm boilie or a tiger nut on a hair rig, light line and a long baiting period. Carp are wary in clear water."},
+      murky:{tag:"Murky Water", name:"Scented Pop-up & Groundbait", desc:"A bright pop-up boilie (e.g. pineapple or strawberry) fished just off bottom, with generous groundbaiting to draw fish in."},
+      cold:{tag:"Cold Water (Spring/Autumn)", name:"Small Bait & Long Wait", desc:"Smaller bait such as sweetcorn or pellets near a deep hole or a sun-warmed bank. Carp feed slowly in cold water."}
+    },
+    monni: {
+      clear:{tag:"Clear Water", name:"Large Wobbler or Big Jig", desc:"A 15-25 cm dark-colored wobbler or a black/purple soft plastic worked slowly near the bottom along deep edges."},
+      murky:{tag:"Murky Water", name:"Clonking & Natural Bait", desc:"Traditional clonking (sound-attraction technique) combined with a large natural bait such as a whole fish or a big bunch of nightcrawlers."},
+      cold:{tag:"Cold Water / Winter", name:"Slow Bottom Bait", desc:"Wels catfish become slow and passive in cold water - offer a slow-moving or stationary natural bait in a deep hole."}
+    },
+    mustebassi: {
+      clear:{tag:"Clear Water", name:"Natural Soft Plastic Bait", desc:"A green or natural-colored worm or creature bait on a light Texas rig, with long pauses along weed edges."},
+      murky:{tag:"Murky Water", name:"Large Attractor Spinnerbait", desc:"A black-blue or firetiger colored spinnerbait or chatterbait, whose vibration helps bass find the bait in murky water."},
+      cold:{tag:"Cold Water (Spring/Autumn)", name:"Slow Jig & Small Bait", desc:"A small jig-and-pig or a drop-shotted small soft plastic worked slowly along a deep bottom - bass are sluggish in cold water."}
+    },
+    barbo: {
+      clear:{tag:"Clear Water", name:"Small Natural Bottom Bait", desc:"An earthworm or sweetcorn on a light bottom rig on the downstream side of the current, since barbel can spot bait from far away in clear water."},
+      murky:{tag:"Murky Water", name:"Scented Pellet Bait", desc:"A pellet mix or groundbait paste as an attractor, with the bait held on the bottom where the current slows."},
+      cold:{tag:"Cold Water (Winter)", name:"Small, Slow Bottom Bait", desc:"Barbel retreat to deeper pools below dams in winter - offer a small bait worked slowly right on the bottom."}
     }
   }
 };
@@ -2045,6 +2179,28 @@ const REAL_LURES_TRANS = {
       {brand:"Waggler-koho", model:"Pitkävartinen koho + hieno siima", type:"Kohokalastus", note:"Kantaa pitkälle avoveden puolelle ja pysyy silti herkkänä hienoisillekin nykäisyille."},
       {brand:"Väritetty maissi", model:"Vaaleanpunainen tai keltainen maissi", type:"Syötti", note:"Erottuu luonnollisesta ravinnosta ja houkuttelee särjen usein nopeammin sameassa vedessä."},
       {brand:"Kastemato", model:"Pieni koukku, luonnollinen esitys", type:"Syötti", note:"Toimii ympäri vuoden ja on erityisen tehokas heti sateen jälkeen, kun matoja huuhtoutuu veteen."}
+    ],
+    karppi: [
+      {brand:"Sensas", model:"Boilie 14 mm", type:"Hiuskoukkusyötti", note:"Kova boili hiuskoukussa pitää syötin tehokkaana pitkään, kun pikkukalat eivät pääse sitä nykimään."},
+      {brand:"Korda", model:"Wafter Pop-up 15 mm", type:"Kellutettu syötti", note:"Nousee hieman pohjasta lietteisillä pohjilla ja erottuu paremmin mäskitetyssä syöttipaikassa."},
+      {brand:"Fox", model:"Method Feeder -koriyhdistelmä", type:"Syöttikalastus", note:"Tiivis mäskipallo houkuttelee karpin nopeasti syöttipaikalle, erityisesti kanavissa ja järvissä."},
+      {brand:"Nash", model:"Tiikeripähkinä hiuskoukussa", type:"Luonnonsyötti", note:"Klassinen, karppien suosima syötti, joka toimii hyvin esisyötetyillä paikoilla."}
+    ],
+    monni: [
+      {brand:"Sportex", model:"Iso uistin tai clonker-tanko", type:"Clonking-houkutus", note:"Perinteinen ranskalainen monninkalastustekniikka - äänivärähtely houkuttelee monnin kauempaakin."},
+      {brand:"Black Cat", model:"Iso softbait 20-30 cm", type:"Softbait", note:"Uitetaan hitaasti syvänteen pohjan tuntumassa, erityisesti lämpiminä kesäöinä."},
+      {brand:"Team Catfish", model:"Kokonainen kala tai iso matokimppu", type:"Luonnonsyötti", note:"Tukevalla siimalla ja isolla koukulla varustettu syötti pohjaan, kun monni ei liiku aktiivisesti."}
+    ],
+    mustebassi: [
+      {brand:"Illex", model:"Deracoup 106F", type:"Pintaviehe", note:"Ranskalainen bassiklassikko - toimii erinomaisesti kasvillisuuden reunalla aamu- ja iltahämärässä."},
+      {brand:"Rapala", model:"CrushCity Rip Roller", type:"Softbait", note:"Monikäyttöinen softbait, joka jäljittelee luonnollista pikkukalaa kasvillisuuden reunalla."},
+      {brand:"Berkley", model:"PowerBait Power Worm 10 cm", type:"Texas rig -syötti", note:"Klassinen madonjäljitelmä, joka uitetaan hitaasti pohjan tuntumassa kasvillisuudessa."},
+      {brand:"Molix", model:"Chatter Bait 14 g", type:"Ärsykeviehe", note:"Voimakkaasti tärisevä viehe, joka toimii hyvin sameassa vedessä ja tuulisella säällä."}
+    ],
+    barbo: [
+      {brand:"Sensas", model:"Pellettiseos + pohjasiima", type:"Pohjakalastus", note:"Pelletti tai mäskitahna houkuttimena, syötti kastematoa tai maissia pidettynä virran hidastumakohdassa."},
+      {brand:"Rive", model:"Kevyt feeder-koriyhdistelmä", type:"Syöttikalastus", note:"Pitää syötin paikallaan virtaavassa vedessä ja levittää tuoksua tehokkaasti alavirtaan."},
+      {brand:"Kastemato", model:"Iso kastemato pohjakoukussa", type:"Luonnonsyötti", note:"Klassinen toutainsyötti, joka toimii erityisen hyvin sateen jälkeen kohonneessa virtaamassa."}
     ]
   },
   en: {
@@ -2102,6 +2258,28 @@ const REAL_LURES_TRANS = {
       {brand:"Waggler float", model:"Long-bodied waggler + fine line", type:"Float fishing", note:"Casts further into open water while staying sensitive to even light bites."},
       {brand:"Dyed sweetcorn", model:"Bright pink or yellow corn", type:"Bait", note:"Stands out from natural food and often draws roach faster in coloured water."},
       {brand:"Earthworm", model:"Small hook, natural presentation", type:"Bait", note:"A year-round classic, especially effective right after rain when worms wash into the water."}
+    ],
+    karppi: [
+      {brand:"Sensas", model:"Boilie 14 mm", type:"Hair rig bait", note:"A hard boilie on a hair rig stays effective for a long time, since small fish can't strip it off the hook."},
+      {brand:"Korda", model:"Wafter Pop-up 15 mm", type:"Buoyant bait", note:"Sits slightly off a silty bottom and stands out better in a baited, groundbaited swim."},
+      {brand:"Fox", model:"Method Feeder rig", type:"Feeder fishing", note:"A tight ball of groundbait draws carp to the swim quickly, especially in canals and lakes."},
+      {brand:"Nash", model:"Tiger nut on a hair rig", type:"Natural bait", note:"A classic carp favorite that works especially well in a pre-baited swim."}
+    ],
+    monni: [
+      {brand:"Sportex", model:"Large lure or clonking pole", type:"Clonking technique", note:"A traditional French wels catfish technique - the sound vibration draws catfish in from further away."},
+      {brand:"Black Cat", model:"Large softbait 20-30 cm", type:"Softbait", note:"Worked slowly near the bottom of a deep hole, especially on warm summer nights."},
+      {brand:"Team Catfish", model:"Whole fish or a large worm bunch", type:"Natural bait", note:"Sturdy line and a large hook presented on the bottom, for when catfish aren't actively moving."}
+    ],
+    mustebassi: [
+      {brand:"Illex", model:"Deracoup 106F", type:"Topwater lure", note:"A French bass-fishing classic - excellent along weed edges at dawn and dusk."},
+      {brand:"Rapala", model:"CrushCity Rip Roller", type:"Softbait", note:"A versatile softbait imitating natural baitfish along weed edges."},
+      {brand:"Berkley", model:"PowerBait Power Worm 10 cm", type:"Texas-rigged bait", note:"A classic worm imitation worked slowly near the bottom through cover."},
+      {brand:"Molix", model:"Chatter Bait 14 g", type:"Attractor lure", note:"A strongly vibrating lure that works well in murky water and windy conditions."}
+    ],
+    barbo: [
+      {brand:"Sensas", model:"Pellet mix + bottom rig", type:"Bottom fishing", note:"Pellets or groundbait paste as an attractor, with earthworm or sweetcorn held where the current slows."},
+      {brand:"Rive", model:"Light feeder cage", type:"Feeder fishing", note:"Holds the bait in place in flowing water and spreads scent efficiently downstream."},
+      {brand:"Earthworm", model:"Large earthworm on a bottom hook", type:"Natural bait", note:"A classic barbel bait, especially effective after rain when the flow picks up."}
     ]
   }
 };
@@ -2129,14 +2307,22 @@ const FISH_INFO_TRANS = {
     kuha: {title:"Kuha", mood:"Hämärän saalistaja", where:"Syvänteiden reunat, kovapohjaiset penkat, salmet ja pikkukalaparvien ympäristö.", when:"Iltahämärä, yö ja pilvinen päivä. Lämmin kesävesi aktivoi kuhaa, mutta kirkas aurinko painaa sen syvemmälle.", start:"Jigi pohjan tuntumaan, kuhan vaappu vetoon tai pystypilkki veneestä.", color:"#c9b36a", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Sander_lucioperca_1.jpg"},
     ahven: {title:"Ahven", mood:"Parvena liikkuva opportunisti", where:"Laiturit, kivikot, kasvillisuuden reunat, penkat ja pikkukalojen pinnassa näkyvät ajot.", when:"Kesällä usein koko päivän, mutta paras piikki tulee aamulla ja illalla. Kevyt tuuli auttaa.", start:"Mikrojigi, pieni lippa, pieni lusikka tai dropshot.", color:"#d88b3d", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Perca_fluviatilis2.jpg"},
     taimen: {title:"Taimen / lohi", mood:"Viileän waterline-voimanpesä", where:"Virran saumat, niskat, suvannot, rantamatalat kylmällä vedellä ja hapekkaat selkävedet.", when:"Viileä vesi, pilvinen keli, tuuli ja hämärä ovat eduksi. Noudata aina rauhoituksia ja alamittoja.", start:"Kapea lusikka, vaappu, perho tai pieni jigi virran mukaan uitettuna.", color:"#b8c7d0", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Brown_trout_Salmo_trutta.jpg"},
-    sarki: {title:"Särkikalat", mood:"Kevyen ongen varma ilo", where:"Lämpimät lahdet, laiturit, ruovikon reunat ja pohjan tasaiset ruokailupaikat.", when:"Lämmin kausi ja tyyni tai leuto keli. Ruokinta kokoaa parvea.", start:"Koho-onki, pieni koukku, mato, toukka, maissi tai leipä.", color:"#d9d3ad", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Common_Roach.JPG"}
+    sarki: {title:"Särkikalat", mood:"Kevyen ongen varma ilo", where:"Lämpimät lahdet, laiturit, ruovikon reunat ja pohjan tasaiset ruokailupaikat.", when:"Lämmin kausi ja tyyni tai leuto keli. Ruokinta kokoaa parvea.", start:"Koho-onki, pieni koukku, mato, toukka, maissi tai leipä.", color:"#d9d3ad", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Common_Roach.JPG"},
+    karppi: {title:"Karppi", mood:"Varovainen, älykäs pohjankaluaja", where:"Syvät pohjakuopat, kasvillisuuden reunat, lämpimät matalikot ja syöttöpaikat, joita on esisyötetty.", when:"Lämmin vesi keväästä syksyyn, erityisesti aamuyö ja ilta. Ukkosta edeltävä ilmanpaineen lasku aktivoi karppia.", start:"Boili tai maissi hiuskoukussa, pitkä syöttöaika ja kärsivällisyys.", color:"#a67c4a", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Common_carp.jpg"},
+    monni: {title:"Monni", mood:"Yön suurpeto syvänteissä", where:"Syvät joenmutkat, patojen alusvedet, suurten järvien syvänteet ja upotetut puurakenteet.", when:"Lämmin kesäyö on parasta aikaa. Ukkosen jälkeinen ilmanpaineen muutos saa monnin liikkeelle.", start:"Iso luonnonsyötti tai clonking-houkutus, tukeva varustus.", color:"#5a4a3a", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Silurus_glanis_white2.JPG"},
+    mustebassi: {title:"Mustebassi", mood:"Väijyvä kasvillisuuden kuningas", where:"Vesikasvillisuuden reunat, upotetut puut, laiturit ja varjoisat pudotukset lämpimissä järvissä.", when:"Lämmin vesi keväästä syksyyn, parhaat hetket aamu- ja iltahämärässä sekä pilvisellä säällä.", start:"Soft plastic -syötti texas-riggauksella tai pintaviehe kasvillisuuden reunalla.", color:"#3d5a3d", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Largemouth_Bass_(Micropterus_salmoides).jpg"},
+    barbo: {title:"Toutain", mood:"Virtaan sopeutunut pohjankaluaja", where:"Virtaavat joet, patojen alavedet, sorapohjat ja virran hidastumakohdat.", when:"Lämmin vesi keväästä syksyyn, erityisesti hämärän aikaan ja sateen jälkeen kohonneessa virtaamassa.", start:"Kastemato tai maissi pohjasiimalla, tarjoile aivan pohjan tuntumassa.", color:"#b09468", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Barbel.jpg"}
   },
   en: {
     hauki: {title:"Pike", mood:"Predator that strikes in almost any weather", where:"Reed edges, shallow bays, rocky reefs, and steep drop-offs.", when:"Best on cloudy and windy days. Midday can be surprisingly productive.", start:"Large spoons, big wobblers, and specialized pike soft baits.", color:"#5b7553", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Esox_lucius1.jpg"},
     kuha: {title:"Zander", mood:"Twilight hunter, lover of warm waters", where:"Open lake areas, deep water during the day, shallower rock piles and narrows in the evening.", when:"Best during dusk, night, and early morning. Calm and warm conditions are ideal.", start:"Soft plastic jigs (10-12 cm), zander wobblers, and deadbaits.", color:"#989069", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Sander_lucioperca_Sverige.jpg"},
     ahven: {title:"Perch", mood:"Lively school hunter and national favorite", where:"Reed lines, bridge pilings, rocky shoals, and weed beds.", when:"Active daytime feeder. Feeding often intensifies in the afternoon and early evening on calm days.", start:"Micro & small jigs (5-8 cm), spinners (size 2-3), and small wobblers.", color:"#4a6750", image:"https://commons.wikimedia.org/wiki/Special:FilePath/European_perch_Perca_fluviatilis.jpg"},
     taimen: {title:"Trout / Salmon", mood:"Streamlined powerhouse of cold waters", where:"Rocky currents, river pools, fast rapids, and wave-swept shores of the outer archipelago.", when:"When water temperature drops in autumn or spring. Windy and cloudy days are best at sea.", start:"Slender spoons, sea trout wobblers, and streamer flies.", color:"#7a6a57", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Salmo_trutta_pictu.jpg"},
-    sarki: {title:"Coarse Fish / Roach", mood:"Surefire fun on a light float rig", where:"Warm bays, harbors, reed edges, and flat muddy bottoms where they feed.", when:"Warm season and calm or gentle weather. Groundbaiting helps gather the school.", start:"Float rod, tiny hook, earthworm, maggot, sweetcorn, or bread.", color:"#d9d3ad", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Common_Roach.JPG"}
+    sarki: {title:"Coarse Fish / Roach", mood:"Surefire fun on a light float rig", where:"Warm bays, harbors, reed edges, and flat muddy bottoms where they feed.", when:"Warm season and calm or gentle weather. Groundbaiting helps gather the school.", start:"Float rod, tiny hook, earthworm, maggot, sweetcorn, or bread.", color:"#d9d3ad", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Common_Roach.JPG"},
+    karppi: {title:"Carp", mood:"Wary, intelligent bottom feeder", where:"Deep bottom holes, weed edges, warm shallows, and pre-baited swims.", when:"Warm water from spring to autumn, especially early morning and evening. A pressure drop before a thunderstorm often triggers feeding.", start:"Boilie or sweetcorn on a hair rig, a long baiting period, and patience.", color:"#a67c4a", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Common_carp.jpg"},
+    monni: {title:"Wels Catfish", mood:"Nocturnal giant of the depths", where:"Deep river bends, tailwaters below dams, deep holes in large lakes, and submerged timber.", when:"Warm summer nights are best. A pressure change after a thunderstorm often triggers activity.", start:"A large natural bait or the clonking technique, with sturdy tackle.", color:"#5a4a3a", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Silurus_glanis_white2.JPG"},
+    mustebassi: {title:"Black Bass", mood:"Ambush predator of the weed beds", where:"Weed edges, submerged timber, docks, and shaded drop-offs in warm lakes.", when:"Warm water from spring to autumn, best around dawn and dusk and on cloudy days.", start:"Soft plastic bait on a Texas rig or a topwater lure along weed edges.", color:"#3d5a3d", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Largemouth_Bass_(Micropterus_salmoides).jpg"},
+    barbo: {title:"Barbel", mood:"Current-loving bottom grazer", where:"Flowing rivers, tailwaters below dams, gravel bottoms, and slower current seams.", when:"Warm water from spring to autumn, especially at dusk and after rain when flow picks up.", start:"Earthworm or sweetcorn on a bottom rig, presented right on the riverbed.", color:"#b09468", image:"https://commons.wikimedia.org/wiki/Special:FilePath/Barbel.jpg"}
   }
 };
 
@@ -2355,7 +2541,7 @@ function setLanguage(lang, saveToLocalStorage = true) {
     storage.setItem('user_language', lang);
   }
   
-  SPECIES = SPECIES_TRANS[lang];
+  SPECIES = getSpeciesForCountry(lang, detectedCountryCode);
   LURES = LURES_TRANS[lang];
   FISH_INFO = FISH_INFO_TRANS[lang];
   
@@ -2924,6 +3110,16 @@ async function loadNearbySpots(userLat,userLon){
       }
     }
 
+    // Tunnistetaan käyttäjän maa taustalla ja suodatetaan kalalajivalikko sen mukaan,
+    // kun mahdollista (esim. Ranskassa näytetään lajit joita siellä yleisesti esiintyy).
+    // Ei estetä muun sivun latautumista - päivitetään valikko heti kun vastaus saapuu.
+    detectCountryCode(userLat, userLon).then(cc => {
+      if (cc) {
+        detectedCountryCode = cc;
+        applyCountrySpeciesFilter();
+      }
+    });
+
     const meName = currentLang === 'fi' ? "Oma sijaintisi" : "Your Location";
     const mePoint = {name: meName, lat:userLat, lon:userLon, distance:0};
 
@@ -3139,7 +3335,15 @@ const SPECIES_MODIFIERS = {
   kuha:c=>((c.cloud>=50?14:0)+(c.cloud<30&&!c.isPrimeTime?-10:0)+(c.isPrimeTime?8:0)+(c.temp<4?-5:0)),
   ahven:c=>((c.wind>=1&&c.wind<=5?6:0)+(c.cloud>=30?5:0)+(c.temp>=8&&c.temp<=20?4:0)),
   taimen:c=>((c.temp>=4&&c.temp<=14?10:0)+(c.temp>18?-12:0)+(c.wind>=2&&c.wind<=8?6:0)+(c.isSeaSummer?-45:0)),
-  sarki:c=>((c.temp>=14?8:0)+(c.cloud<30?3:0)+(c.temp<5?-8:0))
+  sarki:c=>((c.temp>=14?8:0)+(c.cloud<30?3:0)+(c.temp<5?-8:0)),
+  // Karppi syö parhaiten lämpimässä vedessä ja ilmanpaineen laskiessa (esim. ukkosen alla); kylmässä vedessä lähes passiivinen
+  karppi:c=>((c.temp>=16?10:0)+(c.temp<8?-14:0)+(c.cloud>=50?4:0)),
+  // Monni on yöeläin - hämärä/pilvisyys ja lämmin kesäkeli suosivat, kylmä vesi latistaa aktiivisuuden lähes nollaan
+  monni:c=>((c.isPrimeTime?12:0)+(c.temp>=16?8:0)+(c.temp<10?-16:0)+(c.cloud>=40?4:0)),
+  // Mustebassi on kylmäverisenä hyvin lämpötilaherkkä - viileä vesi laskee aktiivisuutta merkittävästi
+  mustebassi:c=>((c.temp>=18&&c.temp<=27?10:0)+(c.temp<12?-15:0)+(c.wind>=1&&c.wind<=6?4:0)+(c.cloud>=30?3:0)),
+  // Toutain/barbo syö aktiivisesti lämpimässä virtaavassa vedessä, erityisesti sateen nostaman virtaaman jälkeen
+  barbo:c=>((c.temp>=14?8:0)+(c.temp<8?-10:0)+(c.cloud>=40?3:0))
 };
 function isBalticCoast(name){
   return /meri|saaristo|ahvenanmaa|hanko|kaskinen|kristiinankaupunki|inkoo|kirkkonummi|loviisa|parainen|kemiönsaari|kaarina|tammisaari|pernajanlahti|kuusistonlahti|halikonlahti|porkkala|merenkurkku|suomenlahti|sipoonlahti/i.test(name||"");
