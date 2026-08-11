@@ -1041,6 +1041,18 @@ body.device-phone .columns {
   </aside>
 </header>
 
+<section class="shell" style="padding-block:8px 32px" aria-label="Tietoa FastFishingista">
+  <p style="max-width:760px; color:var(--ink-soft); line-height:1.7;">
+    FastFishing on suomalaisille kalastajille tehty kalakelin mittari, joka yhdistää sään, ilmanpaineen
+    muutoksen, pilvisyyden ja vuorokaudenajan yhdeksi arvioksi siitä, kannattaako lähteä vesille juuri
+    tänään. Työkalun rinnalla sivustolla on kattavat <a href="#oppaat" data-go="oppaat" style="color:var(--lake-deep); text-decoration:underline;">kalastusoppaat</a>
+    hauelle, ahvenelle, kuhalle ja taimenelle - miten kevät, kesä, syksy ja talvi sekä sää ja veden lämpötila
+    muuttavat kalan käytöstä ja mitä vieheitä kannattaa kokeilla missä olosuhteessa. Pisteytys on aina
+    suuntaa-antava apuväline, ei tae saaliista - paikallistuntemus ja oma silmämääräinen arvio ratkaisevat
+    usein enemmän kuin mikä tahansa yksittäinen mittari.
+  </p>
+</section>
+
 <section id="nearbySection" class="shell nearby-section" hidden>
   <div class="section-head">
     <h2>Lähelläsi</h2>
@@ -1224,6 +1236,11 @@ body.device-phone .columns {
         <div class="fish-body" id="fishInfo"></div>
       </article>
     </div>
+    <div class="section-head" style="margin-top:40px" id="fishSeasonsHead">
+      <h2 id="fishSeasonsTitle">Vuodenajat ja olosuhteet</h2>
+      <p id="fishSeasonsDesc">Miten sää, veden lämpötila ja vuodenaika muuttavat kalan käytöstä ja mitä kannattaa kokeilla.</p>
+    </div>
+    <div class="grid" id="fishSeasonsGrid"></div>
   </section>
 
   <section id="varusteet" class="page">
@@ -1243,7 +1260,7 @@ body.device-phone .columns {
     <section id="oppaat" class="page">
   <div class="section-head">
     <h2>Kalastusoppaat</h2>
-    <p>Lue kattavat oppaat eri kalalajien kalastuksesta, vieheistä ja vuodenajoista.</p>
+    <p>Lue kattavat oppaat eri kalalajien kalastuksesta, vieheistä ja vuodenajoista. Kaikki oppaat käyvät läpi, miten kevät, kesä, syksy ja talvi - sekä tuuli, pilvisyys ja veden lämpötila - muuttavat kalan käytöstä ja mitä siihen kannattaa vastata viehevalinnalla.</p>
   </div>
 
   <div class="grid">
@@ -1253,9 +1270,12 @@ body.device-phone .columns {
       <h3>🎣 Hauen kalastus</h3>
 
       <p>
-        Kattava opas hauen kalastukseen. Opi parhaat vieheet,
-        vuodenajat, ottipaikat, sääolosuhteet sekä vinkit
-        suuremman hauen saamiseen.
+        Kattava opas hauen kalastukseen ympäri vuoden. Keväällä hauki hakeutuu
+        matalille kutulahdille, kesähelteellä se vetäytyy viileämpään veteen ja
+        syvempiin pudotuksiin, syksyllä se syö voimakkaasti ennen talvea, ja jään
+        alla se löytyy hitaana mutta yhä tavoitettavana kasvillisuuden aukoista.
+        Opas käy läpi parhaat vieheet, ottipaikat ja sääolosuhteet joka vuodenajalle
+        sekä vinkit suuremman hauen saamiseen.
       </p>
 
       <a href="hauen-kalastus.html">Lue opas →</a>
@@ -1269,8 +1289,12 @@ body.device-phone .columns {
   <h3>🐟 Ahvenen kalastus</h3>
 
   <p>
-    Kattava opas ahvenen kalastukseen. Lue parhaat vieheet,
-    vuodenajat, kalapaikat ja vinkit suurempien ahventen saamiseen.
+    Kattava opas ahvenen kalastukseen eri vuodenaikoina. Kevään kutuaikaan parvet
+    kerääntyvät matalille kasvillisuusalueille, kesällä ahven syö usein koko päivän
+    mutta parhaiten aamu- ja iltahämärässä, syksyllä parvet kasvavat ja seuraavat
+    pikkukaloja avoimilla penkoilla, ja talvella jään alla ahven löytyy hitaana
+    syvänteiden reunoilta. Lue parhaat vieheet, kalapaikat ja vinkit suurempien
+    ahventen saamiseen kussakin tilanteessa.
   </p>
 
   <a href="ahvenen-kalastus.html">Lue opas →</a>
@@ -1283,9 +1307,12 @@ body.device-phone .columns {
   <h3>🦈 Kuhan kalastus</h3>
 
   <p>
-    Kattava opas kuhan kalastukseen. Lue parhaat vieheet,
-    vuodenajat, kalapaikat, sääolosuhteet ja vinkit
-    suuremman kuhan saamiseen.
+    Kattava opas kuhan kalastukseen. Kylmä kevätvesi hidastaa kuhaa päivällä,
+    joten paras aika on hämärä ja yö - samoin kesällä, jolloin kirkas aurinko
+    painaa kuhan syvänteisiin. Syksyllä kuha kerääntyy kovapohjaisille penkoille
+    ravintokalojen perässä, ja talvella jään alla se viihtyy hitaana syvänteissä.
+    Lue parhaat vieheet, kalapaikat, sääolosuhteet ja vinkit suuremman kuhan
+    saamiseen.
   </p>
 
   <a href="kuhan-kalastus.html">Lue opas →</a>
@@ -1298,8 +1325,11 @@ body.device-phone .columns {
   <h3>🦈 Kuhan vetouistelu</h3>
 
   <p>
-    Kuhan vetouistelun perusteet: parhaat syvyydet, uistelunopeus,
-    vieheet ja ajankohdat kuhan löytämiseen.
+    Kuhan vetouistelun perusteet vuodenajan mukaan: kesällä pilvinen keli ja
+    ilta-yö nostavat kuhan lähemmäs pintaa, kun kirkas aurinko puolestaan painaa
+    sen syvälle. Syksyllä vaihdetaan syvemmälle uiviin vieheisiin kalan
+    seuratessa syvänteiden reunoja. Opas käy läpi parhaat syvyydet,
+    uistelunopeuden, vieheet ja ajankohdat kuhan löytämiseen läpi vuoden.
   </p>
 
   <a href="kuhan-vetouistelu.html">Lue opas →</a>
@@ -1312,8 +1342,10 @@ body.device-phone .columns {
   <h3>🐟 Ahvenen vetouistelu</h3>
 
   <p>
-    Ahvenen vetouistelun perusteet: parhaat vieheet, syvyydet ja
-    nopeudet ahvenparvien löytämiseen.
+    Ahvenen vetouistelun perusteet: kesällä pieni tuuli ja pintakuohu auttavat
+    peittämään vieheen liikkeen, syksyllä isommat ahvenparvet löytyvät avoimilta
+    penkoilta pikkukalojen seurasta. Opas käy läpi parhaat vieheet, syvyydet ja
+    nopeudet ahvenparvien löytämiseen sääolosuhteesta riippuen.
   </p>
 
   <a href="ahvenen-vetouistelu.html">Lue opas →</a>
@@ -1326,8 +1358,11 @@ body.device-phone .columns {
   <h3>🎣 Hauen vetouistelu</h3>
 
   <p>
-    Hauen vetouistelun perusteet: isot vieheet, oikea nopeus ja
-    parhaat paikat kevään, kesän ja syksyn uisteluun.
+    Hauen vetouistelun perusteet: kevään kylmässä vedessä hidas uinti matalalla
+    toimii parhaiten, kesähelteellä kannattaa etsiä viileämpää, syvempää vettä,
+    ja syksyn tuulisilla päivillä isot vaaput ja lusikat tehoavat, kun happi ja
+    ravintokalat kertyvät rantavyöhykkeelle. Opas käy läpi isot vieheet, oikean
+    nopeuden ja parhaat paikat kevään, kesän ja syksyn uisteluun.
   </p>
 
   <a href="hauen-vetouistelu.html">Lue opas →</a>
@@ -1340,8 +1375,11 @@ body.device-phone .columns {
   <h3>🐟 Taimenen vetouistelu</h3>
 
   <p>
-    Taimenen vetouistelun perusteet merellä ja järvillä: syvyydet,
-    nopeudet ja vieheet vuodenajan mukaan.
+    Taimenen vetouistelun perusteet merellä ja järvillä. Keväällä kylmä,
+    hapekas vesi vetää taimenta virran saumoihin, kesällä kannattaa etsiä
+    viileämpiä virtapaikkoja ja tuulen puolta, ja syksyllä nousukalat liikkuvat
+    jokisuille pilvisellä ja tuulisella säällä. Opas käy läpi syvyydet,
+    nopeudet ja vieheet vuodenajan ja sään mukaan.
   </p>
 
   <a href="taimenen-vetouistelu.html">Lue opas →</a>
@@ -1354,9 +1392,11 @@ body.device-phone .columns {
   <h3>🪱 Jigikalastus</h3>
 
   <p>
-    Kattava opas jigikalastukseen. Opi valitsemaan oikea jigi,
-    jigipää, uittotekniikka ja parhaat kalastuspaikat hauelle,
-    ahvenelle ja kuhalle.
+    Kattava opas jigikalastukseen. Kylmässä kevät- ja talvivedessä pienempi
+    jigipää ja hitaampi uitto toimivat, lämpimässä kesävedessä kalan aktiivisuus
+    sallii nopeamman ja rohkeamman uinnin. Opi valitsemaan oikea jigi, jigipää
+    ja uittotekniikka hauelle, ahvenelle ja kuhalle vuodenajan ja veden
+    lämpötilan mukaan.
   </p>
 
   <a href="jigikalastus.html">Lue opas →</a>
@@ -1369,8 +1409,11 @@ body.device-phone .columns {
   <h3>🎣 Vieheen valinta</h3>
 
   <p>
-    Kattava opas oikean vieheen valintaan. Opi valitsemaan sopiva viehe
-    eri kalalajeille, vuodenajoille ja sääolosuhteisiin.
+    Kattava opas oikean vieheen valintaan. Kirkkaassa vedessä luonnonvärinen ja
+    pienempi viehe toimii paremmin, sameassa vedessä kannattaa lisätä kontrastia
+    ja ääntä. Kylmässä vedessä hidastetaan uintia, lämpimässä vedessä voi uittaa
+    nopeammin. Opas käy läpi sopivan vieheen valinnan eri kalalajeille,
+    vuodenajoille ja sääolosuhteisiin.
   </p>
 
   <a href="vieheen-valinta.html">Lue opas →</a>
@@ -1822,7 +1865,9 @@ const UI_TRANS = {
     water_variants_desc: "Jos vesi ei juuri nyt ole mitatun kaltaista, kokeile jotain näistä.",
     fish_where: "Mistä etsiä:",
     fish_when: "Milloin yrittää:",
-    fish_start: "Viehe alkuun:"
+    fish_start: "Viehe alkuun:",
+    fish_seasons_title: "Vuodenajat ja olosuhteet",
+    fish_seasons_desc: "Miten sää, veden lämpötila ja vuodenaika muuttavat kalan käytöstä ja mitä kannattaa kokeilla."
   },
   en: {
     title: "FastFishing - Bite Index and Lure Guide",
@@ -1911,7 +1956,9 @@ const UI_TRANS = {
     water_variants_desc: "If the water isn't quite like what's measured right now, try one of these instead.",
     fish_where: "Where to look:",
     fish_when: "When to try:",
-    fish_start: "Starting lure:"
+    fish_start: "Starting lure:",
+    fish_seasons_title: "Seasons & conditions",
+    fish_seasons_desc: "How weather, water temperature, and time of year change fish behavior - and what to try instead."
   }
 };
 
@@ -2326,6 +2373,121 @@ const FISH_INFO_TRANS = {
   }
 };
 
+const FISH_SEASONS_TRANS = {
+  fi: {
+    hauki: [
+      {label:"Kevät", text:"Jäidenlähdön jälkeen hauki hakeutuu matalille, aurinkoisille lahdenpohjukoille kutemaan huhti-toukokuussa. Vesi on kylmää, joten viehettä kannattaa uittaa hitaasti - pieni vaappu tai matalalla kulkeva jerkkiviehe toimii parhaiten aurinkoisella ja tyynellä säällä, kun matala vesi lämpenee nopeimmin."},
+      {label:"Kesä", text:"Helteellä hauki vetäytyy viileämpään veteen, kasvillisuuden suojaan tai syvempien pudotusten reunoille. Parhaat hetket ovat aamu- ja iltahämärä, jolloin pintaviehe tai matalalla kulkeva shad toimii. Tuulinen, pilvinen kesäpäivä pitää hauen aktiivisena myös keskipäivällä."},
+      {label:"Syksy", text:"Veden viiletessä syys-lokakuussa hauki syö voimakkaasti valmistautuessaan talveen. Isot vaaput, lusikat ja spinnerbaitit tehoavat erityisesti tuulisella säällä, joka sekoittaa vettä ja tuo happea ja ravintokaloja rantavyöhykkeelle."},
+      {label:"Talvi", text:"Jään alla hauki liikkuu hitaammin, mutta pysyy usein aktiivisena kasvillisuuden aukoissa ja syvänteiden reunoilla, varsinkin aamu- ja iltahämärässä. Pilkkikalastuksessa isompi, hitaasti liikuteltava viehe tai eläväsyötti toimii parhaiten, kun kirkas pakkaskeli vaihtuu lauhempaan."}
+    ],
+    kuha: [
+      {label:"Kevät", text:"Kutuaikaan touko-kesäkuussa kuha liikkuu matalampiin, lämpimämpiin lahtiin. Kalastus onnistuu parhaiten iltahämärässä ja yöllä pienellä jigillä tai vaapulla, koska kylmä kevätvesi hidastaa kalan aineenvaihduntaa päivällä."},
+      {label:"Kesä", text:"Lämmin kesävesi aktivoi kuhan, mutta kirkas päivänvalo painaa sen syvänteisiin tai sameaan veteen. Parhaat saalismahdollisuudet ovat pilvisellä säällä, iltahämärässä ja yöllä - jigi pohjan tuntumassa tai kuhan vaappu vetouistelussa."},
+      {label:"Syksy", text:"Syksyllä kuha kokoontuu syvänteiden reunoille ja kovapohjaisille penkoille ravintokalojen perässä. Pystypilkintä veneestä ja hitaasti aukovat jigit toimivat hyvin, erityisesti tyyninä, pilvisinä päivinä."},
+      {label:"Talvi", text:"Jään alla kuha viihtyy syvänteissä ja liikkuu hitaasti. Pilkki tai pieni tuulastin lähellä pohjaa, hidas nostoliike ja pitkät tauot - parhaat hetket ovat usein hämärän tunnit ja ilmanpaineen ollessa vakaa."}
+    ],
+    ahven: [
+      {label:"Kevät", text:"Kutuaikaan huhti-toukokuussa ahvenparvet kokoontuvat matalille, kasvillisuuden reunustamille alueille. Pieni jigi tai lippa toimii hyvin lämpimimpään aikaan päivästä, kun aurinko on lämmittänyt matalan veden."},
+      {label:"Kesä", text:"Kesällä ahven syö usein koko päivän, mutta parhaat piikit ovat aamulla ja illalla. Kevyt tuuli ja pieni pintakuohu auttavat peittämään vieheen liikkeen - mikrojigi, pieni lusikka tai dropshot toimivat laitureilla ja kivikoilla."},
+      {label:"Syksy", text:"Syksyllä ahven parveutuu suuremmiksi joukoiksi ja seuraa pikkukalaparvia avoimilla penkoilla. Tuulinen, pilvinen päivä tuo kalan lähemmäs pintaa - kokeile pieniä vaappuja ja lusikoita."},
+      {label:"Talvi", text:"Jään alla ahven liikkuu hitaammin mutta on usein hyvin tavoitettavissa syvänteiden reunoilta. Pieni pilkki tai vaappupilkki, hidas ja tasainen liike, toimii parhaiten aamu- ja iltahämärässä."}
+    ],
+    taimen: [
+      {label:"Kevät", text:"Keväällä kylmä, hapekas vesi houkuttelee taimenta virran saumoihin ja niskoille. Kapea lusikka tai vaappu, uitettuna virran mukana, toimii parhaiten pilvisellä ja viileällä säällä."},
+      {label:"Kesä", text:"Lämpimällä kesäsäällä taimen hakeutuu viileämpään, hapekkaaseen veteen - virtapaikkoihin, syvempiin suvantoihin tai ulkosaariston tuulen puolelle. Parhaat hetket ovat aamu- ja iltahämärä."},
+      {label:"Syksy", text:"Syksyllä nousukalat liikkuvat jokisuille ja virtapaikkoihin. Pilvinen, tuulinen sää ja hämärän tunnit ovat parhaita - perho, pieni jigi tai kapea lusikka virran mukaan uitettuna."},
+      {label:"Talvi", text:"Talvella taimen liikkuu hitaasti kylmässä vedessä, mutta avovesialueilla ja sulissa virtapaikoissa kalastus voi onnistua leudompina päivinä. Muista aina tarkistaa paikalliset rauhoitukset ja alamitat."}
+    ],
+    sarki: [
+      {label:"Kevät", text:"Kutuaikaan touko-kesäkuussa särkikalat kokoontuvat matalille, kasvillisuuden reunustamille alueille syömään. Pieni koukku, mato tai toukka koho-ongella toimii hyvin lämpimänä, tyynenä päivänä."},
+      {label:"Kesä", text:"Lämpimänä kesänä särkikalat viihtyvät lämpimissä lahdissa ja laitureilla koko päivän. Ruokinta kokoaa parven paikalleen - maissi, leipä tai toukka toimivat syöttinä tyynellä säällä."},
+      {label:"Syksy", text:"Veden viiletessä särkikalat vetäytyvät syvemmälle, mutta lämpimät, aurinkoiset päivät voivat tuoda parven takaisin matalaan."},
+      {label:"Talvi", text:"Talvella särkikalat liikkuvat hitaasti ja syövät vähän. Pilkkikalastuksessa pieni koukku ja hidas, herkkä vapa auttavat havaitsemaan aristelevat otit."}
+    ],
+    karppi: [
+      {label:"Kevät", text:"Veden lämmetessä keväällä karppi aktivoituu ja hakeutuu matalille, aurinkoisille alueille. Esisyöttäminen ja kärsivällisyys kannattavat, kun vesi ylittää noin 12 astetta."},
+      {label:"Kesä", text:"Lämmin kesävesi on karpin parasta aikaa - aamuyö ja ilta ovat tehokkaimpia hetkiä. Boili tai maissi hiuskoukussa syöttöpaikalla, joka on esisyötetty säännöllisesti."},
+      {label:"Syksy", text:"Syksyllä karppi syö voimakkaasti valmistautuessaan talveen, ja ilmanpaineen lasku ennen ukkosta tai sadetta aktivoi kalaa entisestään."},
+      {label:"Talvi", text:"Talvella karpin aineenvaihdunta hidastuu merkittävästi ja se syö harvoin. Kalastus onnistuu parhaiten leudoimpina päivinä syvemmissä talvehtimiskuopissa."}
+    ],
+    monni: [
+      {label:"Kevät", text:"Alkukeväällä monni on vielä hidas kylmässä vedessä, mutta veden lämpenemisen myötä toukokuun lopulla se alkaa aktivoitua syvänteiden ja jokien mutkien tuntumassa."},
+      {label:"Kesä", text:"Lämpimät kesäyöt ovat monnin parasta aikaa. Ukkosen jälkeinen ilmanpaineen muutos ja lämmin, tyyni yö saavat ison monnin liikkeelle - iso luonnonsyötti tai clonking-tekniikka toimii."},
+      {label:"Syksy", text:"Syksyllä monni syö vielä aktiivisesti lämpimien päivien iltoina ennen kuin siirtyy talvehtimispaikkoihin syvänteisiin."},
+      {label:"Talvi", text:"Talvella monni on lähes liikkumaton syvänteiden pohjalla ja kalastus on harvoin kannattavaa - paras aika palaa jälleen kevään lämpenemisen myötä."}
+    ],
+    mustebassi: [
+      {label:"Kevät", text:"Veden lämpenemisen myötä keväällä mustebassi hakeutuu matalille kutupaikoille kasvillisuuden reunoille. Hidas soft plastic -syötti texas-riggauksella toimii hyvin."},
+      {label:"Kesä", text:"Lämpimällä kesäsäällä mustebassi viihtyy varjoisilla pudotuksilla ja upotettujen puiden luona. Aamu- ja iltahämärä sekä pilvinen sää tuovat kalan lähemmäs pintaa - pintaviehe toimii tyynellä säällä."},
+      {label:"Syksy", text:"Syksyllä mustebassi seuraa pikkukalaparvia avoimemmilla alueilla ennen siirtymistä talvehtimispaikkoihin syvemmälle."},
+      {label:"Talvi", text:"Talvella mustebassi on hitaampi ja pysyttelee syvemmässä vedessä - hidas, pieni viehe lähellä pohjaa toimii parhaiten leudompina päivinä."}
+    ],
+    barbo: [
+      {label:"Kevät", text:"Kevään tulviin ja kohonneeseen virtaamaan toutain reagoi aktiivisesti - mato tai maissi pohjasiimalla virran hidastumakohdissa toimii hyvin."},
+      {label:"Kesä", text:"Lämpimällä kesäsäällä toutain syö parhaiten hämärän aikaan ja sateen jälkeen, kun virtaama kasvaa hetkellisesti."},
+      {label:"Syksy", text:"Syksyllä toutain kerääntyy syvempiin virran hidastumakohtiin ja patojen alavesiin ennen talvea."},
+      {label:"Talvi", text:"Talvella toutain on hidas ja viettää ajan syvimmissä virran suvantopaikoissa - kalastus on harvinaisempaa mutta mahdollista leudompina jaksoina."}
+    ]
+  },
+  en: {
+    hauki: [
+      {label:"Spring", text:"After ice-out, pike moves onto shallow, sun-warmed bays to spawn in April-May. The water is still cold, so work lures slowly - a small wobbler or a shallow-running jerkbait works best on calm, sunny days when the shallows warm up fastest."},
+      {label:"Summer", text:"In hot weather pike retreats to cooler water, weed cover, or the edges of deeper drop-offs. The best windows are dawn and dusk, when a topwater lure or a shallow-running shad works well. Windy, overcast summer days keep pike active even at midday."},
+      {label:"Autumn", text:"As the water cools in September-October, pike feeds aggressively ahead of winter. Large spoons, wobblers, and spinnerbaits are effective, especially on windy days that mix the water and bring oxygen and baitfish to the shoreline."},
+      {label:"Winter", text:"Under the ice, pike moves more slowly but often stays active near weed gaps and the edges of deep basins, especially at dawn and dusk. For ice fishing, a larger, slow-moving lure or live bait works best, particularly when a clear cold spell gives way to milder weather."}
+    ],
+    kuha: [
+      {label:"Spring", text:"During the May-June spawning period, zander moves into shallower, warmer bays. Fishing works best at dusk and at night with a small jig or wobbler, since cold spring water slows the fish's metabolism during the day."},
+      {label:"Summer", text:"Warm summer water activates zander, but bright daylight pushes it into deep water or turbid areas. The best chances come on cloudy days, at dusk, and at night - a jig worked near the bottom or a zander-style trolling lure."},
+      {label:"Autumn", text:"In autumn, zander gathers along deep edges and hard-bottomed ridges, following baitfish. Vertical jigging from a boat and slow-worked soft plastics do well, especially on calm, overcast days."},
+      {label:"Winter", text:"Under the ice, zander stays in deep basins and moves slowly. A jig or small lure fished close to the bottom with a slow lift and long pauses works best, often during twilight hours and when air pressure is stable."}
+    ],
+    ahven: [
+      {label:"Spring", text:"During the April-May spawning period, perch schools gather in shallow areas lined with vegetation. A small jig or spinner works well during the warmest part of the day, once the sun has warmed the shallows."},
+      {label:"Summer", text:"In summer, perch often feeds all day, but the strongest bites come in the morning and evening. A light breeze and a bit of surface chop help mask lure movement - micro jigs, small spoons, and drop-shot rigs work well around docks and rocky shoals."},
+      {label:"Autumn", text:"In autumn, perch forms larger schools and follows baitfish shoals in open areas. A windy, overcast day brings the fish closer to the surface - try small wobblers and spoons."},
+      {label:"Winter", text:"Under the ice, perch moves more slowly but is often easy to find along the edges of deep basins. A small ice jig or wobbler with a slow, steady motion works best at dawn and dusk."}
+    ],
+    taimen: [
+      {label:"Spring", text:"In spring, cold, oxygen-rich water draws trout to current seams and the heads of rapids. A slender spoon or wobbler worked with the current works best on overcast, cool days."},
+      {label:"Summer", text:"In hot summer weather, trout seeks cooler, oxygenated water - current areas, deeper pools, or the windward side of the outer archipelago. The best windows are dawn and dusk."},
+      {label:"Autumn", text:"In autumn, migrating fish move into river mouths and current areas. Overcast, windy weather and twilight hours are best - a fly, small jig, or slender spoon fished with the current."},
+      {label:"Winter", text:"In winter, trout moves slowly in cold water, but open-water areas and unfrozen current spots can still produce fish on milder days. Always check local closed seasons and minimum size limits."}
+    ],
+    sarki: [
+      {label:"Spring", text:"During the May-June spawning period, roach schools gather in shallow, weed-lined areas to feed. A small hook with a worm or maggot on a float rig works well on warm, calm days."},
+      {label:"Summer", text:"In warm summer weather, roach favor warm bays and docks throughout the day. Groundbaiting keeps the school in place - sweetcorn, bread, or maggot work well as bait in calm conditions."},
+      {label:"Autumn", text:"As the water cools, roach retreat to deeper water, though warm, sunny days can still draw the school back into the shallows."},
+      {label:"Winter", text:"In winter, roach moves slowly and feeds sparingly. Ice fishing calls for a small hook and a sensitive, slow presentation to detect cautious bites."}
+    ],
+    karppi: [
+      {label:"Spring", text:"As the water warms in spring, carp becomes active and moves into shallow, sunlit areas. Pre-baiting and patience pay off once the water passes roughly 12°C."},
+      {label:"Summer", text:"Warm summer water is carp's prime season - early morning and evening are the most productive windows. A boilie or sweetcorn on a hair rig at a regularly pre-baited swim works well."},
+      {label:"Autumn", text:"In autumn, carp feeds heavily ahead of winter, and a pressure drop before a thunderstorm or rain often triggers extra activity."},
+      {label:"Winter", text:"In winter, carp's metabolism slows drastically and it feeds rarely. Fishing works best on the mildest days in deeper wintering holes."}
+    ],
+    monni: [
+      {label:"Spring", text:"In early spring, catfish is still sluggish in cold water, but as the water warms toward the end of May it starts becoming active near deep holes and river bends."},
+      {label:"Summer", text:"Warm summer nights are catfish's prime time. A pressure change after a thunderstorm combined with a warm, calm night brings big catfish on the move - a large natural bait or the clonking technique works well."},
+      {label:"Autumn", text:"In autumn, catfish still feeds actively on warm evenings before moving to deep wintering spots."},
+      {label:"Winter", text:"In winter, catfish is nearly motionless on the bottom of deep holes and fishing is rarely worthwhile - the best time returns with spring warming."}
+    ],
+    mustebassi: [
+      {label:"Spring", text:"As the water warms in spring, black bass moves onto shallow spawning areas along weed edges. A slow soft-plastic bait on a Texas rig works well."},
+      {label:"Summer", text:"In warm summer weather, black bass favors shaded drop-offs and submerged timber. Dawn, dusk, and cloudy weather bring fish closer to the surface - a topwater lure works well in calm conditions."},
+      {label:"Autumn", text:"In autumn, black bass follows baitfish shoals into more open areas before moving to deeper wintering spots."},
+      {label:"Winter", text:"In winter, black bass slows down and stays in deeper water - a slow, small lure fished near the bottom works best on milder days."}
+    ],
+    barbo: [
+      {label:"Spring", text:"Barbel responds actively to spring floods and rising flow - a worm or sweetcorn on a bottom rig in slower current seams works well."},
+      {label:"Summer", text:"In warm summer weather, barbel feeds best at dusk and after rain, when the flow briefly picks up."},
+      {label:"Autumn", text:"In autumn, barbel gathers in deeper, slower current areas and tailwaters below dams ahead of winter."},
+      {label:"Winter", text:"In winter, barbel is sluggish and spends its time in the deepest, slowest current pools - fishing is less common but possible during milder spells."}
+    ]
+  }
+};
+
 const TIPS_TRANS = {
   fi: [
     {tag:"Pakkaa mukaan", title:"Peruspaketti rannalle", desc:"Monipuolinen rasia syntyy muutamasta lusikasta, vaapusta, lipasta, jigistä, perukkeista, pihdeistä ja mittanauhasta."},
@@ -2402,6 +2564,7 @@ let currentLang = storage.getItem('user_language') || 'fi';
 let SPECIES = SPECIES_TRANS[currentLang];
 let LURES = LURES_TRANS[currentLang];
 let FISH_INFO = FISH_INFO_TRANS[currentLang];
+let FISH_SEASONS = FISH_SEASONS_TRANS[currentLang];
 let lastInfo = null;
 let lastWeatherData = null;
 let lastDailySummaries = null;
@@ -2544,6 +2707,7 @@ function setLanguage(lang, saveToLocalStorage = true) {
   SPECIES = getSpeciesForCountry(lang, detectedCountryCode);
   LURES = LURES_TRANS[lang];
   FISH_INFO = FISH_INFO_TRANS[lang];
+  FISH_SEASONS = FISH_SEASONS_TRANS[lang];
   
   // Re-initialize select elements
   const currentFishId = spSel.value;
@@ -2630,6 +2794,10 @@ function setLanguage(lang, saveToLocalStorage = true) {
   if (realLureDesc) realLureDesc.textContent = trans.real_lure_desc;
   const waterVariantsTitle = document.getElementById("waterVariantsTitle");
   if (waterVariantsTitle) waterVariantsTitle.textContent = trans.water_variants_title;
+  const fishSeasonsTitle = document.getElementById("fishSeasonsTitle");
+  if (fishSeasonsTitle) fishSeasonsTitle.textContent = trans.fish_seasons_title;
+  const fishSeasonsDesc = document.getElementById("fishSeasonsDesc");
+  if (fishSeasonsDesc) fishSeasonsDesc.textContent = trans.fish_seasons_desc;
   const waterVariantsDesc = document.getElementById("waterVariantsDesc");
   if (waterVariantsDesc) waterVariantsDesc.textContent = trans.water_variants_desc;
   const lureBackBtn = document.getElementById("lureBackBtn");
@@ -3693,6 +3861,13 @@ function renderFishInfo(id=spSel.value){
   document.getElementById("fishVisual").innerHTML=`<img src="${f.image}" alt="${f.title}" loading="lazy" onerror="this.parentElement.innerHTML=fishSvg('${f.color}')">`;
   renderSpeciesButtons();
   renderLureSpeciesButtons();
+  renderFishSeasons(id);
+}
+function renderFishSeasons(id=spSel.value){
+  const seasons = (FISH_SEASONS && FISH_SEASONS[id]) || (FISH_SEASONS && FISH_SEASONS.ahven) || [];
+  const grid = document.getElementById("fishSeasonsGrid");
+  if (!grid) return;
+  grid.innerHTML = seasons.map(s=>`<article class="tip-card"><span class="tag">${s.label}</span><p>${s.text}</p></article>`).join("");
 }
 function computeScoreFromValues(vals,species,loc){
   const isSeaSummer=isSeaLocation(loc)&&isSummerMonth(new Date());
