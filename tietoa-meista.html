@@ -2,6 +2,22 @@
 <html lang="fi">
 <head>
 <meta charset="UTF-8">
+<script>
+(function () {
+  try {
+    var stored = null;
+    try { stored = localStorage.getItem('color_theme'); } catch (e) {}
+    if (!stored) {
+      var m = document.cookie.match(/(?:^|; )color_theme=([^;]*)/);
+      stored = m ? decodeURIComponent(m[1]) : null;
+    }
+    var theme = (stored === 'dark' || stored === 'light')
+      ? stored
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tietoa meistä - FastFishing</title>
 <meta name="description" content="Kuka FastFishingin takana on ja miksi sivusto tehtiin - lyhyt esittely harrastusprojektin taustoista.">
@@ -28,6 +44,36 @@
   --shadow-small: 0 8px 24px rgba(23, 52, 47, .09);
   --radius: 24px;
 }
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #eef3f0;
+  --ink-soft: #a8c2b9;
+  --lake: #59a3a7;
+  --lake-deep: #8dd0d2;
+  --mist: #17302c;
+  --paper: #0d1a16;
+  --paper-bright: #142522;
+  --line: #29423b;
+  --orange: #e2884a;
+  --shadow: 0 18px 50px rgba(0, 0, 0, .45);
+  --shadow-small: 0 8px 24px rgba(0, 0, 0, .35);
+}
+html[data-theme="light"], html:not([data-theme]) { color-scheme: light; }
+html[data-theme="dark"] .topbar { background: rgba(13, 26, 22, .88); }
+html[data-theme="dark"] .brand-mark { background: #17342f; }
+html[data-theme="dark"] .card { background: rgba(20, 37, 34, .84); }
+.theme-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; margin-left: 14px; border: 1px solid var(--line);
+  border-radius: 50%; color: var(--ink-soft); background: rgba(255,253,247,.5);
+  cursor: pointer; transition: color .2s, background .2s, border-color .2s;
+}
+.theme-toggle:hover { color: var(--ink); border-color: var(--lake); }
+.theme-toggle svg { width: 15px; height: 15px; display: block; }
+.theme-toggle .icon-sun { display: none; }
+html[data-theme="dark"] .theme-toggle { background: rgba(20,37,34,.6); }
+html[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
@@ -109,8 +155,33 @@ footer { margin-top: 60px; padding: 36px 0 44px; border-top: 1px solid var(--lin
       <span>FastFishing</span>
     </a>
     <a class="back-link" href="index.html">← Takaisin kelimittariin</a>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Vaihda tumma/vaalea tila" title="Tumma/vaalea tila">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+    </button>
   </div>
 </div>
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('themeToggle');
+  function setStored(theme) {
+    try { localStorage.setItem('color_theme', theme); } catch (e) {}
+    try {
+      var d = new Date(); d.setTime(d.getTime() + 365*24*60*60*1000);
+      document.cookie = 'color_theme=' + encodeURIComponent(theme) + '; expires=' + d.toUTCString() + '; path=/; SameSite=Lax';
+    } catch (e) {}
+  }
+  if (btn) {
+    btn.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      var next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      setStored(next);
+    });
+  }
+})();
+</script>
 
 <main class="shell">
   <div class="eyebrow">Kuka tämän tekee</div>

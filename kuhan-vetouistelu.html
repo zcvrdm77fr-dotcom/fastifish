@@ -2,6 +2,23 @@
 <html lang="fi">
 <head>
 <meta charset="UTF-8">
+<script>
+// Asetetaan tumma/vaalea tila heti ennen ensimmäistä piirtoa, jotta sivu ei välähdä väärällä teemalla.
+(function () {
+  try {
+    var stored = null;
+    try { stored = localStorage.getItem('color_theme'); } catch (e) {}
+    if (!stored) {
+      var m = document.cookie.match(/(?:^|; )color_theme=([^;]*)/);
+      stored = m ? decodeURIComponent(m[1]) : null;
+    }
+    var theme = (stored === 'dark' || stored === 'light')
+      ? stored
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Kuhan vetouistelu – Kattava opas | FastFishing</title>
@@ -92,6 +109,22 @@ text-align:center;
 color:#666;
 }
 
+
+html[data-theme="dark"] body{background:#0d1a16;color:#eef3f0;}
+html[data-theme="dark"] header{background:#0a2224;}
+html[data-theme="dark"] h2{color:#7fd6d6;}
+html[data-theme="dark"] article{background:#142522;box-shadow:0 10px 30px rgba(0,0,0,.4);}
+html[data-theme="dark"] .tip{background:#132a26;border-left-color:#59a3a7;}
+html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom:1px solid #29423b;}
+html[data-theme="dark"] footer{color:#9db3ab;}
+
+.theme-toggle-fab{position:fixed;top:16px;right:16px;z-index:9999;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(23,52,47,.55);backdrop-filter:blur(8px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s;}
+.theme-toggle-fab:hover{transform:translateY(-2px);}
+.theme-toggle-fab svg{width:18px;height:18px;display:block;}
+.theme-toggle-fab .icon-sun{display:none;}
+html[data-theme="dark"] .theme-toggle-fab{background:rgba(20,37,34,.85);border-color:rgba(255,255,255,.18);}
+html[data-theme="dark"] .theme-toggle-fab .icon-sun{display:block;}
+html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 </style>
 
 <!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
@@ -128,6 +161,10 @@ color:#666;
 </head>
 
 <body>
+<button class="theme-toggle-fab" id="themeToggleFab" type="button" aria-label="Vaihda tumma/vaalea tila" title="Tumma/vaalea tila">
+<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+</button>
 
 <header>
 
@@ -638,6 +675,27 @@ Onnistuneita kalastushetkiä ja kireitä siimoja!
     setConsentCookie('min');
     if (banner) banner.style.display = 'none';
   });
+})();
+</script>
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('themeToggleFab');
+  function setStored(theme) {
+    try { localStorage.setItem('color_theme', theme); } catch (e) {}
+    try {
+      var d = new Date(); d.setTime(d.getTime() + 365*24*60*60*1000);
+      document.cookie = 'color_theme=' + encodeURIComponent(theme) + '; expires=' + d.toUTCString() + '; path=/; SameSite=Lax';
+    } catch (e) {}
+  }
+  if (btn) {
+    btn.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      var next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      setStored(next);
+    });
+  }
 })();
 </script>
 </body>
