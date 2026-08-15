@@ -470,19 +470,85 @@ main { padding-bottom: 70px; }
   position: absolute;
   top: 0; left: 0; right: 0;
   z-index: 950;
-  padding: 8px 14px;
   background: rgba(169, 70, 53, .94);
   color: #fff;
-  font-size: .74rem;
-  line-height: 1.4;
 }
-.sea-chart-overlay-disclaimer strong { display: block; font-size: .78rem; }
+.sea-disclaimer-toggle {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  padding: 6px 14px;
+  font-size: .72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sea-disclaimer-chevron { float: right; transition: transform .2s; }
+.sea-chart-overlay-disclaimer.expanded .sea-disclaimer-chevron { transform: rotate(180deg); }
+.sea-disclaimer-detail { padding: 0 14px 10px; font-size: .74rem; line-height: 1.4; }
+.sea-disclaimer-dismiss { display: block; margin-top: 8px; border: 1px solid rgba(255,255,255,.6); background: transparent; color: #fff; padding: 5px 10px; border-radius: 999px; font-size: .7rem; font-weight: 700; cursor: pointer; }
+.sea-disclaimer-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 950;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(169, 70, 53, .94);
+  color: #fff;
+  font-size: .95rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-small);
+}
+.sea-chart-activate-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 980;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 26, 22, .45);
+}
+.sea-chart-activate-overlay[hidden] { display: none; }
+.sea-chart-activate-btn { min-height: 52px; padding: 0 22px; font-size: 1rem; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.sea-chart-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 253, 247, .95);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: .8rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-small);
+}
+html[data-theme="dark"] .sea-chart-close-btn { background: rgba(20, 37, 34, .95); }
+.sea-chart-full-wrap.sea-chart-maximized {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100svh !important;
+  max-width: none !important;
+  margin: 0 !important;
+  z-index: 20000;
+  border-radius: 0 !important;
+}
 .sea-chart-hud { display: flex; flex-wrap: wrap; gap: 8px; }
 .sea-chart-hud .condition-chip { min-width: 84px; padding: 6px 10px; }
 .sea-chart-hud span:last-child { font-family: 'Fjalla One', sans-serif; font-size: 1rem; color: var(--ink); }
 .sea-chart-toolbar {
   position: absolute;
-  top: 48px;
+  top: 36px;
   left: 8px;
   right: 8px;
   z-index: 900;
@@ -1602,9 +1668,19 @@ body.device-phone .columns {
     <div class="nearby-map-wrap sea-chart-full-wrap" id="seaChartWrap">
       <div id="seaChartMap"></div>
 
-      <div class="sea-chart-overlay-disclaimer">
-        <strong>Ei virallinen navigointikartta.</strong> Avointa dataa (OpenSeaMap, Väylävirasto, Traficom) suunnitteluun - reitit ovat tietokoneen laskemia ehdotuksia, ei navigointiohjeita. Tarkista aina virallisista merikartoista ennen lähtöä.
+      <div class="sea-chart-activate-overlay" id="seaChartActivateOverlay">
+        <button type="button" class="btn primary sea-chart-activate-btn" id="seaChartActivateBtn">🔍 Avaa kartta suureksi</button>
       </div>
+      <button type="button" class="sea-chart-close-btn" id="seaChartCloseBtn" hidden>✕ Sulje</button>
+
+      <div class="sea-chart-overlay-disclaimer" id="seaChartDisclaimer">
+        <button type="button" class="sea-disclaimer-toggle" id="seaDisclaimerToggle">⚠️ Ei virallinen navigointikartta <span class="sea-disclaimer-chevron" id="seaDisclaimerChevron">▾</span></button>
+        <div class="sea-disclaimer-detail" id="seaDisclaimerDetail" hidden>
+          Avointa dataa (OpenSeaMap, Väylävirasto, Traficom) suunnitteluun - reitit ovat tietokoneen laskemia ehdotuksia, ei navigointiohjeita. Tarkista aina virallisista merikartoista ennen lähtöä.
+          <button type="button" id="seaDisclaimerDismissBtn" class="sea-disclaimer-dismiss">Älä näytä enää tätä huomautusta</button>
+        </div>
+      </div>
+      <button type="button" class="sea-disclaimer-badge" id="seaDisclaimerBadge" hidden title="Huomio: ei virallinen navigointikartta - näytä uudelleen">⚠️</button>
 
       <div class="sea-chart-toolbar" id="seaChartToolbar">
         <div class="sea-route-panel-buttons">
@@ -1631,6 +1707,7 @@ body.device-phone .columns {
           <div class="condition-chip"><span class="cc-label">Nopeus</span><span id="seaSpeedValue">–</span></div>
           <div class="condition-chip"><span class="cc-label">Tuuli</span><span id="seaWindValue">–</span></div>
           <div class="condition-chip"><span class="cc-label">Lämpötila</span><span id="seaTempValue">–</span></div>
+          <div class="condition-chip"><span class="cc-label">Aallokko</span><span id="seaWaveValue">–</span></div>
         </div>
         <p class="sea-chart-zoom-hint" id="seaChartZoomHint" hidden>Zoomaa lähemmäs nähdäksesi viralliset väylätiedot.</p>
       </div>
@@ -3460,8 +3537,14 @@ function renderSeaChart(){
     return;
   }
 
-  seaChartMap=L.map(mapEl,{scrollWheelZoom:false,zoomControl:false}).setView([63.0,26.0],5);
-  L.control.zoom({position:'bottomright'}).addTo(seaChartMap);
+  // Zoomaus hiiren rullalla ja kahden sormen nipistyksellä (touchZoom on Leafletissä oletuksena
+  // päällä) - ei erillisiä +/- -painikkeita, käyttäjän toiveen mukaisesti. Kartta luodaan
+  // aluksi ei-vuorovaikutteisena (dragging/zoom pois päältä) - käyttäjän pitää ensin avata
+  // kartta suureksi "Avaa kartta suureksi" -painikkeesta ennen kuin sitä voi käyttää.
+  seaChartMap=L.map(mapEl,{
+    scrollWheelZoom:false, zoomControl:false, dragging:false,
+    touchZoom:false, doubleClickZoom:false, boxZoom:false, keyboard:false
+  }).setView([63.0,26.0],5);
   // Merikarttamainen ulkoasu (sininen vesi, vaimennettu maa) CSS-suotimella tavallisten
   // OSM-laattojen päällä - ei uutta ulkoista karttapalvelua/lisenssiä.
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
@@ -3499,6 +3582,49 @@ function renderSeaChart(){
   }, true);
 
   setTimeout(()=>{ if (seaChartMap) seaChartMap.invalidateSize(); },200);
+}
+
+function setSeaChartInteractive(enabled){
+  if (!seaChartMap) return;
+  ['dragging','scrollWheelZoom','touchZoom','doubleClickZoom','boxZoom'].forEach(name => {
+    const handler = seaChartMap[name];
+    if (!handler) return;
+    if (enabled) handler.enable(); else handler.disable();
+  });
+}
+let seaChartWrapOriginalParent=null, seaChartWrapOriginalNextSibling=null;
+function enterSeaChartFullscreen(){
+  const wrap=document.getElementById("seaChartWrap");
+  const overlay=document.getElementById("seaChartActivateOverlay");
+  const closeBtn=document.getElementById("seaChartCloseBtn");
+  if (!wrap) return;
+  // .page-elementeillä on sisääntuloanimaatio (transform), joka jää computed-tyyliin animaation
+  // päätyttyäkin (matrix(1,0,0,1,0,0)) - CSS-spesifikaation mukaan mikä tahansa transform-arvo,
+  // vaikka identiteettimatriisi, luo position:fixed-lapsille oman containing blockin, jolloin
+  // "kiinteä" kartta jäisikin kiinni sivun vieritykseen eikä peittäisi koko näyttöä. Siirretään
+  // siksi kartta suoraan bodyn lapseksi täysinäytön ajaksi ja palautetaan paikalleen suljettaessa.
+  seaChartWrapOriginalParent = wrap.parentElement;
+  seaChartWrapOriginalNextSibling = wrap.nextSibling;
+  document.body.appendChild(wrap);
+  wrap.classList.add("sea-chart-maximized");
+  if (overlay) overlay.hidden = true;
+  if (closeBtn) closeBtn.hidden = false;
+  setSeaChartInteractive(true);
+  setTimeout(()=>{ if (seaChartMap) seaChartMap.invalidateSize(); },50);
+}
+function exitSeaChartFullscreen(){
+  const wrap=document.getElementById("seaChartWrap");
+  const overlay=document.getElementById("seaChartActivateOverlay");
+  const closeBtn=document.getElementById("seaChartCloseBtn");
+  if (!wrap) return;
+  wrap.classList.remove("sea-chart-maximized");
+  if (overlay) overlay.hidden = false;
+  if (closeBtn) closeBtn.hidden = true;
+  setSeaChartInteractive(false);
+  if (seaChartWrapOriginalParent) {
+    seaChartWrapOriginalParent.insertBefore(wrap, seaChartWrapOriginalNextSibling);
+  }
+  setTimeout(()=>{ if (seaChartMap) seaChartMap.invalidateSize(); },50);
 }
 function toggleSeaChartSeamarks(show){
   if (!seaChartMap || !seaChartSeamarkLayer) return;
@@ -3542,10 +3668,23 @@ function startSeaSpeedWatch(){
 }
 
 let seaWeatherFetchToken=0;
+async function fetchMarineWeather(loc){
+  const url=`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}&hourly=wave_height,wave_direction&timezone=auto`;
+  const controller=new AbortController();
+  const timeoutId=setTimeout(()=>controller.abort(),6500);
+  try{
+    const res=await fetch(url,{signal:controller.signal});
+    clearTimeout(timeoutId);
+    if(!res.ok) throw new Error("Aallokkotietojen haku epäonnistui");
+    return await res.json();
+  }catch(err){clearTimeout(timeoutId);throw err}
+}
+
 async function updateSeaChartWeather(){
   if (!seaChartMap) return;
   const windEl=document.getElementById("seaWindValue");
   const tempEl=document.getElementById("seaTempValue");
+  const waveEl=document.getElementById("seaWaveValue");
   if (!windEl || !tempEl) return;
   const center=seaChartMap.getCenter();
   const token=++seaWeatherFetchToken;
@@ -3553,10 +3692,22 @@ async function updateSeaChartWeather(){
     const data = await fetchWeather({ lat: center.lat, lon: center.lng });
     if (token !== seaWeatherFetchToken) return;
     const idx = nearestHourIndex(data.hourly.time);
-    windEl.textContent = `${data.hourly.wind_speed_10m[idx].toFixed(1)} m/s`;
+    const windDir = degToCompass(data.hourly.wind_direction_10m[idx]);
+    windEl.textContent = `${data.hourly.wind_speed_10m[idx].toFixed(1)} m/s ${windDir}`;
     tempEl.textContent = `${data.hourly.temperature_2m[idx].toFixed(0)}°C`;
   } catch (e) {
     // Sään haku epäonnistui - HUD näyttää vain "-", kartta toimii silti.
+  }
+  if (waveEl) {
+    try {
+      const marine = await fetchMarineWeather({ lat: center.lat, lon: center.lng });
+      if (token !== seaWeatherFetchToken) return;
+      const idx2 = nearestHourIndex(marine.hourly.time);
+      const h = marine.hourly.wave_height[idx2];
+      waveEl.textContent = (typeof h === 'number') ? `${h.toFixed(1)} m` : 'Ei tietoa';
+    } catch (e) {
+      waveEl.textContent = 'Ei tietoa';
+    }
   }
 }
 
@@ -3755,52 +3906,65 @@ function clearSeaRoute(){
 
 async function computeAndDrawRoute(){
   const statusEl=document.getElementById("seaRouteStatus");
-  const infoEl=document.getElementById("seaRouteInfo");
   if (!seaRoute.startLatLng || !seaRoute.endLatLng) return;
   if (statusEl) statusEl.textContent = "Haetaan väylätietoja ja lasketaan reittiä...";
 
-  const pad=0.12;
+  const straightDistanceM = haversineMeters(seaRoute.startLatLng, seaRoute.endLatLng);
+  const pad = Math.min(0.6, Math.max(0.15, straightDistanceM / 90000));
   const lats=[seaRoute.startLatLng.lat, seaRoute.endLatLng.lat];
   const lngs=[seaRoute.startLatLng.lng, seaRoute.endLatLng.lng];
   const bbox=[Math.min.apply(null,lngs)-pad, Math.min.apply(null,lats)-pad, Math.max.apply(null,lngs)+pad, Math.max.apply(null,lats)+pad];
 
-  let graphResult;
+  let graphResult, fetchFailed=false;
   try {
     graphResult = await buildRouteGraph(bbox);
   } catch(e) {
-    if (statusEl) statusEl.textContent = "Väylätietojen haku epäonnistui. Yritä uudelleen.";
-    return;
-  }
-  const { graph, nodeLatLng } = graphResult;
-  const MAX_SNAP_M = 800;
-  const startNode = findNearestRouteNode(nodeLatLng, seaRoute.startLatLng, MAX_SNAP_M);
-  const endNode = findNearestRouteNode(nodeLatLng, seaRoute.endLatLng, MAX_SNAP_M);
-
-  if (!startNode || !endNode) {
-    if (statusEl) statusEl.textContent = "Lähtöpaikka tai määränpää ei ole tarpeeksi lähellä merkittyä väylää - reittiä ei voida ehdottaa turvallisesti tälle kohdalle.";
-    if (infoEl) infoEl.hidden = true;
-    return;
+    fetchFailed = true;
   }
 
-  const result = dijkstraRoute(graph, startNode.key, endNode.key);
-  if (!result) {
-    if (statusEl) statusEl.textContent = "Näiden pisteiden välillä ei löytynyt yhtenäistä merkittyä väylää - virallinen väylädata ei kata kaikkia mahdollisia reittejä.";
-    if (infoEl) infoEl.hidden = true;
-    return;
+  const MAX_SNAP_M = 1500;
+  let result=null, startNode=null, endNode=null;
+  if (graphResult) {
+    startNode = findNearestRouteNode(graphResult.nodeLatLng, seaRoute.startLatLng, MAX_SNAP_M);
+    endNode = findNearestRouteNode(graphResult.nodeLatLng, seaRoute.endLatLng, MAX_SNAP_M);
+    if (startNode && endNode) {
+      result = dijkstraRoute(graphResult.graph, startNode.key, endNode.key);
+    }
   }
-
-  const allLatLngs = [];
-  result.edges.forEach(e => { e.coords.forEach(c => allLatLngs.push(c)); });
 
   if (seaRoute.routeLayer) seaChartMap.removeLayer(seaRoute.routeLayer);
-  seaRoute.routeLayer = L.polyline(allLatLngs, { color:'#f5c518', weight:5, opacity:.95 }).addTo(seaChartMap);
 
-  const km = (result.totalMeters/1000).toFixed(1);
-  if (statusEl) statusEl.textContent = `Reitti löytyi: ${km} km merkittyjä väyliä pitkin.`;
+  if (result) {
+    const allLatLngs = [];
+    result.edges.forEach(e => { e.coords.forEach(c => allLatLngs.push(c)); });
+    seaRoute.routeLayer = L.polyline(allLatLngs, { color:'#f5c518', weight:5, opacity:.95 }).addTo(seaChartMap);
+    const km = (result.totalMeters/1000).toFixed(1);
+    if (statusEl) statusEl.textContent = `Reitti löytyi: ${km} km merkittyjä väyliä pitkin.`;
+    drawRouteInfo(km, result.edges.length, false);
+    return;
+  }
 
-  if (infoEl) {
-    infoEl.hidden = false;
-    infoEl.innerHTML = `<h4>Nopein reitti merkittyjä väyliä pitkin: ${km} km</h4><ul><li>Kulkee ${result.edges.length} navigointilinjan kautta - pysyy koko matkan virallisesti merkityillä väylillä, ei vapaan veden läpi.</li><li>Suuntatieto (miltä puolelta ohittaa kukin merkki) ei ole vielä saatavilla - tarkista merkkien ohitussuunta virallisista merikartoista ennen lähtöä.</li></ul>`;
+  // Ei yhtenäistä merkittyä väylää pisteiden välillä - piirretään suora "linnuntietä"-yhteys
+  // selvästi eri tyylillä (katkoviiva) eikä koskaan väylä-reittinä. Tämä ei ole reittiehdotus,
+  // vain karkea etäisyys/suuntaviiva - ei huomioi syvyyttä, kareja tai matalikkoja lainkaan.
+  seaRoute.routeLayer = L.polyline([seaRoute.startLatLng, seaRoute.endLatLng], {
+    color:'#8a8f96', weight:3, opacity:.85, dashArray:'8 8'
+  }).addTo(seaChartMap);
+  const straightKm = (straightDistanceM/1000).toFixed(1);
+  if (statusEl) statusEl.textContent = fetchFailed
+    ? "Väylätietojen haku epäonnistui - näytetään vain suora yhteys."
+    : `Ei merkittyä väylää pisteiden välillä - näytetään suora yhteys (${straightKm} km).`;
+  drawRouteInfo(straightKm, 0, true);
+}
+
+function drawRouteInfo(km, segmentCount, isStraightFallback){
+  const infoEl=document.getElementById("seaRouteInfo");
+  if (!infoEl) return;
+  infoEl.hidden = false;
+  if (isStraightFallback) {
+    infoEl.innerHTML = `<h4>Suora yhteys: ${km} km</h4><ul><li><strong>Ei kulje merkittyä väylää pitkin.</strong> Tämä on vain suora linnuntie-etäisyys pisteiden välillä - ei huomioi syvyyttä, kareja, matalikkoja eikä väyliä.</li><li>Käytä vain karkeana etäisyysarviona. Suunnittele oikea reitti virallisista merikartoista.</li></ul>`;
+  } else {
+    infoEl.innerHTML = `<h4>Nopein reitti merkittyjä väyliä pitkin: ${km} km</h4><ul><li>Kulkee ${segmentCount} navigointilinjan kautta - pysyy koko matkan virallisesti merkityillä väylillä, ei vapaan veden läpi.</li><li>Suuntatieto (miltä puolelta ohittaa kukin merkki) ei ole vielä saatavilla - tarkista merkkien ohitussuunta virallisista merikartoista ennen lähtöä.</li></ul>`;
   }
 }
 
@@ -3838,6 +4002,44 @@ function onSeaChartMapClick(latlng){
   if (setStartBtn) setStartBtn.addEventListener("click",()=>armSeaRoutePlacement('start'));
   const setEndBtn=document.getElementById("seaSetEndBtn");
   if (setEndBtn) setEndBtn.addEventListener("click",()=>armSeaRoutePlacement('end'));
+
+  const disclaimerToggle=document.getElementById("seaDisclaimerToggle");
+  if (disclaimerToggle) disclaimerToggle.addEventListener("click",()=>{
+    const wrap=document.getElementById("seaChartDisclaimer");
+    const detail=document.getElementById("seaDisclaimerDetail");
+    const expanded = wrap.classList.toggle("expanded");
+    detail.hidden = !expanded;
+    const toolbar=document.getElementById("seaChartToolbar");
+    if (toolbar) toolbar.style.top = (wrap.offsetHeight + 4) + "px";
+  });
+
+  // Varoituksen voi kutistaa pieneksi merkiksi ("älä näytä enää") mutta ei poistaa kokonaan -
+  // aineiston julkaisija (Väylävirasto/Traficom) toteaa itse ettei data sovellu
+  // navigointikäyttöön, joten jonkin pysyvän merkinnän pitää aina olla näkyvissä.
+  const dismissBtn=document.getElementById("seaDisclaimerDismissBtn");
+  const badge=document.getElementById("seaDisclaimerBadge");
+  const disclaimerWrap=document.getElementById("seaChartDisclaimer");
+  function setDisclaimerDismissed(dismissed){
+    storage.setItem('sea_chart_disclaimer_dismissed', dismissed ? '1' : '0');
+    if (disclaimerWrap) disclaimerWrap.hidden = dismissed;
+    if (badge) badge.hidden = !dismissed;
+    const toolbar=document.getElementById("seaChartToolbar");
+    if (toolbar) toolbar.style.top = dismissed ? "12px" : (disclaimerWrap.offsetHeight + 4) + "px";
+  }
+  if (dismissBtn) dismissBtn.addEventListener("click", () => setDisclaimerDismissed(true));
+  if (badge) badge.addEventListener("click", () => setDisclaimerDismissed(false));
+  if (storage.getItem('sea_chart_disclaimer_dismissed') === '1') setDisclaimerDismissed(true);
+
+  const activateBtn=document.getElementById("seaChartActivateBtn");
+  if (activateBtn) activateBtn.addEventListener("click", enterSeaChartFullscreen);
+  const closeBtn=document.getElementById("seaChartCloseBtn");
+  if (closeBtn) closeBtn.addEventListener("click", exitSeaChartFullscreen);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const wrap=document.getElementById("seaChartWrap");
+      if (wrap && wrap.classList.contains("sea-chart-maximized")) exitSeaChartFullscreen();
+    }
+  });
 })();
 
 function renderNearbySpots(spots, userLat, userLon){
