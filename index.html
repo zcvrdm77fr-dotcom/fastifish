@@ -289,6 +289,7 @@ h1 { max-width: 8ch; margin: 18px 0 20px; font-family: 'Fjalla One', sans-serif;
 .intent-btn:hover { color: var(--ink); }
 .intent-btn.active { color: #fffaf0; background: var(--orange-dark); }
 html[data-theme="dark"] .intent-switch { background: rgba(20, 37, 34, .66); }
+.btn[hidden], .mini-link[hidden] { display: none; }
 .btn, .mini-link {
   display: inline-flex;
   align-items: center;
@@ -438,6 +439,33 @@ main { padding-bottom: 70px; }
 .lure-product-brand { font: 700 .68rem/1 'JetBrains Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--orange-dark); }
 .lure-product-model { font-family: 'Fjalla One', sans-serif; font-size: 1.25rem; margin: 2px 0 2px; }
 .lure-product-type { display: inline-flex; width: fit-content; padding: 4px 10px; border-radius: 999px; background: var(--mist); color: var(--lake-deep); font: 700 .64rem/1 'JetBrains Mono', monospace; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+
+.feed-auth-card { max-width: 420px; }
+.feed-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.feed-field label { font: 700 .72rem/1 'JetBrains Mono', monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); }
+.feed-field input[type="text"], .feed-field input[type="password"], .feed-field textarea {
+  padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-bright);
+  color: var(--ink); font: 500 .95rem/1.4 inherit;
+}
+.feed-field textarea { resize: vertical; min-height: 70px; }
+.feed-field input:focus, .feed-field textarea:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+.feed-form-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.feed-switch-mode { border: 0; background: none; padding: 0; color: var(--lake-deep); font-weight: 700; text-decoration: underline; cursor: pointer; }
+.feed-error { color: var(--danger); font-size: .86rem; margin: 4px 0 0; }
+.feed-hint { color: var(--ink-soft); font-size: .8rem; margin: 6px 0 0; }
+.feed-user-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.feed-user-bar strong { font-family: 'Fjalla One', sans-serif; font-size: 1.1rem; font-weight: 400; }
+.feed-post-preview { width: 100%; max-height: 220px; object-fit: cover; border-radius: 14px; margin-top: 10px; display: none; }
+.feed-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; margin-top: 22px; }
+.feed-post-card { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--paper-bright); display: flex; flex-direction: column; }
+.feed-post-image { width: 100%; aspect-ratio: 4/3; object-fit: cover; background: var(--mist); display: block; }
+.feed-post-body { padding: 14px 16px 16px; }
+.feed-post-user { font-weight: 700; color: var(--lake-deep); }
+.feed-post-time { color: var(--ink-soft); font-size: .76rem; margin-left: 6px; }
+.feed-post-caption { margin: 8px 0 0; color: var(--ink); font-size: .92rem; word-break: break-word; }
+.feed-list-status { color: var(--ink-soft); font-size: .9rem; margin-top: 16px; }
+.feed-load-more { margin-top: 16px; }
+
 @media (max-width: 680px) {
   .now-badge { position: static; margin-bottom: 10px; }
   .tip-card-now { padding-top: 16px; }
@@ -571,7 +599,11 @@ html[data-theme="dark"] .sea-chart-toolbar { background: rgba(20, 37, 34, .96); 
 .sea-chart-bottom-left { position: absolute; bottom: 12px; left: 12px; z-index: 900; display: flex; flex-direction: column; gap: 6px; max-width: calc(100% - 24px); }
 .sea-chart-zoom-hint { position: static; margin: 0; padding: 6px 10px; border-radius: 10px; background: rgba(20,37,34,.85); color: #fff; font-size: .72rem; max-width: 240px; }
 .sea-chart-basemap { filter: saturate(1.5) hue-rotate(-8deg) brightness(0.97) contrast(1.05); }
-.sea-mark-dot { width: 10px; height: 10px; border-radius: 50%; background: #d5752c; border: 1.5px solid #fffdf7; box-shadow: 0 0 0 1px rgba(23,52,47,.4); }
+.sea-mark-dot { width: 7px; height: 7px; border-radius: 50%; background: #d5752c; border: 1px solid #fffdf7; box-shadow: 0 0 0 1px rgba(23,52,47,.35); opacity: .8; }
+.sea-hazard-mark { width: 16px; height: 16px; position: relative; }
+.sea-hazard-mark::before, .sea-hazard-mark::after { content:""; position:absolute; top:50%; left:50%; width:18px; height:3px; background:#111; border-radius:2px; box-shadow: 0 0 0 1px #fffdf7; }
+.sea-hazard-mark::before { transform: translate(-50%,-50%) rotate(45deg); }
+.sea-hazard-mark::after { transform: translate(-50%,-50%) rotate(-45deg); }
 .speed-zone-label { background: rgba(169,70,53,.92); color: #fff; border: 0; box-shadow: none; font-weight: 700; font-size: .72rem; padding: 2px 6px; }
 .speed-zone-label::before { display: none; }
 .sea-route-info { margin-top: 14px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper-bright); }
@@ -1676,7 +1708,7 @@ body.device-phone .columns {
       <div class="sea-chart-overlay-disclaimer" id="seaChartDisclaimer">
         <button type="button" class="sea-disclaimer-toggle" id="seaDisclaimerToggle">⚠️ Ei virallinen navigointikartta <span class="sea-disclaimer-chevron" id="seaDisclaimerChevron">▾</span></button>
         <div class="sea-disclaimer-detail" id="seaDisclaimerDetail" hidden>
-          Avointa dataa (OpenSeaMap, Väylävirasto, Traficom) suunnitteluun - reitit ovat tietokoneen laskemia ehdotuksia, ei navigointiohjeita. Tarkista aina virallisista merikartoista ennen lähtöä.
+          Avointa dataa (OpenSeaMap, Väylävirasto, Traficom, OpenStreetMap) suunnitteluun - reitit ovat tietokoneen laskemia ehdotuksia, ei navigointiohjeita. Sisäjärvillä ja muualla ilman merkittyä väylää reitti EI sisällä syvyys- tai kivikkodataa. Tarkista aina virallisista merikartoista ja paikallisista olosuhteista ennen lähtöä.
           <button type="button" id="seaDisclaimerDismissBtn" class="sea-disclaimer-dismiss">Älä näytä enää tätä huomautusta</button>
         </div>
       </div>
@@ -1690,12 +1722,12 @@ body.device-phone .columns {
         </div>
         <div class="sea-toolbar-row2">
           <label class="sea-chart-toggle sea-chart-toggle-compact">
-            <input type="checkbox" id="seamarkToggle" checked>
-            Merimerkit
+            <input type="checkbox" id="seamarkToggle">
+            OpenSeaMap-merimerkit
           </label>
           <label class="sea-chart-toggle sea-chart-toggle-compact">
             <input type="checkbox" id="officialLayerToggle" checked>
-            Väylätiedot
+            Väylät ja karikot
           </label>
           <button class="btn" id="seaChartLocateBtn" type="button">📍 Paikanna</button>
         </div>
@@ -1719,11 +1751,12 @@ body.device-phone .columns {
   <section id="feedi" class="page">
     <div class="section-head">
       <h2>Saaliit</h2>
-      <p>Kirjaudu sisään ja jaa saaliskuvasi muiden kalastajien nähtäväksi. Tulossa pian.</p>
+      <p>Kirjaudu sisään ja jaa saaliskuvasi muiden kalastajien nähtäväksi. Kuvat ja käyttäjänimet tarkistetaan automaattisesti ennen julkaisua.</p>
     </div>
-    <div class="content-card">
-      <p style="color:var(--ink-soft);">Käyttäjätilit ja saalisfeedi ovat rakenteilla.</p>
-    </div>
+    <div class="content-card feed-auth-card" id="feedAuthCard"></div>
+    <div class="feed-list" id="feedList"></div>
+    <p class="feed-list-status" id="feedListStatus">Ladataan saaliita...</p>
+    <button class="btn feed-load-more" id="feedLoadMoreBtn" type="button" hidden>Lataa lisää</button>
   </section>
 
   <section id="linkit" class="page">
@@ -3555,11 +3588,14 @@ function renderSeaChart(){
 
   // OpenSeaMap on vapaaehtoisvoimin ylläpidetty avoin merimerkkidata - ei virallinen
   // navigointikartta eikä taattu SLA, siksi kerros on aina valinnainen eikä sitä ladata
-  // pohjakartan estäväksi riippuvuudeksi.
+  // pohjakartan estäväksi riippuvuudeksi. EI lisätä kartalle oletuksena: se piirtää samat
+  // turvalaitteet toisilla ikoneilla kuin oma "Väylät ja karikot" -taso (turvalaitteet_uusi),
+  // mikä teki kartasta sekavan kahden päällekkäisen merkkijoukon kanssa - käyttäjä saa
+  // päälle halutessaan.
   seaChartSeamarkLayer=L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',{
     maxZoom:18,
     attribution:'&copy; OpenSeaMap-tekijät'
-  }).addTo(seaChartMap);
+  });
 
   officialLayerGroup=L.layerGroup().addTo(seaChartMap);
   seaChartMap.on('moveend zoomend', updateOfficialLayers);
@@ -3727,13 +3763,26 @@ async function fetchVaylapilviCollection(collectionId, bbox, limit){
 }
 
 function styleFairwayArea(){
-  return { color:'#2f6f73', weight:2, fillColor:'#2f6f73', fillOpacity:.12 };
+  return { color:'#2f6f73', weight:1, fillColor:'#2f6f73', fillOpacity:.05 };
 }
 function styleSpeedZone(){
-  return { color:'#a94635', weight:1.5, fillColor:'#a94635', fillOpacity:.28 };
+  return { color:'#a94635', weight:1, fillColor:'#a94635', fillOpacity:.12 };
 }
 function safetyEquipmentIcon(){
   return L.divIcon({ className:'', html:'<div class="sea-mark-dot"></div>', iconSize:[10,10], iconAnchor:[5,5] });
+}
+function hazardMarkIcon(){
+  return L.divIcon({ className:'', html:'<div class="sea-hazard-mark"></div>', iconSize:[16,16], iconAnchor:[8,8] });
+}
+// Väylävirasto-datan navigointilajikoodi 3-6 = kardinaalimerkit (pohjois/etelä/länsi/itä),
+// jotka osoittavat kummalta puolelta vaarallinen kohde (kivi, kari, matalikko) ohitetaan
+// turvallisesti, ja koodi 7 = erillisvaara-/reunamerkki joka on pystytetty suoraan vaaran
+// päälle tai välittömään läheisyyteen. Nämä ovat siis nimenomaan karikko-/kivimerkintöjä,
+// eivät tavallisia väylän suuntamerkkejä (koodit 1-2, 99) - siksi erotellaan omaksi,
+// selvästi varoittavaksi tasoksi käyttäjän pyytämän "merkkaa kaikki kivet, karikot" mukaisesti.
+const HAZARD_NAV_CODES = new Set([3,4,5,6,7]);
+function isHazardMark(props){
+  return HAZARD_NAV_CODES.has(props && props.navigointilajikoodi);
 }
 
 async function updateOfficialLayers(){
@@ -3768,19 +3817,27 @@ async function updateOfficialLayers(){
         style: styleSpeedZone,
         onEachFeature: (feature, layer) => {
           const p = feature.properties || {};
+          // Ei enää pysyvää kelluvaa tekstilappua jokaisen alueen päällä (teki kartasta
+          // sekavan monen alueen kanssa) - tiedot näkyvät klikatessa popupista.
           const label = p.suuruus ? `${p.suuruus} km/h` : 'Nopeusrajoitus';
-          layer.bindTooltip(label, { permanent:true, direction:'center', className:'speed-zone-label' });
           layer.bindPopup(`<div class="nearby-popup"><h4>${label}</h4><p>${p.nimisijainti||''}${p.poikkeus ? ' · '+p.poikkeus : ''}</p></div>`);
         }
       }).addTo(officialLayerGroup);
     }
     if (equipment) {
       L.geoJSON(equipment, {
-        pointToLayer: (feature, latlng) => L.marker(latlng, { icon: safetyEquipmentIcon() }),
+        pointToLayer: (feature, latlng) => {
+          const p = feature.properties || {};
+          return L.marker(latlng, { icon: isHazardMark(p) ? hazardMarkIcon() : safetyEquipmentIcon(), zIndexOffset: isHazardMark(p) ? 500 : 0 });
+        },
         onEachFeature: (feature, layer) => {
           const p = feature.properties || {};
           const name = p.nimifi || p.turvalaitetyyppifi || 'Turvalaite';
-          layer.bindPopup(`<div class="nearby-popup"><h4>${name}</h4><p>${p.turvalaitetyyppifi||''}${p.sijaintifi ? ' · '+p.sijaintifi : ''}</p></div>`);
+          const hazard = isHazardMark(p);
+          const hazardNote = hazard
+            ? `<p style="color:#a92f1f;font-weight:700;">⚠️ Merkitsee vaarallista kohdetta (kivi, kari tai matalikko) - pidä etäisyyttä. Ei koskaan navigointiohje, tarkista virallisesta merikartasta.</p>`
+            : '';
+          layer.bindPopup(`<div class="nearby-popup"><h4>${hazard ? '⚠️ ' : ''}${name}</h4><p>${p.turvalaitetyyppifi||''}${p.sijaintifi ? ' · '+p.sijaintifi : ''}</p>${hazardNote}</div>`);
         }
       }).addTo(officialLayerGroup);
     }
@@ -3873,6 +3930,212 @@ function dijkstraRoute(graph, startKey, endKey){
   return { edges, totalMeters: dist.get(endKey) };
 }
 
+// --- Avoveden reititys ilman merkittyä väylää ------------------------------------------------
+// Käyttäjän nimenomaisesta pyynnöstä: reititetään myös kun pisteiden välillä ei ole yhtenäistä
+// merkittyä väylää - erityisesti sisäjärvillä, joilla kauppamerenkulun väyliä ei useimmiten ole
+// lainkaan, vaikka kalastusreitti olisi ihan tavallinen. Tämä perustuu OSM-vesialuedataan (mikä
+// on vettä/maata) ja Väylävirasto/Traficom-karimerkkeihin, joita vältetään puskurilla. TÄRKEÄ
+// RAJOITUS: tässä EI ole minkäänlaista syvyys- tai kivikkodataa yksittäisistä kartoittamattomista
+// kivistä - varsinkaan pienillä sisäjärvillä ei ole virallista syvyyskartoitusta ollenkaan. Siksi
+// tulos piirretään aina selvästi eri tyylillä kuin merkitty väylä ja sen mukana näytetään vahva
+// varoitus (ks. drawOpenWaterRouteInfo) - tämä ei korvaa merkittyä väylää eikä ole koskaan
+// navigointiohje, ks. sea-chart-disclaimer.
+
+function metersPerDegLat(){ return 111320; }
+function metersPerDegLng(atLat){ return 111320 * Math.cos(atLat * Math.PI/180); }
+
+function pointInRing(lat, lng, ring){
+  let inside = false;
+  for (let i=0, j=ring.length-1; i<ring.length; j=i++) {
+    const yi=ring[i][0], xi=ring[i][1], yj=ring[j][0], xj=ring[j][1];
+    const intersect = ((yi>lat) !== (yj>lat)) && (lng < (xj-xi)*(lat-yi)/(yj-yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+function pointInAnyPolygon(lat, lng, polygons){
+  for (const ring of polygons) { if (pointInRing(lat,lng,ring)) return true; }
+  return false;
+}
+
+// OpenStreetMap Overpass -rajapinta (avoin data, ODbL) vesialueiden (järvet, joet, lahdet)
+// ääriviivoille - käytetään vain reitityksen maa/vesi-erotteluun, ei minkäänlaiseen
+// syvyys- tai navigointitarkkuuteen. Julkinen Overpass-palvelu on ajoittain ruuhkautunut ja
+// hylkää pyyntöjä ("The server is probably too busy") - siksi yritetään kahta eri julkista
+// peilipalvelinta aikakatkaisulla, ennen kuin luovutetaan (jolloin computeAndDrawRoute putoaa
+// suoraan viivayhteyteen, ks. yllä).
+const OVERPASS_ENDPOINTS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter'
+];
+async function fetchWaterPolygons(bbox){
+  const [minLon,minLat,maxLon,maxLat] = bbox;
+  const box = `${minLat},${minLon},${maxLat},${maxLon}`;
+  const q = `[out:json][timeout:20];(way["natural"="water"](${box});way["waterway"="riverbank"](${box});way["natural"="bay"](${box});relation["natural"="water"](${box}););out geom;`;
+  let lastErr = null;
+  let data = null;
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    try {
+      const res = await fetch(endpoint, { method:'POST', body: q, signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!res.ok) { lastErr = new Error('overpass fetch failed: ' + res.status); continue; }
+      data = await res.json();
+      break;
+    } catch(e) {
+      clearTimeout(timeoutId);
+      lastErr = e;
+    }
+  }
+  if (!data) throw lastErr || new Error('overpass fetch failed');
+  const polygons = [];
+  (data.elements||[]).forEach(el => {
+    if (el.type === 'way' && el.geometry && el.geometry.length > 2) {
+      polygons.push(el.geometry.map(g => [g.lat, g.lon]));
+    } else if (el.type === 'relation' && el.members) {
+      el.members.forEach(m => {
+        if (m.geometry && m.geometry.length > 2) polygons.push(m.geometry.map(g => [g.lat, g.lon]));
+      });
+    }
+  });
+  return polygons;
+}
+
+async function fetchHazardPoints(bbox){
+  try {
+    const data = await fetchVaylapilviCollection('vesivaylatiedot:turvalaitteet_uusi', bbox, 500);
+    return (data.features||[])
+      .filter(f => isHazardMark(f.properties||{}))
+      .map(f => f.geometry && f.geometry.coordinates && f.geometry.coordinates[0])
+      .filter(Boolean)
+      .map(c => ({ lat:c[1], lng:c[0] }));
+  } catch(e) { return []; }
+}
+
+const OPEN_WATER_MAX_STRAIGHT_M = 60000; // liian iso alue tekisi ruudukkolaskennasta liian raskaan/hitaan selaimessa
+const OPEN_WATER_TARGET_CELLS = 3000;
+const OPEN_WATER_MIN_CELL_M = 40;
+const OPEN_WATER_MAX_CELL_M = 600;
+const HAZARD_BUFFER_M = 120;      // karimerkin lähietäisyys - reitti välttää voimakkaasti
+const HAZARD_SOFT_BUFFER_M = 300; // laajempi vyöhyke - reitti kalliimpi mutta ei estetty
+
+function buildOpenWaterGrid(bbox, polygons, hazards){
+  const [minLon,minLat,maxLon,maxLat] = bbox;
+  const midLat = (minLat+maxLat)/2;
+  const mLat = metersPerDegLat(), mLng = metersPerDegLng(midLat);
+  const widthM = (maxLon-minLon) * mLng;
+  const heightM = (maxLat-minLat) * mLat;
+  let cellM = Math.sqrt((widthM*heightM) / OPEN_WATER_TARGET_CELLS) || OPEN_WATER_MIN_CELL_M;
+  cellM = Math.min(OPEN_WATER_MAX_CELL_M, Math.max(OPEN_WATER_MIN_CELL_M, cellM));
+  const cols = Math.max(2, Math.min(70, Math.ceil(widthM / cellM)));
+  const rows = Math.max(2, Math.min(70, Math.ceil(heightM / cellM)));
+  const dLng = (maxLon-minLon)/cols, dLat = (maxLat-minLat)/rows;
+
+  const water = new Uint8Array(cols*rows);
+  const cost = new Float32Array(cols*rows).fill(1);
+  let waterCount = 0;
+  for (let r=0; r<rows; r++){
+    for (let c=0; c<cols; c++){
+      const lat = minLat + (r+0.5)*dLat;
+      const lng = minLon + (c+0.5)*dLng;
+      const idx = r*cols+c;
+      if (pointInAnyPolygon(lat, lng, polygons)) { water[idx]=1; waterCount++; }
+    }
+  }
+  if (waterCount === 0) return null;
+
+  hazards.forEach(h => {
+    const rc = Math.round((h.lat-minLat)/dLat), cc = Math.round((h.lng-minLon)/dLng);
+    const rSoft = Math.max(1, Math.ceil(HAZARD_SOFT_BUFFER_M / Math.min(dLat*mLat, dLng*mLng)));
+    for (let r=rc-rSoft; r<=rc+rSoft; r++){
+      for (let c=cc-rSoft; c<=cc+rSoft; c++){
+        if (r<0||r>=rows||c<0||c>=cols) continue;
+        const idx=r*cols+c;
+        if (!water[idx]) continue;
+        const lat = minLat + (r+0.5)*dLat, lng = minLon + (c+0.5)*dLng;
+        const distM = haversineMeters(L.latLng(h.lat,h.lng), L.latLng(lat,lng));
+        if (distM <= HAZARD_BUFFER_M) cost[idx] = Math.max(cost[idx], 40);
+        else if (distM <= HAZARD_SOFT_BUFFER_M) cost[idx] = Math.max(cost[idx], 6);
+      }
+    }
+  });
+
+  return { cols, rows, minLon, minLat, dLng, dLat, mLat, mLng, water, cost };
+}
+
+function gridCellIndex(grid, lat, lng){
+  const c = Math.floor((lng-grid.minLon)/grid.dLng);
+  const r = Math.floor((lat-grid.minLat)/grid.dLat);
+  if (c<0||c>=grid.cols||r<0||r>=grid.rows) return null;
+  return { r, c, idx: r*grid.cols+c };
+}
+function nearestWaterCell(grid, lat, lng, maxRing){
+  const center = gridCellIndex(grid, lat, lng);
+  if (!center) return null;
+  if (grid.water[center.idx]) return center;
+  for (let rad=1; rad<=maxRing; rad++){
+    for (let dr=-rad; dr<=rad; dr++){
+      for (let dc=-rad; dc<=rad; dc++){
+        if (Math.max(Math.abs(dr),Math.abs(dc)) !== rad) continue;
+        const r=center.r+dr, c=center.c+dc;
+        if (r<0||r>=grid.rows||c<0||c>=grid.cols) continue;
+        const idx=r*grid.cols+c;
+        if (grid.water[idx]) return { r, c, idx };
+      }
+    }
+  }
+  return null;
+}
+
+// Sama yksinkertainen O(n^2) Dijkstra-tyyli kuin dijkstraRoute():ssa yllä - ruudukko on
+// tarkoituksella rajattu pieneksi (enintään 70x70), jotta tämä pysyy nopeana selaimessa.
+function gridAStarRoute(grid, start, end){
+  const cols=grid.cols, total=grid.cols*grid.rows;
+  const cellW = grid.dLng*grid.mLng, cellH = grid.dLat*grid.mLat;
+  const dist = new Float64Array(total).fill(Infinity);
+  const visited = new Uint8Array(total);
+  const prev = new Int32Array(total).fill(-1);
+  dist[start.idx] = 0;
+  const neighbors = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+  for (let iter=0; iter<total; iter++){
+    let u=-1, best=Infinity;
+    for (let i=0;i<total;i++){ if (!visited[i] && dist[i]<best){ best=dist[i]; u=i; } }
+    if (u===-1) break;
+    if (u===end.idx) break;
+    visited[u]=1;
+    const ur=Math.floor(u/cols), uc=u%cols;
+    for (const [dr,dc] of neighbors){
+      const r=ur+dr, c=uc+dc;
+      if (r<0||r>=grid.rows||c<0||c>=grid.cols) continue;
+      const idx=r*cols+c;
+      if (!grid.water[idx] || visited[idx]) continue;
+      const stepM = Math.sqrt((dr*cellH)*(dr*cellH) + (dc*cellW)*(dc*cellW));
+      const w = stepM * ((grid.cost[u]+grid.cost[idx])/2);
+      const nd = dist[u] + w;
+      if (nd < dist[idx]) { dist[idx]=nd; prev[idx]=u; }
+    }
+  }
+  if (dist[end.idx] === Infinity) return null;
+  const path=[]; let cur=end.idx;
+  while (true){ path.unshift(cur); if (cur===start.idx) break; cur=prev[cur]; if (cur===-1) return null; }
+  const latlngs = path.map(idx => {
+    const r=Math.floor(idx/cols), c=idx%cols;
+    return L.latLng(grid.minLat+(r+0.5)*grid.dLat, grid.minLon+(c+0.5)*grid.dLng);
+  });
+  return { latlngs, totalMeters: dist[end.idx] };
+}
+
+function drawOpenWaterRouteInfo(km){
+  const infoEl=document.getElementById("seaRouteInfo");
+  if (!infoEl) return;
+  infoEl.hidden = false;
+  infoEl.innerHTML = `<h4>⚠️ Avoveden reitti (arvio): ${km} km</h4><ul>
+    <li><strong>Ei kulje merkittyä väylää pitkin.</strong> Reitti on laskettu avoimen vesialuedatan ja tunnettujen karimerkkien perusteella - se EI sisällä syvyystietoa eikä kaikkia kartoittamattomia kiviä ja matalikkoja, varsinkaan pienillä sisäjärvillä joilta ei ole virallista syvyyskartoitusta.</li>
+    <li>Käytä vain karkeana suunnitteluapuna. Aja hitaasti ja tarkkaile vettä erityisesti rantojen ja saarten lähellä. Tarkista aina paikalliset olosuhteet ennen lähtöä.</li>
+  </ul>`;
+}
+
 let seaRoutePlacing = null; // 'start' | 'end' | null - mikä piste asetetaan seuraavalla klikkauksella
 
 function updateSeaRouteButtons(){
@@ -3902,6 +4165,20 @@ function clearSeaRoute(){
   if (statusEl) statusEl.textContent = 'Valitse "Lähtöpaikka", sitten klikkaa kartalta.';
   const infoEl=document.getElementById("seaRouteInfo");
   if (infoEl) { infoEl.hidden = true; infoEl.innerHTML=''; }
+}
+
+// Tumma "halo"-ääriviiva värillisen reittiviivan alla tekee reitistä selvästi erottuvan
+// kirjavan pohjakartan, väyläalueiden ja turvalaitemerkkien seasta - ilman haloa ohut
+// värillinen viiva hukkui helposti muun tason alle ja karttaa oli vaikea lukea.
+function drawHaloRoute(latlngs, lineOptions){
+  const group = L.layerGroup();
+  L.polyline(latlngs, {
+    color:'#12201d', weight: lineOptions.weight + 4, opacity:.55,
+    dashArray: lineOptions.dashArray, lineCap:'round', lineJoin:'round'
+  }).addTo(group);
+  L.polyline(latlngs, Object.assign({ lineCap:'round', lineJoin:'round' }, lineOptions)).addTo(group);
+  group.addTo(seaChartMap);
+  return group;
 }
 
 async function computeAndDrawRoute(){
@@ -3937,19 +4214,63 @@ async function computeAndDrawRoute(){
   if (result) {
     const allLatLngs = [];
     result.edges.forEach(e => { e.coords.forEach(c => allLatLngs.push(c)); });
-    seaRoute.routeLayer = L.polyline(allLatLngs, { color:'#f5c518', weight:5, opacity:.95 }).addTo(seaChartMap);
+    seaRoute.routeLayer = drawHaloRoute(allLatLngs, { color:'#f5c518', weight:5, opacity:1 });
     const km = (result.totalMeters/1000).toFixed(1);
     if (statusEl) statusEl.textContent = `Reitti löytyi: ${km} km merkittyjä väyliä pitkin.`;
     drawRouteInfo(km, result.edges.length, false);
     return;
   }
 
-  // Ei yhtenäistä merkittyä väylää pisteiden välillä - piirretään suora "linnuntietä"-yhteys
-  // selvästi eri tyylillä (katkoviiva) eikä koskaan väylä-reittinä. Tämä ei ole reittiehdotus,
-  // vain karkea etäisyys/suuntaviiva - ei huomioi syvyyttä, kareja tai matalikkoja lainkaan.
-  seaRoute.routeLayer = L.polyline([seaRoute.startLatLng, seaRoute.endLatLng], {
-    color:'#8a8f96', weight:3, opacity:.85, dashArray:'8 8'
-  }).addTo(seaChartMap);
+  // Ei yhtenäistä merkittyä väylää pisteiden välillä - yritetään avoveden ruudukkoreititystä
+  // (ks. yllä oleva laaja kommentti buildOpenWaterGrid-lohkon yhteydessä). Tämä on tarkoituksella
+  // toissijainen: merkittyä väylää käytetään aina kun sellainen löytyy.
+  if (statusEl) statusEl.textContent = "Ei merkittyä väylää - lasketaan avoveden reittiä...";
+  let gridRouteResult = null;
+  if (straightDistanceM <= OPEN_WATER_MAX_STRAIGHT_M) {
+    try {
+      // Oma, matkan pituuteen suhteutettu bbox-marginaali - väylägraafin haku yllä käyttää
+      // tarkoituksella suurta minimimarginaalia (0.15°) jotta kaukanakin oleva väylä löytyy,
+      // mutta ruudukkoreitityksessä sama marginaali tekisi lyhyestä sisäjärvireitistä turhan
+      // karkean (pieni järvi voi kadota ruudukon otantavälien väliin). Siksi pienemmillä
+      // etäisyyksillä käytetään paljon tiukempaa rajausta.
+      const gridPad = Math.min(0.3, Math.max(0.008, straightDistanceM / 55000));
+      const gridBbox = [
+        Math.min.apply(null, lngs) - gridPad, Math.min.apply(null, lats) - gridPad,
+        Math.max.apply(null, lngs) + gridPad, Math.max.apply(null, lats) + gridPad
+      ];
+      const [polygons, hazards] = await Promise.all([
+        fetchWaterPolygons(gridBbox),
+        fetchHazardPoints(gridBbox)
+      ]);
+      const grid = buildOpenWaterGrid(gridBbox, polygons, hazards);
+      if (grid) {
+        const startCell = nearestWaterCell(grid, seaRoute.startLatLng.lat, seaRoute.startLatLng.lng, 6);
+        const endCell = nearestWaterCell(grid, seaRoute.endLatLng.lat, seaRoute.endLatLng.lng, 6);
+        if (startCell && endCell) {
+          gridRouteResult = gridAStarRoute(grid, startCell, endCell);
+        }
+      }
+    } catch(e) {
+      // Overpass-haku epäonnistui tms. - jatketaan alla suoraan viivaan, ei kaadeta karttaa.
+    }
+  }
+
+  if (gridRouteResult) {
+    const latlngs = [seaRoute.startLatLng, ...gridRouteResult.latlngs, seaRoute.endLatLng];
+    seaRoute.routeLayer = drawHaloRoute(latlngs, { color:'#e08f1f', weight:5, opacity:1, dashArray:'2 10' });
+    const openKm = (gridRouteResult.totalMeters/1000).toFixed(1);
+    if (statusEl) statusEl.textContent = `Avoveden reitti (arvio): ${openKm} km - ei merkittyä väylää.`;
+    drawOpenWaterRouteInfo(openKm);
+    return;
+  }
+
+  // Ei yhtenäistä merkittyä väylää eikä avoveden ruudukkoreittiä pisteiden välillä - piirretään
+  // suora "linnuntietä"-yhteys selvästi eri tyylillä (katkoviiva) eikä koskaan väylä-reittinä.
+  // Tämä ei ole reittiehdotus, vain karkea etäisyys/suuntaviiva - ei huomioi syvyyttä, kareja
+  // tai matalikkoja lainkaan.
+  seaRoute.routeLayer = drawHaloRoute([seaRoute.startLatLng, seaRoute.endLatLng], {
+    color:'#8a8f96', weight:3, opacity:1, dashArray:'8 8'
+  });
   const straightKm = (straightDistanceM/1000).toFixed(1);
   if (statusEl) statusEl.textContent = fetchFailed
     ? "Väylätietojen haku epäonnistui - näytetään vain suora yhteys."
@@ -4228,12 +4549,290 @@ function showPage(id){
   if (id === 'merikartta') {
     renderSeaChart();
   }
+  if (id === 'feedi') {
+    initFeedPage();
+  }
 
   const page = document.getElementById(id);
   if(page) page.scrollIntoView({block:"start"});
 }
 document.querySelectorAll("[data-page]").forEach(btn=>btn.addEventListener("click",()=>showPage(btn.dataset.page)));
 document.querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();showPage(a.dataset.go)}));
+
+// --- Saalisfeedi: käyttäjätilit, kuvan lataus, feedin selaus -------------------------------
+let feedUser = null;
+let feedAuthMode = 'login'; // 'login' | 'signup'
+let feedCursor = null;      // pienin tähän mennessä ladattu postauksen id (sivutus)
+let feedHasMore = true;
+let feedLoading = false;
+
+async function feedApi(path, options){
+  const res = await fetch(path, options);
+  let data = null;
+  try { data = await res.json(); } catch(e) { /* ei JSON-vartaloa (esim. 204) */ }
+  if (!res.ok) {
+    const err = new Error((data && data.error) || 'Jokin meni pieleen.');
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}
+
+async function fetchFeedUser(){
+  try {
+    const data = await feedApi('/api/auth/me');
+    feedUser = data.user;
+  } catch(e) {
+    feedUser = null;
+  }
+}
+
+function renderFeedAuth(){
+  const card = document.getElementById('feedAuthCard');
+  if (!card) return;
+
+  if (feedUser) {
+    card.innerHTML = `
+      <div class="feed-user-bar">
+        <span>Kirjautuneena: <strong>${escapeHtml(feedUser.username)}</strong></span>
+        <button class="btn" type="button" id="feedLogoutBtn">Kirjaudu ulos</button>
+      </div>
+      <div class="feed-field" style="margin-top:16px;">
+        <label for="feedPostCaption">Uusi saalis</label>
+        <textarea id="feedPostCaption" maxlength="280" placeholder="Kerro saaliista..."></textarea>
+      </div>
+      <div class="feed-field">
+        <label for="feedPostImage">Kuva (JPEG/PNG/WebP, enintään 8 Mt)</label>
+        <input type="file" id="feedPostImage" accept="image/jpeg,image/png,image/webp">
+        <img id="feedPostPreview" class="feed-post-preview" alt="">
+      </div>
+      <div class="feed-form-actions">
+        <button class="btn primary" type="button" id="feedPostSubmitBtn">Julkaise</button>
+      </div>
+      <p class="feed-hint">Kuva ja teksti tarkistetaan automaattisesti ennen julkaisua - epäasiallinen sisältö hylätään.</p>
+      <p class="feed-error" id="feedPostError" hidden></p>
+    `;
+    document.getElementById('feedLogoutBtn').addEventListener('click', handleFeedLogout);
+    document.getElementById('feedPostSubmitBtn').addEventListener('click', handleFeedNewPost);
+    const fileInput = document.getElementById('feedPostImage');
+    const preview = document.getElementById('feedPostPreview');
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) { preview.style.display = 'none'; return; }
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    });
+    return;
+  }
+
+  const isSignup = feedAuthMode === 'signup';
+  card.innerHTML = `
+    <h3 style="margin-top:0;">${isSignup ? 'Luo käyttäjä' : 'Kirjaudu sisään'}</h3>
+    <div class="feed-field">
+      <label for="feedUsername">Käyttäjänimi</label>
+      <input type="text" id="feedUsername" autocomplete="username" maxlength="20">
+    </div>
+    <div class="feed-field">
+      <label for="feedPassword">Salasana</label>
+      <input type="password" id="feedPassword" autocomplete="${isSignup ? 'new-password' : 'current-password'}">
+    </div>
+    <div class="feed-form-actions">
+      <button class="btn primary" type="button" id="feedAuthSubmitBtn">${isSignup ? 'Luo käyttäjä' : 'Kirjaudu'}</button>
+      <button class="feed-switch-mode" type="button" id="feedSwitchModeBtn">${isSignup ? 'Onko sinulla jo tili? Kirjaudu' : 'Ei vielä tiliä? Luo käyttäjä'}</button>
+    </div>
+    ${isSignup ? '<p class="feed-hint">3-20 merkkiä (kirjaimet, numerot, - ja _), salasana vähintään 8 merkkiä. Käyttäjänimi tarkistetaan automaattisesti.</p>' : ''}
+    <p class="feed-error" id="feedAuthError" hidden></p>
+  `;
+  document.getElementById('feedAuthSubmitBtn').addEventListener('click', isSignup ? handleFeedSignup : handleFeedLogin);
+  document.getElementById('feedSwitchModeBtn').addEventListener('click', () => {
+    feedAuthMode = isSignup ? 'login' : 'signup';
+    renderFeedAuth();
+  });
+}
+
+function setFeedAuthBusy(busy){
+  const btn = document.getElementById('feedAuthSubmitBtn');
+  if (btn) btn.disabled = busy;
+}
+function showFeedAuthError(msg){
+  const el = document.getElementById('feedAuthError');
+  if (el) { el.textContent = msg; el.hidden = !msg; }
+}
+
+async function handleFeedSignup(){
+  const username = document.getElementById('feedUsername').value.trim();
+  const password = document.getElementById('feedPassword').value;
+  showFeedAuthError('');
+  setFeedAuthBusy(true);
+  try {
+    const data = await feedApi('/api/auth/signup', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    feedUser = { username: data.username };
+    renderFeedAuth();
+  } catch(e) {
+    showFeedAuthError(e.message);
+  } finally {
+    setFeedAuthBusy(false);
+  }
+}
+
+async function handleFeedLogin(){
+  const username = document.getElementById('feedUsername').value.trim();
+  const password = document.getElementById('feedPassword').value;
+  showFeedAuthError('');
+  setFeedAuthBusy(true);
+  try {
+    const data = await feedApi('/api/auth/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    feedUser = { username: data.username };
+    renderFeedAuth();
+  } catch(e) {
+    showFeedAuthError(e.message);
+  } finally {
+    setFeedAuthBusy(false);
+  }
+}
+
+async function handleFeedLogout(){
+  try { await feedApi('/api/auth/logout', { method: 'POST' }); } catch(e) { /* ei väliä, tyhjennetään silti paikallinen tila */ }
+  feedUser = null;
+  feedAuthMode = 'login';
+  renderFeedAuth();
+}
+
+async function handleFeedNewPost(){
+  const captionEl = document.getElementById('feedPostCaption');
+  const fileInput = document.getElementById('feedPostImage');
+  const errorEl = document.getElementById('feedPostError');
+  const submitBtn = document.getElementById('feedPostSubmitBtn');
+  const file = fileInput.files && fileInput.files[0];
+  errorEl.hidden = true;
+
+  if (!file) {
+    errorEl.textContent = 'Valitse kuva ensin.';
+    errorEl.hidden = false;
+    return;
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    errorEl.textContent = 'Kuva on liian suuri (enintään 8 Mt).';
+    errorEl.hidden = false;
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('image', file);
+  formData.append('caption', captionEl.value.trim());
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Tarkistetaan ja julkaistaan...';
+  try {
+    await feedApi('/api/posts', { method: 'POST', body: formData });
+    captionEl.value = '';
+    fileInput.value = '';
+    document.getElementById('feedPostPreview').style.display = 'none';
+    await loadFeed(true);
+  } catch(e) {
+    errorEl.textContent = e.message;
+    errorEl.hidden = false;
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Julkaise';
+  }
+}
+
+function formatFeedTime(sqliteUtcString){
+  try {
+    const d = new Date(sqliteUtcString.replace(' ', 'T') + 'Z');
+    return d.toLocaleString('fi-FI', { day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  } catch(e) {
+    return '';
+  }
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+
+function renderPostCard(post){
+  const card = document.createElement('div');
+  card.className = 'feed-post-card';
+
+  const img = document.createElement('img');
+  img.className = 'feed-post-image';
+  img.src = post.imageUrl;
+  img.loading = 'lazy';
+  img.alt = 'Saaliskuva käyttäjältä ' + post.username;
+  card.appendChild(img);
+
+  const body = document.createElement('div');
+  body.className = 'feed-post-body';
+
+  const userSpan = document.createElement('span');
+  userSpan.className = 'feed-post-user';
+  userSpan.textContent = post.username;
+  body.appendChild(userSpan);
+
+  const timeSpan = document.createElement('span');
+  timeSpan.className = 'feed-post-time';
+  timeSpan.textContent = formatFeedTime(post.createdAt);
+  body.appendChild(timeSpan);
+
+  if (post.caption) {
+    const p = document.createElement('p');
+    p.className = 'feed-post-caption';
+    p.textContent = post.caption;
+    body.appendChild(p);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+async function loadFeed(reset){
+  if (feedLoading) return;
+  feedLoading = true;
+  const listEl = document.getElementById('feedList');
+  const statusEl = document.getElementById('feedListStatus');
+  const moreBtn = document.getElementById('feedLoadMoreBtn');
+  if (reset) {
+    feedCursor = null;
+    feedHasMore = true;
+    if (listEl) listEl.innerHTML = '';
+  }
+  if (statusEl) statusEl.textContent = 'Ladataan saaliita...';
+  if (moreBtn) moreBtn.hidden = true;
+
+  try {
+    const qs = feedCursor ? `?before=${feedCursor}&limit=20` : '?limit=20';
+    const data = await feedApi('/api/posts' + qs);
+    const posts = data.posts || [];
+    posts.forEach(p => { if (listEl) listEl.appendChild(renderPostCard(p)); });
+    feedHasMore = posts.length === 20;
+    if (posts.length) feedCursor = posts[posts.length - 1].id;
+
+    const totalShown = listEl ? listEl.children.length : 0;
+    if (statusEl) statusEl.textContent = totalShown === 0 ? 'Ei vielä saaliskuvia - ole ensimmäinen!' : '';
+    if (moreBtn) moreBtn.hidden = !feedHasMore;
+  } catch(e) {
+    if (statusEl) statusEl.textContent = 'Saaliiden lataus epäonnistui.';
+  } finally {
+    feedLoading = false;
+  }
+}
+
+document.getElementById('feedLoadMoreBtn') && document.getElementById('feedLoadMoreBtn').addEventListener('click', () => loadFeed(false));
+
+async function initFeedPage(){
+  await fetchFeedUser();
+  renderFeedAuth();
+  loadFeed(true);
+}
 
 function degToCompass(deg){
   const dirs = currentLang === 'fi'
