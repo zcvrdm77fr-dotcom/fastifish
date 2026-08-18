@@ -1230,6 +1230,8 @@ body.device-phone .columns {
 </style>
 <!-- AdSense-skripti EI lataudu tässä automaattisesti. Se injektoidaan dynaamisesti loadAdSense()-funktiolla
      vasta kun käyttäjä on hyväksynyt evästeet ("cookie_consent" = "all"), ks. sivun lopun <script>. -->
+<!-- Saalisfeedin palvelimen osoite. Muokkaa feed-config.js:ää, älä tätä riviä. -->
+<script src="feed-config.js"></script>
 </head>
 <body>
 
@@ -4565,12 +4567,73 @@ let feedAuthMode = 'login'; // 'login' | 'signup'
 let feedCursor = null;      // pienin tähän mennessä ladattu postauksen id (sivutus)
 let feedHasMore = true;
 let feedLoading = false;
+let feedApiOffline = false; // tosi jos palvelinta ei ole määritetty tai se ei vastaa
+
+// Saalisfeedin palvelin voi olla eri osoitteessa kuin itse sivusto: GitHub Pages tarjoilee vain
+// staattisia tiedostoja, joten API ajetaan muualla (ks. feed-config.js ja DEPLOY.md). Tyhjä arvo
+// tarkoittaa samaa osoitetta - oikea asetus vain kun sivustoa ajetaan itse "npm start":lla.
+const FEED_API_BASE = String(window.FASTFISH_API_BASE || '').trim().replace(/\/+$/, '');
+function feedApiUrl(path){ return FEED_API_BASE + path; }
+// Kuvapolut tulevat palvelimelta muodossa /uploads/xxx.jpg - eri osoitteessa ajettaessa niiden
+// eteen tarvitaan palvelimen osoite, muutta kuvat haettaisiin sivuston omasta osoitteesta.
+function feedAssetUrl(url){
+  if (!url) return '';
+  return /^https?:\/\//i.test(url) ? url : FEED_API_BASE + url;
+}
+
+// Istuntotunnus talletetaan vain localStorageen (ei document.cookieen), koska eri osoitteessa
+// olevan palvelimen asettama eväste ei kulje selaimessa perille - Safari ja Firefox estävät
+// kolmannen osapuolen evästeet oletuksena.
+const FEED_TOKEN_KEY = 'ff_session_token';
+function getFeedToken(){
+  try { return localStorage.getItem(FEED_TOKEN_KEY) || ''; } catch(e) { return feedTokenFallback; }
+}
+let feedTokenFallback = '';
+function setFeedToken(token){
+  feedTokenFallback = token || '';
+  try {
+    if (token) localStorage.setItem(FEED_TOKEN_KEY, token);
+    else localStorage.removeItem(FEED_TOKEN_KEY);
+  } catch(e) { /* private mode - istunto elää vain tämän sivulatauksen ajan */ }
+}
+
+function feedOfflineError(){
+  const err = new Error(FEED_API_BASE
+    ? 'Saalisfeedin palvelimeen ei juuri nyt saada yhteyttä. Yritä hetken kuluttua uudelleen.'
+    : 'Saalisfeedin palvelinta ei ole vielä otettu käyttöön.');
+  err.offline = true;
+  feedApiOffline = true;
+  return err;
+}
 
 async function feedApi(path, options){
-  const res = await fetch(path, options);
+  const opts = Object.assign({}, options);
+  opts.credentials = 'include'; // samasta osoitteesta tarjoiltaessa istunto kulkee evästeessä
+  const token = getFeedToken();
+  if (token) {
+    opts.headers = Object.assign({}, opts.headers, { 'Authorization': 'Bearer ' + token });
+  }
+
+  let res;
+  try {
+    res = await fetch(feedApiUrl(path), opts);
+  } catch(e) {
+    // Verkkovirhe tai CORS-esto - palvelinta ei tavoiteta lainkaan.
+    throw feedOfflineError();
+  }
+
+  // Staattinen tarjoilu (GitHub Pages) vastaa API-polkuunkin HTML-sivulla. Ilman tätä tarkistusta
+  // JSON-jäsennys epäonnistuisi ja käyttäjä näkisi vain "Jokin meni pieleen".
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw feedOfflineError();
+  }
+
+  feedApiOffline = false;
   let data = null;
-  try { data = await res.json(); } catch(e) { /* ei JSON-vartaloa (esim. 204) */ }
+  try { data = await res.json(); } catch(e) { /* ei JSON-vartaloa */ }
   if (!res.ok) {
+    if (res.status === 401) setFeedToken(''); // vanhentunut istunto - älä yritä sillä uudelleen
     const err = new Error((data && data.error) || 'Jokin meni pieleen.');
     err.status = res.status;
     throw err;
@@ -4582,6 +4645,7 @@ async function fetchFeedUser(){
   try {
     const data = await feedApi('/api/auth/me');
     feedUser = data.user;
+    if (!feedUser) setFeedToken('');
   } catch(e) {
     feedUser = null;
   }
@@ -4590,6 +4654,27 @@ async function fetchFeedUser(){
 function renderFeedAuth(){
   const card = document.getElementById('feedAuthCard');
   if (!card) return;
+
+  // Palvelinta ei tavoiteta: kerrotaan se suoraan sen sijaan, että näytettäisiin kirjautumis-
+  // lomake, joka ei voi toimia. Aiemmin lomake näytti toimivalta ja kaatui vasta lähetykseen.
+  if (feedApiOffline) {
+    card.innerHTML = `
+      <h3 style="margin-top:0;">Saalisfeedi ei ole juuri nyt käytettävissä</h3>
+      <p>${FEED_API_BASE
+        ? 'Saaliskuvien palvelimeen ei saada yhteyttä. Kyseessä on todennäköisesti tilapäinen katko - kokeile hetken kuluttua uudelleen.'
+        : 'Saaliiden jakaminen vaatii palvelimen, jota ei ole vielä otettu käyttöön. Kirjautuminen ja kuvien julkaisu avautuvat heti kun se on tehty.'}</p>
+      <div class="feed-form-actions">
+        <button class="btn" type="button" id="feedRetryBtn">Yritä uudelleen</button>
+      </div>
+    `;
+    const retryBtn = document.getElementById('feedRetryBtn');
+    if (retryBtn) retryBtn.addEventListener('click', () => {
+      feedApiOffline = false;
+      card.innerHTML = '<p>Yhdistetään...</p>';
+      initFeedPage();
+    });
+    return;
+  }
 
   if (feedUser) {
     card.innerHTML = `
@@ -4669,10 +4754,12 @@ async function handleFeedSignup(){
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
+    setFeedToken(data.token);
     feedUser = { username: data.username };
     renderFeedAuth();
   } catch(e) {
     showFeedAuthError(e.message);
+    if (e.offline) renderFeedAuth();
   } finally {
     setFeedAuthBusy(false);
   }
@@ -4688,10 +4775,12 @@ async function handleFeedLogin(){
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
+    setFeedToken(data.token);
     feedUser = { username: data.username };
     renderFeedAuth();
   } catch(e) {
     showFeedAuthError(e.message);
+    if (e.offline) renderFeedAuth();
   } finally {
     setFeedAuthBusy(false);
   }
@@ -4699,6 +4788,7 @@ async function handleFeedLogin(){
 
 async function handleFeedLogout(){
   try { await feedApi('/api/auth/logout', { method: 'POST' }); } catch(e) { /* ei väliä, tyhjennetään silti paikallinen tila */ }
+  setFeedToken('');
   feedUser = null;
   feedAuthMode = 'login';
   renderFeedAuth();
@@ -4738,6 +4828,7 @@ async function handleFeedNewPost(){
   } catch(e) {
     errorEl.textContent = e.message;
     errorEl.hidden = false;
+    if (e.status === 401) { feedUser = null; renderFeedAuth(); }
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Julkaise';
@@ -4765,7 +4856,7 @@ function renderPostCard(post){
 
   const img = document.createElement('img');
   img.className = 'feed-post-image';
-  img.src = post.imageUrl;
+  img.src = feedAssetUrl(post.imageUrl);
   img.loading = 'lazy';
   img.alt = 'Saaliskuva käyttäjältä ' + post.username;
   card.appendChild(img);
@@ -4820,7 +4911,8 @@ async function loadFeed(reset){
     if (statusEl) statusEl.textContent = totalShown === 0 ? 'Ei vielä saaliskuvia - ole ensimmäinen!' : '';
     if (moreBtn) moreBtn.hidden = !feedHasMore;
   } catch(e) {
-    if (statusEl) statusEl.textContent = 'Saaliiden lataus epäonnistui.';
+    if (statusEl) statusEl.textContent = e.offline ? '' : 'Saaliiden lataus epäonnistui.';
+    if (e.offline) renderFeedAuth(); // näytä selkeä selitys kirjautumislomakkeen tilalla
   } finally {
     feedLoading = false;
   }
@@ -4830,8 +4922,8 @@ document.getElementById('feedLoadMoreBtn') && document.getElementById('feedLoadM
 
 async function initFeedPage(){
   await fetchFeedUser();
+  await loadFeed(true); // asettaa feedApiOffline:n jos palvelinta ei tavoiteta
   renderFeedAuth();
-  loadFeed(true);
 }
 
 function degToCompass(deg){

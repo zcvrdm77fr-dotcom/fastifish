@@ -4,13 +4,11 @@ import sharp from 'sharp';
 import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import { db } from './db.js';
 import { requireAuth } from './auth.js';
 import { moderatePost, ModerationUnavailableError } from './moderation.js';
+import { UPLOADS_DIR } from './paths.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
 const MAX_CAPTION_LEN = 280;
 const POST_COOLDOWN_MS = 60 * 1000; // roskapostin/tulvimisen esto - yksi julkaisu per minuutti per käyttäjä
 

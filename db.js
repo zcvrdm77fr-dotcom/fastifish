@@ -1,13 +1,11 @@
 import Database from 'better-sqlite3';
 import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+// paths.js luo hakemistot heti importissa. ES-moduulien importit ajetaan aina ennen tuovan
+// moduulin (server.js) omaa koodia, joten hakemistot ovat olemassa ennen kuin tietokanta
+// avataan tässä.
+import { DATA_DIR } from './paths.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// ES-moduulien importit ajetaan aina ennen tuovan moduulin (server.js) omaa koodia, joten
-// server.js:n fs.mkdirSync('data') ei ehdi ajaa ennen tätä - luodaan hakemisto siis tässä.
-fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
-export const db = new Database(path.join(__dirname, 'data', 'fastfishing.db'));
+export const db = new Database(path.join(DATA_DIR, 'fastfishing.db'));
 
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
