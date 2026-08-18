@@ -1,8 +1,5 @@
 import Database from 'better-sqlite3';
 import path from 'path';
-// paths.js luo hakemistot heti importissa. ES-moduulien importit ajetaan aina ennen tuovan
-// moduulin (server.js) omaa koodia, joten hakemistot ovat olemassa ennen kuin tietokanta
-// avataan tässä.
 import { DATA_DIR } from './paths.js';
 
 export const db = new Database(path.join(DATA_DIR, 'fastfishing.db'));
@@ -50,8 +47,15 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
-  CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
-  CREATE INDEX IF NOT EXISTS idx_posts_status_created ON posts(status, created_at DESC);
-  CREATE INDEX IF NOT EXISTS idx_likes_post ON likes(post_id);
-  CREATE INDEX IF NOT EXISTS idx_comments_post_created ON comments(post_id, created_at);
+  CREATE INDEX IF NOT EXISTS idx_sessions_user
+    ON sessions(user_id);
+
+  CREATE INDEX IF NOT EXISTS idx_posts_status_created
+    ON posts(status, created_at DESC);
+
+  CREATE INDEX IF NOT EXISTS idx_likes_post
+    ON likes(post_id);
+
+  CREATE INDEX IF NOT EXISTS idx_comments_post_created
+    ON comments(post_id, created_at);
 `);
