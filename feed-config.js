@@ -15,4 +15,4 @@
 // asetus vain silloin kun ajat sivustoa itse komennolla "npm start".
 // ---------------------------------------------------------------------------------------------
 
-window.FASTFISH_API_BASE = "https://140.238.99.13:3000";
+window.FASTFISH_API_BASE = "https://api.fastfishin.com";
