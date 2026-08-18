@@ -356,7 +356,7 @@ router.post('/:id/comments', requireAuth, (req, res) => {
   });
 });
 
-router.delete('/:id', requireAuth, async (req, res) => {
+router.post('/:id/delete', requireAuth, async (req, res) => {
   const postId = Number(req.params.id);
 
   if (!Number.isInteger(postId) || postId < 1) {
