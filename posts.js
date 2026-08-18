@@ -356,4 +356,52 @@ router.post('/:id/comments', requireAuth, (req, res) => {
   });
 });
 
+router.delete('/:id', requireAuth, async (req, res) => {
+  const postId = Number(req.params.id);
+
+  if (!Number.isInteger(postId) || postId < 1) {
+    return res.status(400).json({ error: 'Virheellinen postaus.' });
+  }
+
+  const post = db.prepare(`
+    SELECT id, user_id, image_path
+    FROM posts
+    WHERE id = ?
+  `).get(postId);
+
+  if (!post) {
+    return res.status(404).json({ error: 'Postausta ei löytynyt.' });
+  }
+
+  if (post.user_id !== req.user.id) {
+    return res.status(403).json({
+      error: 'Voit poistaa vain omat julkaisusi.'
+    });
+  }
+
+  // Poista tietokannasta.
+  // likes/comments poistuvat automaattisesti foreign key -sääntöjen ansiosta.
+  db.prepare(`
+    DELETE FROM posts
+    WHERE id = ?
+  `).run(postId);
+
+  // Poista kuvatiedosto.
+  try {
+    await fs.promises.unlink(
+      path.join(UPLOADS_DIR, post.image_path)
+    );
+  } catch (err) {
+    // Tiedoston puuttuminen ei estä tietokantapoistoa.
+    if (err.code !== 'ENOENT') {
+      console.error('Kuvan poistaminen epäonnistui:', err);
+    }
+  }
+
+  res.json({
+    ok: true,
+    id: postId
+  });
+});
+
 export default router;
