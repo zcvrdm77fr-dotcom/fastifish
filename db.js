@@ -1,13 +1,11 @@
 import Database from 'better-sqlite3';
 import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+// paths.js luo hakemistot heti importissa. ES-moduulien importit ajetaan aina ennen tuovan
+// moduulin (server.js) omaa koodia, joten hakemistot ovat olemassa ennen kuin tietokanta
+// avataan tässä.
+import { DATA_DIR } from './paths.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// ES-moduulien importit ajetaan aina ennen tuovan moduulin (server.js) omaa koodia, joten
-// server.js:n fs.mkdirSync('data') ei ehdi ajaa ennen tätä - luodaan hakemisto siis tässä.
-fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
-export const db = new Database(path.join(__dirname, 'data', 'fastfishing.db'));
+export const db = new Database(path.join(DATA_DIR, 'fastfishing.db'));
 
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
@@ -37,6 +35,23 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS likes (
+    post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (post_id, user_id)
+  );
+
+  CREATE TABLE IF NOT EXISTS comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    body TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
   CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
   CREATE INDEX IF NOT EXISTS idx_posts_status_created ON posts(status, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_likes_post ON likes(post_id);
+  CREATE INDEX IF NOT EXISTS idx_comments_post_created ON comments(post_id, created_at);
 `);

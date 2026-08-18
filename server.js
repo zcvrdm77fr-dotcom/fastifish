@@ -3,28 +3,61 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { attachUser } from './auth.js';
 import authRouter from './auth.js';
 import postsRouter from './posts.js';
+import { UPLOADS_DIR } from './paths.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-fs.mkdirSync(path.join(__dirname, 'data'), { recursive: true });
-fs.mkdirSync(path.join(__dirname, 'uploads'), { recursive: true });
-
 const app = express();
-const PORT = 3000;
+// Pilvipalvelut (Render, Fly, Railway...) antavat portin ympäristömuuttujassa eivätkä anna
+// valita sitä itse - kovakoodattu 3000 tarkoittaisi, ettei palvelu vastaa lainkaan.
+const PORT = parseInt(process.env.PORT, 10) || 3000;
+
+// Palvelu on kuormanjakajan/proxyn takana pilvessä. Ilman tätä Express ei tiedä, että alkuperäinen
+// pyyntö tuli HTTPS:llä, eikä Secure-eväste kulkisi läpi.
+app.set('trust proxy', 1);
+
+// CORS: sivusto voi olla eri osoitteessa kuin tämä API (esim. staattinen sivusto GitHub
+// Pagesissa, API omalla palvelimella). Selain estää tällaiset pyynnöt oletuksena, ellei API
+// erikseen kerro sallivansa kyseistä alkuperää. Sallitaan vain nimenomaisesti listatut
+// osoitteet - jokerimerkki (*) ei kelpaa, koska kirjautuminen vaatii credentials-tuen.
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(o => o.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.includes(origin.replace(/\/+$/, ''))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Max-Age', '86400');
+  }
+  // Vary kertoo välimuisteille, ettei yhden alkuperän vastausta saa tarjoilla toiselle.
+  res.setHeader('Vary', 'Origin');
+  if (req.method === 'OPTIONS') return res.status(204).end();
+  next();
+});
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(attachUser);
 
+// Terveystarkistus: pilvipalvelut pingaavat tätä, ja frontti käyttää sitä kertoakseen
+// käyttäjälle selkeästi jos saalisfeedin palvelin ei ole tavoitettavissa.
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, feed: true });
+});
+
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '30d' }));
+app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d' }));
 
 // express.static(__dirname) alla tarjoilee koko projektikansion - se sisältää nyt myös
 // tietokannan (salasanahashit) ja palvelimen lähdekoodin, joita EI saa koskaan päätyä
@@ -34,7 +67,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '3
 const BLOCKED_STATIC_PREFIXES = ['/data', '/node_modules'];
 const BLOCKED_STATIC_FILES = new Set([
   '/server.js', '/db.js', '/auth.js', '/posts.js', '/moderation.js',
-  '/package.json', '/package-lock.json'
+  '/paths.js', '/wordlist.js', '/package.json', '/package-lock.json'
 ]);
 app.use((req, res, next) => {
   if (BLOCKED_STATIC_FILES.has(req.path) || BLOCKED_STATIC_PREFIXES.some(p => req.path.startsWith(p))) {

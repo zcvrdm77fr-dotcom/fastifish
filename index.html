@@ -463,6 +463,22 @@ main { padding-bottom: 70px; }
 .feed-post-user { font-weight: 700; color: var(--lake-deep); }
 .feed-post-time { color: var(--ink-soft); font-size: .76rem; margin-left: 6px; }
 .feed-post-caption { margin: 8px 0 0; color: var(--ink); font-size: .92rem; word-break: break-word; }
+.feed-post-actions { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.feed-action-btn { display: inline-flex; align-items: center; gap: 6px; border: 0; background: transparent; color: var(--ink-soft); font-weight: 700; font-size: .82rem; cursor: pointer; padding: 4px 2px; }
+.feed-action-btn:hover { color: var(--ink); }
+.feed-action-btn svg { width: 18px; height: 18px; }
+.feed-like-btn.liked { color: var(--danger); }
+.feed-like-btn.liked svg { fill: var(--danger); stroke: var(--danger); }
+.feed-delete-btn { margin-left: auto; color: var(--danger); }
+.feed-comments { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.feed-comments[hidden] { display: none; }
+.feed-comment-item { font-size: .85rem; line-height: 1.4; }
+.feed-comment-item .feed-comment-user { font-weight: 700; color: var(--lake-deep); }
+.feed-comment-item .feed-comment-time { color: var(--ink-soft); font-size: .7rem; margin-left: 4px; }
+.feed-comment-item p { margin: 2px 0 0; color: var(--ink); word-break: break-word; }
+.feed-comment-form { display: flex; gap: 8px; margin-top: 4px; }
+.feed-comment-input { flex: 1; min-width: 0; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; font-size: .85rem; }
+.feed-comment-status { font-size: .78rem; color: var(--ink-soft); }
 .feed-list-status { color: var(--ink-soft); font-size: .9rem; margin-top: 16px; }
 .feed-load-more { margin-top: 16px; }
 
@@ -1230,6 +1246,8 @@ body.device-phone .columns {
 </style>
 <!-- AdSense-skripti EI lataudu tässä automaattisesti. Se injektoidaan dynaamisesti loadAdSense()-funktiolla
      vasta kun käyttäjä on hyväksynyt evästeet ("cookie_consent" = "all"), ks. sivun lopun <script>. -->
+<!-- Saalisfeedin palvelimen osoite. Muokkaa feed-config.js:ää, älä tätä riviä. -->
+<script src="feed-config.js"></script>
 </head>
 <body>
 
@@ -4565,12 +4583,73 @@ let feedAuthMode = 'login'; // 'login' | 'signup'
 let feedCursor = null;      // pienin tähän mennessä ladattu postauksen id (sivutus)
 let feedHasMore = true;
 let feedLoading = false;
+let feedApiOffline = false; // tosi jos palvelinta ei ole määritetty tai se ei vastaa
+
+// Saalisfeedin palvelin voi olla eri osoitteessa kuin itse sivusto: GitHub Pages tarjoilee vain
+// staattisia tiedostoja, joten API ajetaan muualla (ks. feed-config.js ja DEPLOY.md). Tyhjä arvo
+// tarkoittaa samaa osoitetta - oikea asetus vain kun sivustoa ajetaan itse "npm start":lla.
+const FEED_API_BASE = String(window.FASTFISH_API_BASE || '').trim().replace(/\/+$/, '');
+function feedApiUrl(path){ return FEED_API_BASE + path; }
+// Kuvapolut tulevat palvelimelta muodossa /uploads/xxx.jpg - eri osoitteessa ajettaessa niiden
+// eteen tarvitaan palvelimen osoite, muutta kuvat haettaisiin sivuston omasta osoitteesta.
+function feedAssetUrl(url){
+  if (!url) return '';
+  return /^https?:\/\//i.test(url) ? url : FEED_API_BASE + url;
+}
+
+// Istuntotunnus talletetaan vain localStorageen (ei document.cookieen), koska eri osoitteessa
+// olevan palvelimen asettama eväste ei kulje selaimessa perille - Safari ja Firefox estävät
+// kolmannen osapuolen evästeet oletuksena.
+const FEED_TOKEN_KEY = 'ff_session_token';
+function getFeedToken(){
+  try { return localStorage.getItem(FEED_TOKEN_KEY) || ''; } catch(e) { return feedTokenFallback; }
+}
+let feedTokenFallback = '';
+function setFeedToken(token){
+  feedTokenFallback = token || '';
+  try {
+    if (token) localStorage.setItem(FEED_TOKEN_KEY, token);
+    else localStorage.removeItem(FEED_TOKEN_KEY);
+  } catch(e) { /* private mode - istunto elää vain tämän sivulatauksen ajan */ }
+}
+
+function feedOfflineError(){
+  const err = new Error(FEED_API_BASE
+    ? 'Saalisfeedin palvelimeen ei juuri nyt saada yhteyttä. Yritä hetken kuluttua uudelleen.'
+    : 'Saalisfeedin palvelinta ei ole vielä otettu käyttöön.');
+  err.offline = true;
+  feedApiOffline = true;
+  return err;
+}
 
 async function feedApi(path, options){
-  const res = await fetch(path, options);
+  const opts = Object.assign({}, options);
+  opts.credentials = 'include'; // samasta osoitteesta tarjoiltaessa istunto kulkee evästeessä
+  const token = getFeedToken();
+  if (token) {
+    opts.headers = Object.assign({}, opts.headers, { 'Authorization': 'Bearer ' + token });
+  }
+
+  let res;
+  try {
+    res = await fetch(feedApiUrl(path), opts);
+  } catch(e) {
+    // Verkkovirhe tai CORS-esto - palvelinta ei tavoiteta lainkaan.
+    throw feedOfflineError();
+  }
+
+  // Staattinen tarjoilu (GitHub Pages) vastaa API-polkuunkin HTML-sivulla. Ilman tätä tarkistusta
+  // JSON-jäsennys epäonnistuisi ja käyttäjä näkisi vain "Jokin meni pieleen".
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw feedOfflineError();
+  }
+
+  feedApiOffline = false;
   let data = null;
-  try { data = await res.json(); } catch(e) { /* ei JSON-vartaloa (esim. 204) */ }
+  try { data = await res.json(); } catch(e) { /* ei JSON-vartaloa */ }
   if (!res.ok) {
+    if (res.status === 401) setFeedToken(''); // vanhentunut istunto - älä yritä sillä uudelleen
     const err = new Error((data && data.error) || 'Jokin meni pieleen.');
     err.status = res.status;
     throw err;
@@ -4582,6 +4661,7 @@ async function fetchFeedUser(){
   try {
     const data = await feedApi('/api/auth/me');
     feedUser = data.user;
+    if (!feedUser) setFeedToken('');
   } catch(e) {
     feedUser = null;
   }
@@ -4590,6 +4670,27 @@ async function fetchFeedUser(){
 function renderFeedAuth(){
   const card = document.getElementById('feedAuthCard');
   if (!card) return;
+
+  // Palvelinta ei tavoiteta: kerrotaan se suoraan sen sijaan, että näytettäisiin kirjautumis-
+  // lomake, joka ei voi toimia. Aiemmin lomake näytti toimivalta ja kaatui vasta lähetykseen.
+  if (feedApiOffline) {
+    card.innerHTML = `
+      <h3 style="margin-top:0;">Saalisfeedi ei ole juuri nyt käytettävissä</h3>
+      <p>${FEED_API_BASE
+        ? 'Saaliskuvien palvelimeen ei saada yhteyttä. Kyseessä on todennäköisesti tilapäinen katko - kokeile hetken kuluttua uudelleen.'
+        : 'Saaliiden jakaminen vaatii palvelimen, jota ei ole vielä otettu käyttöön. Kirjautuminen ja kuvien julkaisu avautuvat heti kun se on tehty.'}</p>
+      <div class="feed-form-actions">
+        <button class="btn" type="button" id="feedRetryBtn">Yritä uudelleen</button>
+      </div>
+    `;
+    const retryBtn = document.getElementById('feedRetryBtn');
+    if (retryBtn) retryBtn.addEventListener('click', () => {
+      feedApiOffline = false;
+      card.innerHTML = '<p>Yhdistetään...</p>';
+      initFeedPage();
+    });
+    return;
+  }
 
   if (feedUser) {
     card.innerHTML = `
@@ -4603,7 +4704,7 @@ function renderFeedAuth(){
       </div>
       <div class="feed-field">
         <label for="feedPostImage">Kuva (JPEG/PNG/WebP, enintään 8 Mt)</label>
-        <input type="file" id="feedPostImage" accept="image/jpeg,image/png,image/webp">
+        <input type="file" id="feedPostImage" accept="image/*">
         <img id="feedPostPreview" class="feed-post-preview" alt="">
       </div>
       <div class="feed-form-actions">
@@ -4669,10 +4770,12 @@ async function handleFeedSignup(){
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
+    setFeedToken(data.token);
     feedUser = { username: data.username };
     renderFeedAuth();
   } catch(e) {
     showFeedAuthError(e.message);
+    if (e.offline) renderFeedAuth();
   } finally {
     setFeedAuthBusy(false);
   }
@@ -4688,10 +4791,12 @@ async function handleFeedLogin(){
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     });
+    setFeedToken(data.token);
     feedUser = { username: data.username };
     renderFeedAuth();
   } catch(e) {
     showFeedAuthError(e.message);
+    if (e.offline) renderFeedAuth();
   } finally {
     setFeedAuthBusy(false);
   }
@@ -4699,12 +4804,67 @@ async function handleFeedLogin(){
 
 async function handleFeedLogout(){
   try { await feedApi('/api/auth/logout', { method: 'POST' }); } catch(e) { /* ei väliä, tyhjennetään silti paikallinen tila */ }
+  setFeedToken('');
   feedUser = null;
   feedAuthMode = 'login';
   renderFeedAuth();
 }
 
 async function handleFeedNewPost(){
+  async function prepareImageForUpload(file) {
+  const type = (file.type || '').toLowerCase();
+
+  if (['image/jpeg', 'image/png', 'image/webp'].includes(type)) {
+    return file;
+  }
+
+  if (
+    type === 'image/heic' ||
+    type === 'image/heif' ||
+    file.name.toLowerCase().endsWith('.heic') ||
+    file.name.toLowerCase().endsWith('.heif')
+  ) {
+    const url = URL.createObjectURL(file);
+
+    try {
+      const img = new Image();
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () =>
+          reject(new Error('iPhonen HEIC-kuvaa ei voitu käsitellä.'));
+        img.src = url;
+      });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(
+          result => result
+            ? resolve(result)
+            : reject(new Error('Kuvan muuntaminen epäonnistui.')),
+          'image/jpeg',
+          0.88
+        );
+      });
+
+      return new File(
+        [blob],
+        file.name.replace(/\.(heic|heif)$/i, '.jpg'),
+        { type: 'image/jpeg' }
+      );
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  throw new Error('Tätä kuvatyyppiä ei tueta.');
+}
   const captionEl = document.getElementById('feedPostCaption');
   const fileInput = document.getElementById('feedPostImage');
   const errorEl = document.getElementById('feedPostError');
@@ -4723,9 +4883,10 @@ async function handleFeedNewPost(){
     return;
   }
 
-  const formData = new FormData();
-  formData.append('image', file);
-  formData.append('caption', captionEl.value.trim());
+ const uploadFile = await prepareImageForUpload(file);
+ const formData = new FormData();
+ formData.append('image', uploadFile, uploadFile.name);
+ formData.append('caption', captionEl.value.trim());
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Tarkistetaan ja julkaistaan...';
@@ -4738,6 +4899,7 @@ async function handleFeedNewPost(){
   } catch(e) {
     errorEl.textContent = e.message;
     errorEl.hidden = false;
+    if (e.status === 401) { feedUser = null; renderFeedAuth(); }
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Julkaise';
@@ -4759,13 +4921,125 @@ function escapeHtml(str){
   return div.innerHTML;
 }
 
+function feedHeartIcon(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>';
+}
+function feedCommentIcon(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-3.8 7.1 8.5 8.5 0 0 1-9 .4L3 21l1.9-5.2a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>';
+}
+function feedTrashIcon(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+}
+
+// Jos käyttäjä ei ole kirjautunut, viedään näkyviin kirjautumislomakkeeseen sen sijaan että
+// yritettäisiin API-kutsua joka joka tapauksessa hylättäisiin 401:llä.
+function feedPromptLogin(){
+  const card = document.getElementById('feedAuthCard');
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function toggleLike(postId, btn){
+  if (!feedUser) { feedPromptLogin(); return; }
+  if (btn.disabled) return;
+  btn.disabled = true;
+  try {
+    const data = await feedApi('/api/posts/' + postId + '/like', { method: 'POST' });
+    btn.classList.toggle('liked', data.liked);
+    const countEl = btn.querySelector('.feed-like-count');
+    if (countEl) countEl.textContent = data.likeCount;
+  } catch(e) {
+    // Hiljainen epäonnistuminen (esim. verkkokatkos) - painike jää ennalleen, voi yrittää uudelleen.
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderFeedComment(c){
+  const item = document.createElement('div');
+  item.className = 'feed-comment-item';
+  const head = document.createElement('span');
+  head.innerHTML = '<span class="feed-comment-user"></span><span class="feed-comment-time"></span>';
+  head.querySelector('.feed-comment-user').textContent = c.username;
+  head.querySelector('.feed-comment-time').textContent = formatFeedTime(c.createdAt);
+  item.appendChild(head);
+  const body = document.createElement('p');
+  body.textContent = c.body;
+  item.appendChild(body);
+  return item;
+}
+
+async function loadComments(postId, wrap){
+  const listEl = wrap.querySelector('.feed-comment-list');
+  listEl.textContent = 'Ladataan kommentteja...';
+  try {
+    const data = await feedApi('/api/posts/' + postId + '/comments');
+    listEl.innerHTML = '';
+    if (!data.comments.length) {
+      const p = document.createElement('p');
+      p.className = 'feed-comment-status';
+      p.textContent = 'Ei vielä kommentteja.';
+      listEl.appendChild(p);
+    } else {
+      data.comments.forEach(c => listEl.appendChild(renderFeedComment(c)));
+    }
+  } catch(e) {
+    listEl.textContent = 'Kommenttien lataus epäonnistui.';
+  }
+}
+
+function toggleCommentsPanel(postId, wrap, countEl){
+  const wasHidden = wrap.hidden;
+  wrap.hidden = !wasHidden;
+  if (wasHidden && !wrap.dataset.loaded) {
+    wrap.dataset.loaded = '1';
+    loadComments(postId, wrap);
+  }
+}
+
+async function submitComment(postId, wrap, countEl){
+  if (!feedUser) { feedPromptLogin(); return; }
+  const input = wrap.querySelector('.feed-comment-input');
+  const statusEl = wrap.querySelector('.feed-comment-status');
+  const body = input.value.trim();
+  if (!body) return;
+  input.disabled = true;
+  try {
+    const comment = await feedApi('/api/posts/' + postId + '/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ body })
+    });
+    const listEl = wrap.querySelector('.feed-comment-list');
+    const emptyMsg = listEl.querySelector('.feed-comment-status');
+    if (emptyMsg) emptyMsg.remove();
+    listEl.appendChild(renderFeedComment(comment));
+    input.value = '';
+    if (statusEl) statusEl.textContent = '';
+    if (countEl) countEl.textContent = String((parseInt(countEl.textContent, 10) || 0) + 1);
+  } catch(e) {
+    if (statusEl) statusEl.textContent = e.message || 'Kommentin lähetys epäonnistui.';
+  } finally {
+    input.disabled = false;
+  }
+}
+
+async function deletePost(postId, card){
+  if (!confirm('Poistetaanko tämä saaliskuva pysyvästi?')) return;
+  try {
+    await feedApi('/api/posts/' + postId, { method: 'DELETE' });
+    card.remove();
+  } catch(e) {
+    alert(e.message || 'Poisto epäonnistui.');
+  }
+}
+
 function renderPostCard(post){
   const card = document.createElement('div');
   card.className = 'feed-post-card';
 
   const img = document.createElement('img');
   img.className = 'feed-post-image';
-  img.src = post.imageUrl;
+  img.src = feedAssetUrl(post.imageUrl);
   img.loading = 'lazy';
   img.alt = 'Saaliskuva käyttäjältä ' + post.username;
   card.appendChild(img);
@@ -4790,6 +5064,50 @@ function renderPostCard(post){
     body.appendChild(p);
   }
 
+  const actions = document.createElement('div');
+  actions.className = 'feed-post-actions';
+
+  const likeBtn = document.createElement('button');
+  likeBtn.type = 'button';
+  likeBtn.className = 'feed-action-btn feed-like-btn' + (post.likedByMe ? ' liked' : '');
+  likeBtn.setAttribute('aria-label', 'Tykkää');
+  likeBtn.innerHTML = feedHeartIcon() + '<span class="feed-like-count">' + post.likeCount + '</span>';
+  body.appendChild(actions);
+  actions.appendChild(likeBtn);
+
+  const commentsWrap = document.createElement('div');
+  commentsWrap.className = 'feed-comments';
+  commentsWrap.hidden = true;
+  commentsWrap.innerHTML = '<div class="feed-comment-list"></div>' +
+    '<div class="feed-comment-form"><input type="text" class="feed-comment-input" maxlength="300" placeholder="Kirjoita kommentti..."><button type="button" class="btn feed-comment-submit">Lähetä</button></div>' +
+    '<p class="feed-comment-status"></p>';
+
+  const commentBtn = document.createElement('button');
+  commentBtn.type = 'button';
+  commentBtn.className = 'feed-action-btn feed-comment-btn';
+  commentBtn.setAttribute('aria-label', 'Kommentit');
+  commentBtn.innerHTML = feedCommentIcon() + '<span class="feed-comment-count">' + post.commentCount + '</span>';
+  actions.appendChild(commentBtn);
+  const commentCountEl = commentBtn.querySelector('.feed-comment-count');
+
+  likeBtn.addEventListener('click', () => toggleLike(post.id, likeBtn));
+  commentBtn.addEventListener('click', () => toggleCommentsPanel(post.id, commentsWrap));
+  commentsWrap.querySelector('.feed-comment-submit').addEventListener('click', () => submitComment(post.id, commentsWrap, commentCountEl));
+  commentsWrap.querySelector('.feed-comment-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); submitComment(post.id, commentsWrap, commentCountEl); }
+  });
+
+  if (post.canDelete) {
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'feed-action-btn feed-delete-btn';
+    delBtn.setAttribute('aria-label', 'Poista');
+    delBtn.innerHTML = feedTrashIcon() + '<span>Poista</span>';
+    delBtn.addEventListener('click', () => deletePost(post.id, card));
+    actions.appendChild(delBtn);
+  }
+
+  body.appendChild(commentsWrap);
   card.appendChild(body);
   return card;
 }
@@ -4820,7 +5138,8 @@ async function loadFeed(reset){
     if (statusEl) statusEl.textContent = totalShown === 0 ? 'Ei vielä saaliskuvia - ole ensimmäinen!' : '';
     if (moreBtn) moreBtn.hidden = !feedHasMore;
   } catch(e) {
-    if (statusEl) statusEl.textContent = 'Saaliiden lataus epäonnistui.';
+    if (statusEl) statusEl.textContent = e.offline ? '' : 'Saaliiden lataus epäonnistui.';
+    if (e.offline) renderFeedAuth(); // näytä selkeä selitys kirjautumislomakkeen tilalla
   } finally {
     feedLoading = false;
   }
@@ -4830,8 +5149,8 @@ document.getElementById('feedLoadMoreBtn') && document.getElementById('feedLoadM
 
 async function initFeedPage(){
   await fetchFeedUser();
+  await loadFeed(true); // asettaa feedApiOffline:n jos palvelinta ei tavoiteta
   renderFeedAuth();
-  loadFeed(true);
 }
 
 function degToCompass(deg){

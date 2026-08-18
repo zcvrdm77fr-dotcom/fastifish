@@ -6,6 +6,14 @@ import { moderateUsername, ModerationUnavailableError } from './moderation.js';
 
 const SESSION_COOKIE = 'ff_session';
 const SESSION_DAYS = 30;
+
+// Kun sivusto (esim. fastfishin.com GitHub Pagesissa) ja tämä API ovat eri osoitteissa, selain
+// kohtelee session-evästettä kolmannen osapuolen evästeenä. Safari ja Firefox estävät sellaiset
+// oletuksena kokonaan, joten pelkkä eväste EI riitä - kirjautuminen näyttäisi onnistuvan mutta
+// unohtuisi heti. Siksi istuntotunnus palautetaan myös vastauksen rungossa, ja front voi
+// lähettää sen Authorization: Bearer -otsakkeessa. Eväste jää käyttöön samasta osoitteesta
+// tarjoiltaessa (npm start paikallisesti), jolloin token ei ole selaimen muistissa lainkaan.
+const CROSS_SITE = process.env.CROSS_SITE_COOKIES === '1';
 const USERNAME_RE = /^[a-zA-Z0-9äöåÄÖÅ_-]{3,20}$/;
 
 const RESERVED_USERNAMES = new Set([
@@ -23,17 +31,52 @@ function createSession(userId){
 function setSessionCookie(res, token, expiresAt){
   res.cookie(SESSION_COOKIE, token, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    // SameSite=None vaatii aina Secure-lipun, muuten selain hylkää evästeen kokonaan.
+    sameSite: CROSS_SITE ? 'none' : 'lax',
+    secure: CROSS_SITE || process.env.NODE_ENV === 'production',
     expires: new Date(expiresAt),
     path: '/'
   });
 }
 
+function clearSessionCookie(res){
+  res.clearCookie(SESSION_COOKIE, {
+    path: '/',
+    sameSite: CROSS_SITE ? 'none' : 'lax',
+    secure: CROSS_SITE || process.env.NODE_ENV === 'production'
+  });
+}
+
+// Istuntotunnus voi tulla joko evästeestä (sama osoite) tai Authorization: Bearer -otsakkeesta
+// (eri osoite, jolloin eväste ei kulje perille).
+function readSessionToken(req){
+  const header = req.headers.authorization;
+  if (header && header.startsWith('Bearer ')) {
+    const token = header.slice(7).trim();
+    if (token) return token;
+  }
+  return (req.cookies && req.cookies[SESSION_COOKIE]) || null;
+}
+
+// Sivuston omistajan käyttäjänimet, jotka saavat poistaa KENEN TAHANSA julkaisun (ei vain omiaan).
+// Asetetaan ADMIN_USERNAMES-ympäristömuuttujalla (pilkulla erotettuna), esim.
+// "kalastaja123,toinenkinylläpitäjä" - ei tietokantasarakkeeksi asti, koska omistajia on
+// käytännössä yksi tai muutama ja tämä on paljon yksinkertaisempi ylläpitää kuin oma
+// käyttöliittymä roolien hallintaan.
+const ADMIN_USERNAMES = new Set(
+  (process.env.ADMIN_USERNAMES || '')
+    .split(',')
+    .map(u => u.trim().toLowerCase())
+    .filter(Boolean)
+);
+export function isAdminUsername(username){
+  return !!username && ADMIN_USERNAMES.has(username.toLowerCase());
+}
+
 // Middleware: lukee session-evästeen ja liittää req.user:iin jos voimassa oleva istunto löytyy.
 // Ei pakota kirjautumista - reitit päättävät itse vaativatko ne req.useria.
 export function attachUser(req, res, next){
-  const token = req.cookies && req.cookies[SESSION_COOKIE];
+  const token = readSessionToken(req);
   if (!token) return next();
   const row = db.prepare(`
     SELECT users.id as id, users.username as username, sessions.expires_at as expires_at
@@ -41,7 +84,7 @@ export function attachUser(req, res, next){
     WHERE sessions.token = ?
   `).get(token);
   if (row && new Date(row.expires_at) > new Date()) {
-    req.user = { id: row.id, username: row.username };
+    req.user = { id: row.id, username: row.username, isAdmin: isAdminUsername(row.username) };
   }
   next();
 }
@@ -85,7 +128,7 @@ router.post('/signup', async (req, res) => {
   const info = db.prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)').run(username, passwordHash);
   const { token, expiresAt } = createSession(info.lastInsertRowid);
   setSessionCookie(res, token, expiresAt);
-  res.json({ username });
+  res.json({ username, token, expiresAt });
 });
 
 router.post('/login', async (req, res) => {
@@ -99,13 +142,13 @@ router.post('/login', async (req, res) => {
   if (!ok) return res.status(401).json({ error: 'Väärä käyttäjänimi tai salasana.' });
   const { token, expiresAt } = createSession(user.id);
   setSessionCookie(res, token, expiresAt);
-  res.json({ username: user.username });
+  res.json({ username: user.username, token, expiresAt });
 });
 
 router.post('/logout', (req, res) => {
-  const token = req.cookies && req.cookies[SESSION_COOKIE];
+  const token = readSessionToken(req);
   if (token) db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
-  res.clearCookie(SESSION_COOKIE, { path: '/' });
+  clearSessionCookie(res);
   res.json({ ok: true });
 });
 
