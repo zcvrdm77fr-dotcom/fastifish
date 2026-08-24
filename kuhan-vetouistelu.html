@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <script>
-// Asetetaan tumma/vaalea tila heti ennen ensimmäistä piirtoa, jotta sivu ei välähdä väärällä teemalla.
 (function () {
   try {
     var stored = null;
@@ -21,103 +20,71 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Kuhan vetouistelu – Kattava opas | FastFishing</title>
+<title>Kuhan vetouistelu: termokliini ja syvyydenhallinta | FastFishing</title>
 
-<meta name="description" content="Lue kattava opas kuhan vetouisteluun. Parhaat syvyydet, uistelunopeus, vieheet, sääolosuhteet ja vinkit suuremman kuhan saamiseen.">
+<meta name="description" content="Kesän kuhavetouistelun ydin on lämpötilan harppauskerros. Opas selittää termokliinin lukemisen kaikuluotaimesta ja vertailee paravaania, lyijysiimaa ja downriggeriä.">
 
 <link rel="canonical" href="https://www.fastfishin.com/kuhan-vetouistelu.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#f4f0e5;
-color:#17342f;
-line-height:1.8;
+:root{
+  --ink:#17342f; --ink-soft:#45645e; --lake:#2f6f73; --lake-deep:#24585c;
+  --mist:#d9e8e4; --paper:#f4f0e5; --paper-bright:#fffdf7; --line:#c9d5cf;
+  --orange:#d5752c; --orange-dark:#ad571e; --link:#24585c;
+  --shadow-small:0 8px 24px rgba(23,52,47,.09); --radius:20px;
 }
-
-header{
-background:#24585c;
-color:white;
-padding:80px 20px;
+html[data-theme="dark"]{
+  color-scheme: dark;
+  --ink:#eef3f0; --ink-soft:#a8c2b9; --lake:#59a3a7; --lake-deep:#123234;
+  --mist:#17302c; --paper:#0d1a16; --paper-bright:#142522; --line:#29423b;
+  --orange:#e2884a; --orange-dark:#e2884a; --link:#8dd0d2;
+  --shadow-small:0 8px 24px rgba(0,0,0,.35);
 }
-
-.container{
-width:min(1100px,92%);
-margin:auto;
-}
-
-h1{
-font-size:56px;
-margin-bottom:20px;
-}
-
-h2{
-font-size:34px;
-margin-top:60px;
-color:#24585c;
-}
-
-h3{
-margin-top:35px;
-}
-
-article{
-background:white;
-padding:40px;
-margin:40px 0;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-.button{
-display:inline-block;
-margin-top:25px;
-padding:14px 22px;
-background:#d5752c;
-color:white;
-text-decoration:none;
-border-radius:10px;
-font-weight:bold;
-}
-
-.tip{
-background:#eef8f6;
-border-left:5px solid #2f6f73;
-padding:18px;
-margin:25px 0;
-border-radius:8px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-th,td{
-padding:14px;
-border-bottom:1px solid #ddd;
-text-align:left;
-}
-
-footer{
-margin-top:60px;
-padding:40px;
-text-align:center;
-color:#666;
-}
-
-
-html[data-theme="dark"] body{background:#0d1a16;color:#eef3f0;}
-html[data-theme="dark"] header{background:#0a2224;}
+html[data-theme="light"], html:not([data-theme]) { color-scheme: light; }
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:17px;}
+a{color:var(--link);}
+.container{width:min(880px,92%);margin:auto;}
+header.hero{background:var(--lake-deep);color:#fff;padding:clamp(40px,8vw,76px) 20px 46px;}
+.crumb{font:600 .78rem/1 'JetBrains Mono',monospace;letter-spacing:.03em;color:#bfe3e0;margin-bottom:16px;}
+.crumb a{color:#bfe3e0;}
+.eyebrow{font:700 .74rem/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f3c393;margin-bottom:14px;display:block;}
+h1{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(2.1rem,5.2vw,3.3rem);line-height:1.06;margin:0 0 18px;letter-spacing:-.01em;}
+h2{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(1.5rem,3.4vw,1.9rem);margin:0 0 14px;color:var(--lake-deep);scroll-margin-top:16px;}
 html[data-theme="dark"] h2{color:#7fd6d6;}
-html[data-theme="dark"] article{background:#142522;box-shadow:0 10px 30px rgba(0,0,0,.4);}
-html[data-theme="dark"] .tip{background:#132a26;border-left-color:#59a3a7;}
-html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom:1px solid #29423b;}
-html[data-theme="dark"] footer{color:#9db3ab;}
-
+h3{margin-top:26px;margin-bottom:8px;font-size:1.1rem;}
+p{margin:0 0 16px;}
+article.card{background:var(--paper-bright);padding:clamp(24px,4vw,38px);margin:26px 0;border-radius:var(--radius);box-shadow:var(--shadow-small);border:1px solid var(--line);}
+.button{display:inline-block;margin-top:22px;padding:13px 20px;background:var(--orange);color:#fff !important;text-decoration:none;border-radius:10px;font-weight:700;}
+.tip{background:var(--mist);border-left:4px solid var(--lake);padding:16px 18px;margin:22px 0;border-radius:8px;}
+.tip strong{color:var(--lake-deep);}
+html[data-theme="dark"] .tip strong{color:#7fd6d6;}
+.note{border:1px dashed var(--line);padding:18px 20px;margin:24px 0;border-radius:12px;color:var(--ink-soft);font-size:.96rem;}
+.note strong{color:var(--ink);}
+.table-wrap{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:460px;}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem;vertical-align:top;}
+th{color:var(--ink-soft);font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;}
+.toc{background:var(--paper-bright);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:.94rem;}
+.toc summary{cursor:pointer;font-weight:700;color:var(--lake-deep);}
+html[data-theme="dark"] .toc summary{color:#7fd6d6;}
+.toc ul{margin:12px 0 0;padding-left:20px;columns:2;column-gap:24px;}
+.toc li{break-inside:avoid;margin-bottom:6px;}
+details.faq{border-bottom:1px solid var(--line);padding:14px 0;}
+details.faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;}
+details.faq summary::-webkit-details-marker{display:none;}
+details.faq summary::before{content:'+ ';color:var(--orange);font-weight:700;}
+details.faq[open] summary::before{content:'– ';}
+details.faq p{margin-top:10px;}
+.related{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:10px;}
+.related li a{display:inline-block;padding:9px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:.9rem;}
+footer{margin-top:40px;padding:36px 20px;text-align:center;color:var(--ink-soft);font-size:.85rem;}
 .theme-toggle-fab{position:fixed;top:16px;right:16px;z-index:9999;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(23,52,47,.55);backdrop-filter:blur(8px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s;}
 .theme-toggle-fab:hover{transform:translateY(-2px);}
 .theme-toggle-fab svg{width:18px;height:18px;display:block;}
@@ -127,7 +94,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-sun{display:block;}
 html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 </style>
 
-<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
+<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes käyttäjä hyväksyy evästeet. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -156,7 +123,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
-<!-- Google AdSense: ladataan AINA suoraan headissa, EI evastesuostumuksen taakse (vaaditaan sivuston hyvaksyntaa varten). -->
+<!-- Google AdSense: ladataan AINA suoraan headissa, EI evästesuostumuksen taakse (vaaditaan sivuston hyväksyntää varten). -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
 </head>
 
@@ -166,479 +133,137 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
 </button>
 
-<header>
-
+<header class="hero">
 <div class="container">
-
-<h1>Kuhan vetouistelu – täydellinen opas aloittelijalle ja kokeneelle kalastajalle</h1>
-
+<div class="crumb"><a href="index.html">Etusivu</a> → Kalastusoppaat → Kuhan vetouistelu</div>
+<span class="eyebrow">Syvyyden hallinta</span>
+<h1>Kuhan vetouistelu: termokliinin lukeminen ratkaisee kesällä</h1>
 <p>
-Kuha on yksi Suomen halutuimmista saaliskaloista, ja vetouistelu on tehokkain tapa löytää liikkuvat kuhaparvet laajoiltakin selkävesiltä. Oikea syvyys ja nopeus ratkaisevat usein enemmän kuin viehevalinta.
+Kesäkuhan vetouistelu on syvyyspeliä. Kun järvi lämpiää, vesi jakautuu kerroksiin, ja kuha asettuu käytännössä aina yhden tietyn kerroksen tuntumaan riippumatta siitä, mikä metrimäärä kaikuluotaimessa lukee. Tämä opas keskittyy siihen, miten tuo kerros – termokliini – löydetään ja miten viehe saadaan pysymään siinä koko vedon ajan.
 </p>
-
-<p>
-Tässä oppaassa käydään läpi, mistä kuhaa kannattaa etsiä eri vuodenaikoina, mitkä vieheet ja nopeudet toimivat parhaiten ja miten sää vaikuttaa kuhan syöntiin.
-</p>
-
-<a class="button" href="index.html">
-← Palaa FastFishing-kelimittariin
-</a>
-
+<a class="button" href="index.html">← Palaa FastFishing-kelimittariin</a>
 </div>
-
 </header>
 
 <div class="container">
 
-<article>
+<details class="toc">
+<summary>Sisällys</summary>
+<ul>
+<li><a href="#termokliini">Termokliini: mikä se on ja miksi kuha viihtyy siinä</a></li>
+<li><a href="#syvyydenhallinta">Paravaani, lyijysiima vai downrigger?</a></li>
+<li><a href="#scurve">S-käyrät ja nopeusvaihtelu</a></li>
+<li><a href="#kausi">Vuodenaikataulu</a></li>
+<li><a href="#viehe">Vieheet</a></li>
+<li><a href="#faq">Usein kysytyt kysymykset</a></li>
+</ul>
+</details>
 
-<h2>Miksi vetouistelu sopii kuhalle niin hyvin?</h2>
-
+<article class="card" id="termokliini">
+<h2>Termokliini: mikä se on ja miksi kuha viihtyy siinä</h2>
 <p>
-Kuha liikkuu usein laajoina parvina avoimella selkävedellä tai syvänteiden
-reunoilla, jolloin paikallaan istuminen yhdellä paikalla ei välttämättä
-tuota tulosta. Vetouistelu mahdollistaa suuren vesialueen kartoittamisen
-tehokkaasti, kunnes parvi löytyy.
+Kesällä auringon lämmittämä pintavesi kelluu kevyempänä kylmemmän alusveden päällä, ja näiden väliin muodostuu ohut, nopeasti jäähtyvä kerros – lämpötilan harppauskerros eli termokliini. Kaikuluotaimessa se näkyy usein vaakasuorana, hieman sumeana vyöhykkeenä tietyllä syvyydellä, ja ravintokala kerääntyy sen ylä- tai alapuolelle riippuen hapesta ja lämpötilasta. Kuha seuraa ravintokalaa ja pysyy näin ollen usein hyvin tarkasti tietyllä metrilukemalla koko kesän ajan.
 </p>
-
 <p>
-Kuha on myös kala, joka reagoi herkästi vieheen syvyyteen ja nopeuteen.
-Kun viehe saadaan kalan syvyyteen oikealla vauhdilla, tärppi tulee usein
-nopeasti.
+Käytännön seuraus: jos toimiva syvyys löytyy esimerkiksi 8 metristä yhdellä alueella, sama syvyys todennäköisesti toimii koko järven muillakin selkävesialueilla samana päivänä, koska koko vesimassa on lämmennyt samaan tahtiin.
 </p>
-
 <div class="tip">
-<strong>Vinkki:</strong><br>
-Käytä kaikuluotainta apuna. Kuhaparvi ja lämpötilan harppauskerros
-(termokliini) näkyvät luotaimessa usein selvästi, ja niiden mukaan
-kannattaa säätää uistelusyvyys.
+<strong>Vinkki:</strong> Kun löydät termokliinin kaikuluotaimesta, kokeile ensimmäistä viehesyvyyttä juuri sen yläpuolelta, ei keskeltä sitä. Kuha saalistaa tyypillisesti ravintokalaa hieman kerroksen yläpuolelta käsin.
 </div>
-
 </article>
 
-<article>
-
-<h2>Missä kuha liikkuu vetouistelun aikana?</h2>
-
+<article class="card" id="syvyydenhallinta">
+<h2>Paravaani, lyijysiima vai downrigger?</h2>
 <p>
-Kuha viihtyy tyypillisesti pohjan tuntumassa tai lämpötilan
-harppauskerroksen yläpuolella. Se suosii selkävesiä, syvänteiden reunoja
-ja pohjan muotojen vaihtelukohtia, kuten hyllyjä ja töyräitä.
+Kolme yleisintä tapaa saada viehe pysymään halutulla syvyydellä sopivat hieman eri tilanteisiin:
 </p>
-
-<p>
-Hyviä vetouistelualueita ovat esimerkiksi:
-</p>
-
-<ul>
-<li>Syvänteiden reunat ja hyllyt</li>
-<li>Selkävesien pohjan muodonvaihtelut</li>
-<li>Saarten ja luotojen syvemmät sivustat</li>
-<li>Virtapaikkojen läheiset syvänteet</li>
-<li>Alueet, joilla kaikuluotain näyttää ravintokalaparvia</li>
-</ul>
-
-<p>
-Jos kaikuluotaimessa näkyy tiivis kalaparvi lähellä pohjaa tai
-harppauskerrosta, kannattaa ajaa alue uudelleen hieman eri linjaa pitkin.
-</p>
-
-</article>
-
-<article>
-
-<h2>Paras sää kuhan vetouisteluun</h2>
-
-<p>
-Kuha on hämäräkala, joten sää ja valoisuus vaikuttavat sen syöntiin
-voimakkaasti. Kirkkaassa vedessä paras syönti ajoittuu usein hämärään ja
-yöhön, kun taas sameassa vedessä kuha voi syödä myös päiväsaikaan.
-</p>
-
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Olosuhde</th>
-<th>Vaikutus</th>
-</tr>
-
-<tr>
-<td>Hämärä ja yö</td>
-<td>Erittäin hyvä</td>
-</tr>
-
-<tr>
-<td>Pilvinen sää</td>
-<td>Hyvä</td>
-</tr>
-
-<tr>
-<td>Kevyt tuuli</td>
-<td>Hyvä</td>
-</tr>
-
-<tr>
-<td>Kirkas, tyyni keskipäivä</td>
-<td>Usein heikompi</td>
-</tr>
-
-<tr>
-<td>Laskeva ilmanpaine</td>
-<td>Voi aktivoida kuhaa</td>
-</tr>
-
+<tr><th>Menetelmä</th><th>Sopii parhaiten</th><th>Huomio</th></tr>
+<tr><td>Syvälle sukeltava vaappu</td><td>4–8&nbsp;m syvyyksiin</td><td>Yksinkertaisin, ei lisävarusteita</td></tr>
+<tr><td>Paravaani / lyijysiima</td><td>6–12&nbsp;m syvyyksiin</td><td>Edullinen tapa lisätä syvyyttä ja leveyttä</td></tr>
+<tr><td>Downrigger</td><td>Hyvin syvä vesi tai tarkka, tasainen syvyys</td><td>Kalliimpi, mutta pitää syvyyden täsmällisenä</td></tr>
 </table>
-
-<p>
-FastFishingin kelimittari yhdistää nämä tekijät yhdeksi pisteytykseksi,
-jotta voit arvioida päivän kalakelin nopeasti ennen vesille lähtöä.
-</p>
-
-</article>
-
-<article>
-
-<h2>Kuhan vetouistelu keväällä ja alkukesällä</h2>
-
-<p>
-Heti kutuajan jälkeen touko-kesäkuussa kuha palaa matalilta
-kutualueilta syvemmälle veteen ja alkaa syödä aktiivisesti. Tämä on
-yksi vuoden parhaista ajoista vetouistella kuhaa.
-</p>
-
-<p>
-Alkukesällä toimiva uistelusyvyys on usein 4–8 metriä ja nopeus
-maltillinen, sillä vesi on vielä viileää.
-</p>
-
-<h3>Kevään parhaat vieheet</h3>
-
-<ul>
-<li>Keskisyvälle sukeltavat vaaput</li>
-<li>Luonnollisen väriset uistimet kirkkaassa vedessä</li>
-<li>Hitaasti uivat mallit</li>
-</ul>
-
-<div class="tip">
-<strong>Vinkki:</strong> Alkukesästä hidas ja tasainen 3–4 km/h vetonopeus
-tuottaa usein paremmin kuin ripeä vetäminen.
 </div>
-
+<p>
+Suurimmalle osalle suomalaisista järvistä syvälle sukeltavat vaaput sekä paravaanit riittävät hyvin. Downrigger kannattaa harkita vasta, jos kalastat toistuvasti yli 12 metrin syvyyksissä tai haluat pitää useamman vavan tarkasti samalla, tasaisella syvyydellä.
+</p>
 </article>
 
-<article>
-
-<h2>Kuhan vetouistelu kesällä</h2>
-
+<article class="card" id="scurve">
+<h2>S-käyrät ja nopeusvaihtelu</h2>
 <p>
-Kesällä veden lämmetessä kuha vetäytyy usein syvemmälle, lämpötilan
-harppauskerroksen tuntumaan. Uistelusyvyys voi tällöin olla 6–12 metriä
-tai jopa syvemmällä isoilla selkävesillä.
+Vedä venettä loivissa S-käyrissä suoran linjan sijaan. Kaarteen ulkoreunalla viehe kiihtyy ja sisäreunalla hidastuu, mikä saa usein passiivisenkin kuhan iskemään äkillisen nopeusvaihtelun ansiosta – tämä yksinkertainen tekniikka toimii yllättävän usein paremmin kuin minkään yksittäisen vieheen vaihtaminen.
 </p>
-
-<p>
-Parhaat syöntihetket ajoittuvat kesällä usein iltahämärään, yöhön ja
-aikaiseen aamuun.
-</p>
-
-<h3>Kesän parhaat vieheet</h3>
-
-<ul>
-<li>Syvälle sukeltavat vaaput</li>
-<li>Kontrastivärit hämärässä ja yöllä</li>
-<li>Paravaanit ja lyijysiima syvyyden hallintaan</li>
-</ul>
-
 </article>
 
-<article>
-
-<h2>Kuhan vetouistelu syksyllä</h2>
-
-<p>
-Syksyllä veden viiletessä kuha kerääntyy usein suuriin parviin
-syvänteiden reunoille ennen talvea. Elo-lokakuu on monelle kuhamiehelle
-vuoden parasta vetouisteluaikaa.
-</p>
-
-<p>
-Syksyllä kannattaa kokeilla hieman hitaampaa vetonopeutta kuin kesällä ja
-keskittyä syvänteiden reunoihin sekä pohjan muodonvaihteluihin.
-</p>
-
-<h3>Syksyn suosikkivieheet</h3>
-
-<ul>
-<li>Syvälle sukeltavat, isommat vaaput</li>
-<li>Luonnolliset kalakuviot</li>
-<li>Hitaasti uivat, vakaat mallit</li>
-</ul>
-
-</article>
-
-<article>
-
-<h2>Uistelunopeus ja syvyys – yhteenvetotaulukko</h2>
-
+<article class="card" id="kausi">
+<h2>Vuodenaikataulu</h2>
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Vuodenaika</th>
-<th>Syvyys</th>
-<th>Nopeus</th>
-</tr>
-
-<tr>
-<td>Kevät / alkukesä</td>
-<td>4–8 m</td>
-<td>3–4 km/h</td>
-</tr>
-
-<tr>
-<td>Kesä</td>
-<td>6–12 m</td>
-<td>3–5 km/h</td>
-</tr>
-
-<tr>
-<td>Syksy</td>
-<td>5–10 m</td>
-<td>3–4 km/h</td>
-</tr>
-
+<tr><th>Ajankohta</th><th>Syvyys</th><th>Nopeus</th></tr>
+<tr><td>Kevät / alkukesä</td><td>4–8&nbsp;m</td><td>3–4&nbsp;km/h</td></tr>
+<tr><td>Kesä (termokliinin tuntumassa)</td><td>6–12&nbsp;m</td><td>3–5&nbsp;km/h</td></tr>
+<tr><td>Syksy</td><td>5–10&nbsp;m</td><td>3–4&nbsp;km/h</td></tr>
 </table>
-
-<p>
-Nämä ovat suuntaa-antavia lähtökohtia – paikallinen kaikuluotain ja
-kokeilu kertovat aina tarkimman totuuden juuri kyseisenä päivänä.
-</p>
-
-</article>
-
-<article>
-
-<h2>Vieheen väri ja koko</h2>
-
-<p>
-Vieheen värillä on merkitystä erityisesti veden kirkkauden ja
-valoisuuden mukaan. Kirkkaassa vedessä ja päivänvalossa luonnolliset
-värit toimivat usein parhaiten, kun taas sameassa vedessä tai pimeällä
-kontrastivärit erottuvat paremmin.
-</p>
-
-<table>
-<tr>
-<th>Veden tila / valo</th>
-<th>Suositeltu väri</th>
-</tr>
-
-<tr>
-<td>Kirkas, päivänvalo</td>
-<td>Kuha, ahven, särki -kuviot</td>
-</tr>
-
-<tr>
-<td>Hieman samea</td>
-<td>Kulta, kupari</td>
-</tr>
-
-<tr>
-<td>Samea / hämärä / yö</td>
-<td>Oranssi, chartreuse, musta-valkoinen</td>
-</tr>
-
-</table>
-
-<p>
-Toimiva vieheen koko kuhalle on tyypillisesti 9–13 cm. Syvälle
-sukeltavat mallit ovat vetouistelussa avainasemassa, sillä ne pääsevät
-kalan syvyyteen ilman lisäpainoja.
-</p>
-
-</article>
-
-<article>
-
-<h2>Miten sää vaikuttaa kuhaan?</h2>
-
-<p>
-Sää vaikuttaa kuhan aktiivisuuteen enemmän kuin moni aloittelija uskoo.
-Pilvinen sää, hämärä ja tasainen ilmanpaine luovat usein erinomaiset
-olosuhteet vetouistelulle. Kirkas ja tyyni keskipäivä puolestaan voi
-passivoida kalan syvemmälle ja aktiivisuuden matalammaksi.
-</p>
-
-<ul>
-<li>Hämärä ja yö lisäävät usein kuhan aktiivisuutta.</li>
-<li>Kevyt tuuli sekoittaa pintavettä ja voi piristää syöntiä.</li>
-<li>Kirkas helle voi työntää kuhan syvemmälle keskipäivällä.</li>
-<li>Laskeva ilmanpaine voi käynnistää lyhyen syöntipiikin.</li>
-</ul>
-
-<div class="tip">
-<strong>Muista:</strong> Tarkista ennen lähtöä FastFishingin kelimittari.
-Se auttaa arvioimaan, kuinka suotuisat olosuhteet ovat juuri kyseisenä
-päivänä.
 </div>
-
+<p>
+Elo-lokakuu on monelle kuhamiehelle vuoden parasta vetouisteluaikaa: termokliini alkaa hajota, kala liikkuu laajemmin ja syö runsaasti ennen talvea.
+</p>
 </article>
 
-<article>
-
-<h2>Reitti ja tekniikka veneessä</h2>
-
+<article class="card" id="viehe">
+<h2>Vieheet</h2>
 <p>
-Vedä venettä loivissa S-käyrissä suoran linjan sijaan. Kaarteen
-ulkoreunalla viehe kiihtyy ja sisäreunalla hidastuu, mikä saa usein
-passiivisenkin kuhan iskemään nopeusvaihtelun ansiosta.
+Toimiva vieheen koko kuhalle on tyypillisesti 9–13&nbsp;cm. Kirkkaassa vedessä ja päivänvalossa luonnolliset kalakuviot (kuha, ahven, särki) toimivat parhaiten; hämärässä ja yöllä kannattaa vaihtaa kontrastivärimpiin tai tumman siluetin malleihin.
 </p>
-
-<p>
-Useamman vavan käyttö paravaanien avulla kattaa leveämmän alueen ja
-nopeuttaa parven löytämistä. Muista tarkistaa vieheiden uinti aika
-ajoin – kasvillisuus tai lika vieheessä pilaa sen toiminnan nopeasti.
-</p>
-
 </article>
 
-<article>
+<article class="card" id="faq">
+<h2>Usein kysytyt kysymykset</h2>
 
-<h2>Yleisimmät virheet</h2>
-
-<ol>
-
-<li>Vedetään liian nopeasti kylmässä vedessä.</li>
-
-<li>Ei huomioida termokliinin sijaintia kesällä.</li>
-
-<li>Vaihdetaan reittiä liian harvoin.</li>
-
-<li>Käytetään liian vaaleaa väriä hämärässä.</li>
-
-<li>Ei tarkisteta vieheen uintia säännöllisesti.</li>
-
-<li>Unohdetaan kaikuluotaimen hyödyntäminen.</li>
-
-<li>Luovutetaan liian aikaisin ennen parven löytymistä.</li>
-
-</ol>
-
-<p>
-Usein pieni muutos syvyydessä tai nopeudessa riittää muuttamaan hiljaisen
-päivän onnistuneeksi kalareissuksi.
-</p>
-
+<details class="faq">
+<summary>Miten termokliinin näkee kaikuluotaimesta, jos ei ole kokemusta lukemisesta?</summary>
+<p>Se näkyy tyypillisesti vaakasuorana, tasaisena vyöhykkeenä samalla syvyydellä koko näytön leveydeltä riippumatta pohjan muodoista – erotuksena kalaparvista, jotka näkyvät pistemäisempinä ja liikkuvat. Monissa laitteissa herkkyysasetusta säätämällä vyöhyke erottuu selvemmin.</p>
+</details>
+<details class="faq">
+<summary>Kannattaako sama syvyys pitää koko päivän?</summary>
+<p>Yleensä kyllä kesällä, koska termokliini pysyy melko vakaana koko avoveden ajan. Sään muuttuessa merkittävästi tai tuulen sekoittaessa pintavettä kerrostuma voi kuitenkin siirtyä, joten kaikuluotainta kannattaa tarkkailla jatkuvasti.</p>
+</details>
+<details class="faq">
+<summary>Onko jigikalastus parempi vaihtoehto kuin vetouistelu?</summary>
+<p>Molemmilla on paikkansa – jigi toimii hyvin tunnetulla, rajatulla paikalla, vetouistelu taas laajan selkäveden kartoittamisessa. Katso jigitekniikan perusteet <a href="jigikalastus.html">Jigikalastus-oppaasta</a> ja yleinen kuhankalastus <a href="kuhan-kalastus.html">Kuhan kalastus -oppaasta</a>.</p>
+</details>
 </article>
 
-<article>
-
-<h2>Usein kysytyt kysymykset (FAQ)</h2>
-
-<h3>Mikä on paras kuukausi kuhan vetouisteluun?</h3>
-
-<p>
-Touko-kesäkuu kudun jälkeen ja elo-lokakuu ovat yleensä parhaita
-ajanjaksoja. Kesähelteillä kuha vetäytyy syvemmälle, mutta syö silti
-hyvin hämärän aikaan.
-</p>
-
-<h3>Kuinka syvältä kuhaa kannattaa vetouistella?</h3>
-
-<p>
-Suuntaa-antava syvyys on 4–12 metriä vuodenajasta riippuen. Paras tapa
-löytää oikea syvyys on seurata kaikuluotainta ja etsiä kalaparvia tai
-lämpötilan harppauskerrosta.
-</p>
-
-<h3>Mikä vetonopeus toimii parhaiten?</h3>
-
-<p>
-Yleisin toimiva nopeus on 3–5 km/h. Kylmässä vedessä kannattaa vetää
-hitaammin, lämpimässä vedessä nopeus voi olla suurempi.
-</p>
-
-<h3>Tarvitaanko kuhan vetouisteluun downriggeria?</h3>
-
-<p>
-Ei välttämättä – syvälle sukeltavat vaaput, lyijysiima tai paravaanit
-riittävät usein hyvin useimpiin syvyyksiin. Downrigger on hyödyllinen
-erityisesti hyvin syvässä vedessä tai kun syvyys halutaan pitää täysin
-tasaisena.
-</p>
-
-</article>
-
-<article>
-
-<h2>Yhteenveto</h2>
-
-<p>
-
-Kuhan vetouistelu on palkitsevaa ympäri avoveden kauden, kun kalastaja
-osaa huomioida vuodenajan, veden lämpötilan ja sääolosuhteet. Keväällä
-kannattaa suunnata kohtalaisen matalille alueille, kesällä lämpötilan
-harppauskerroksen tuntumaan ja syksyllä syvänteiden reunoille. Oikea
-syvyys, nopeus ja vieheen väri ovat usein onnistuneen kuhareissun
-tärkeimmät tekijät.
-
-</p>
-
-<p>
-
-Muista tarkistaa myös FastFishingin kelimittari ennen lähtöä. Se auttaa
-arvioimaan, kuinka suotuisat kalastusolosuhteet ovat juuri kyseisenä
-päivänä.
-
-</p>
-
-<p>
-
-Tutustu myös muihin oppaisiin:
-
-</p>
-
-<ul>
-
-<li><a href="hauen-kalastus.html">Hauen kalastus</a></li>
-
-<li><a href="ahvenen-kalastus.html">Ahvenen kalastus</a></li>
-
+<article class="card">
+<h2>Muut oppaat</h2>
+<ul class="related">
 <li><a href="kuhan-kalastus.html">Kuhan kalastus</a></li>
-
+<li><a href="hauen-vetouistelu.html">Hauen vetouistelu</a></li>
+<li><a href="taimenen-vetouistelu.html">Taimenen vetouistelu</a></li>
 <li><a href="jigikalastus.html">Jigikalastus</a></li>
-
-<li><a href="vieheen-valinta.html">Vieheen valinta</a></li>
-
 </ul>
-
-<p>
-
-Onnistuneita kalastushetkiä ja kireitä siimoja!
-
-</p>
-
+<p style="margin-top:22px">Osuvaa syvyyttä ja pitkää iltaa vedessä!</p>
 </article>
 
 </div>
 
 <footer>
-
 <p>&copy; 2026 FastFishing – Kalastusoppaat ja kelimittari.</p>
-
 <p>
 <a href="index.html">Etusivu</a> |
 <a href="tietoa-meista.html">Tietoa meistä</a> |
 <a href="tietosuoja.html">Tietosuojaseloste</a>
 </p>
-
 </footer>
 
 <div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto kayttaa evasteita (mainosten personointiin Google AdSense) ja kavijatilastointiin (Google Analytics). Lue lisaa <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
+    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
     <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkaa valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyvaksy kaikki</button>
+      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
+      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
     </div>
   </div>
 </div>

@@ -21,103 +21,71 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Hauen kalastus – Kattava opas | FastFishing</title>
+<title>Hauen kalastus: rakenteen lukeminen ja väijyntäpaikat | FastFishing</title>
 
-<meta name="description" content="Lue kattava opas hauen kalastukseen. Parhaat vieheet, vuodenajat, sääolosuhteet, ottipaikat ja vinkit suuremman hauen saamiseen.">
+<meta name="description" content="Miksi hauki löytyy juuri tietyistä paikoista? Opas käy läpi väijyntärakenteet, vuodenaikataulun, viehevalinnan ja vastuullisen kalastuksen säännöt.">
 
 <link rel="canonical" href="https://www.fastfishin.com/hauen-kalastus.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#f4f0e5;
-color:#17342f;
-line-height:1.8;
+:root{
+  --ink:#17342f; --ink-soft:#45645e; --lake:#2f6f73; --lake-deep:#24585c;
+  --mist:#d9e8e4; --paper:#f4f0e5; --paper-bright:#fffdf7; --line:#c9d5cf;
+  --orange:#d5752c; --orange-dark:#ad571e; --link:#24585c;
+  --shadow-small:0 8px 24px rgba(23,52,47,.09); --radius:20px;
 }
-
-header{
-background:#24585c;
-color:white;
-padding:80px 20px;
+html[data-theme="dark"]{
+  color-scheme: dark;
+  --ink:#eef3f0; --ink-soft:#a8c2b9; --lake:#59a3a7; --lake-deep:#123234;
+  --mist:#17302c; --paper:#0d1a16; --paper-bright:#142522; --line:#29423b;
+  --orange:#e2884a; --orange-dark:#e2884a; --link:#8dd0d2;
+  --shadow-small:0 8px 24px rgba(0,0,0,.35);
 }
-
-.container{
-width:min(1100px,92%);
-margin:auto;
-}
-
-h1{
-font-size:56px;
-margin-bottom:20px;
-}
-
-h2{
-font-size:34px;
-margin-top:60px;
-color:#24585c;
-}
-
-h3{
-margin-top:35px;
-}
-
-article{
-background:white;
-padding:40px;
-margin:40px 0;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-.button{
-display:inline-block;
-margin-top:25px;
-padding:14px 22px;
-background:#d5752c;
-color:white;
-text-decoration:none;
-border-radius:10px;
-font-weight:bold;
-}
-
-.tip{
-background:#eef8f6;
-border-left:5px solid #2f6f73;
-padding:18px;
-margin:25px 0;
-border-radius:8px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-th,td{
-padding:14px;
-border-bottom:1px solid #ddd;
-text-align:left;
-}
-
-footer{
-margin-top:60px;
-padding:40px;
-text-align:center;
-color:#666;
-}
-
-
-html[data-theme="dark"] body{background:#0d1a16;color:#eef3f0;}
-html[data-theme="dark"] header{background:#0a2224;}
+html[data-theme="light"], html:not([data-theme]) { color-scheme: light; }
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:17px;}
+a{color:var(--link);}
+.container{width:min(880px,92%);margin:auto;}
+header.hero{background:var(--lake-deep);color:#fff;padding:clamp(40px,8vw,76px) 20px 46px;}
+.crumb{font:600 .78rem/1 'JetBrains Mono',monospace;letter-spacing:.03em;color:#bfe3e0;margin-bottom:16px;}
+.crumb a{color:#bfe3e0;}
+.eyebrow{font:700 .74rem/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f3c393;margin-bottom:14px;display:block;}
+h1{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(2.1rem,5.2vw,3.3rem);line-height:1.06;margin:0 0 18px;letter-spacing:-.01em;}
+h2{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(1.5rem,3.4vw,1.9rem);margin:0 0 14px;color:var(--lake-deep);scroll-margin-top:16px;}
 html[data-theme="dark"] h2{color:#7fd6d6;}
-html[data-theme="dark"] article{background:#142522;box-shadow:0 10px 30px rgba(0,0,0,.4);}
-html[data-theme="dark"] .tip{background:#132a26;border-left-color:#59a3a7;}
-html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom:1px solid #29423b;}
-html[data-theme="dark"] footer{color:#9db3ab;}
-
+h3{margin-top:26px;margin-bottom:8px;font-size:1.1rem;}
+p{margin:0 0 16px;}
+article.card{background:var(--paper-bright);padding:clamp(24px,4vw,38px);margin:26px 0;border-radius:var(--radius);box-shadow:var(--shadow-small);border:1px solid var(--line);}
+.button{display:inline-block;margin-top:22px;padding:13px 20px;background:var(--orange);color:#fff !important;text-decoration:none;border-radius:10px;font-weight:700;}
+.tip{background:var(--mist);border-left:4px solid var(--lake);padding:16px 18px;margin:22px 0;border-radius:8px;}
+.tip strong{color:var(--lake-deep);}
+html[data-theme="dark"] .tip strong{color:#7fd6d6;}
+.note{border:1px dashed var(--line);padding:18px 20px;margin:24px 0;border-radius:12px;color:var(--ink-soft);font-size:.96rem;}
+.note strong{color:var(--ink);}
+.table-wrap{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:460px;}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem;vertical-align:top;}
+th{color:var(--ink-soft);font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;}
+.toc{background:var(--paper-bright);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:.94rem;}
+.toc summary{cursor:pointer;font-weight:700;color:var(--lake-deep);}
+html[data-theme="dark"] .toc summary{color:#7fd6d6;}
+.toc ul{margin:12px 0 0;padding-left:20px;columns:2;column-gap:24px;}
+.toc li{break-inside:avoid;margin-bottom:6px;}
+details.faq{border-bottom:1px solid var(--line);padding:14px 0;}
+details.faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;}
+details.faq summary::-webkit-details-marker{display:none;}
+details.faq summary::before{content:'+ ';color:var(--orange);font-weight:700;}
+details.faq[open] summary::before{content:'– ';}
+details.faq p{margin-top:10px;}
+.related{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:10px;}
+.related li a{display:inline-block;padding:9px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:.9rem;}
+footer{margin-top:40px;padding:36px 20px;text-align:center;color:var(--ink-soft);font-size:.85rem;}
 .theme-toggle-fab{position:fixed;top:16px;right:16px;z-index:9999;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(23,52,47,.55);backdrop-filter:blur(8px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s;}
 .theme-toggle-fab:hover{transform:translateY(-2px);}
 .theme-toggle-fab svg{width:18px;height:18px;display:block;}
@@ -127,7 +95,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-sun{display:block;}
 html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 </style>
 
-<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
+<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes käyttäjä hyväksyy evästeet. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -156,7 +124,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
-<!-- Google AdSense: ladataan AINA suoraan headissa, EI evastesuostumuksen taakse (vaaditaan sivuston hyvaksyntaa varten). -->
+<!-- Google AdSense: ladataan AINA suoraan headissa, EI evästesuostumuksen taakse (vaaditaan sivuston hyväksyntää varten). -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
 </head>
 
@@ -166,504 +134,176 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
 </button>
 
-<header>
-
+<header class="hero">
 <div class="container">
-
-<h1>Hauen kalastus – täydellinen opas aloittelijalle ja kokeneelle kalastajalle</h1>
-
+<div class="crumb"><a href="index.html">Etusivu</a> → Kalastusoppaat → Hauen kalastus</div>
+<span class="eyebrow">Väijyvä petokala</span>
+<h1>Hauen kalastus: opi lukemaan rakenne, älä vain vaihtamaan viehettä</h1>
 <p>
-
-Hauki on Suomen yleisin petokala ja samalla yksi mielenkiintoisimmista
-kalastettavista. Se voi painaa yli kymmenen kiloa, iskeä vieheeseen
-räjähtävästi ja tarjota ikimuistoisen väsytyksen niin rannalta kuin veneestäkin.
-
+Suurin osa haukikalastajista vaihtaa viehettä, kun kala ei tartu. Kokeneempi kalastaja vaihtaa ensin paikkaa. Hauki ei ui ympäriinsä etsimässä ruokaa – se seisoo yhdessä kohdassa ja odottaa, että ruoka tulee sen luo. Tämä opas keskittyy siihen, miten tällaiset paikat tunnistaa rannalta tai veneestä käsin, sekä siihen, miten vuodenaika ja sää muuttavat niiden sijaintia.
 </p>
-
-<p>
-
-Tässä oppaassa käydään läpi, mistä haukea kannattaa etsiä eri vuodenaikoina,
-mitkä vieheet toimivat parhaiten ja miten sää vaikuttaa hauen syöntiin.
-
-</p>
-
-<a class="button" href="index.html">
-← Palaa FastFishing-kelimittariin
-</a>
-
+<a class="button" href="index.html">← Palaa FastFishing-kelimittariin</a>
 </div>
-
 </header>
 
 <div class="container">
 
-<article>
-
-<h2>Miksi hauki on niin suosittu saaliskala?</h2>
-
-<p>
-
-Hauki kuuluu lähes jokaisen suomalaisen kalastajan ensimmäisiin saaliskaloihin.
-Lajia esiintyy lähes kaikkialla Suomessa pienistä metsäjärvistä suuriin
-selkävesiin ja rannikon merenlahtiin. Hauen suuri levinneisyys tarkoittaa,
-että sitä voi tavoitella käytännössä ympäri maata.
-
-</p>
-
-<p>
-
-Toinen syy hauen suosioon on sen aggressiivinen käyttäytyminen.
-Kun hauki päättää iskeä vieheeseen, tärppi on usein voimakas ja
-yllättävä. Tämä tekee kalastuksesta erittäin viihdyttävää.
-
-</p>
-
-<div class="tip">
-
-<strong>Vinkki:</strong><br>
-
-Jos tavoittelet ensimmäistä haukeasi, älä etsi syvintä kohtaa järvestä.
-Useimmiten kala löytyy paljon lähempää rantaa kuin moni uskoo.
-
-</div>
-
-</article>
-
-<article>
-
-<h2>Missä hauki liikkuu?</h2>
-
-<p>
-
-Hauki on väijyvä petokala. Se ei yleensä ui jatkuvasti pitkiä matkoja,
-vaan odottaa sopivassa paikassa saaliin kulkevan läheltä.
-
-</p>
-
-<p>
-
-Hyviä ottipaikkoja ovat esimerkiksi:
-
-</p>
-
+<details class="toc">
+<summary>Sisällys</summary>
 <ul>
-
-<li>Kaislikon reunat</li>
-
-<li>Lumpeikkojen laidat</li>
-
-<li>Ruovikkojen aukot</li>
-
-<li>Kivikkoiset rannat</li>
-
-<li>Virtapaikkojen suvannot</li>
-
-<li>Syvänteen reunat syksyllä</li>
-
-<li>Salmet, joissa pikkukalat liikkuvat</li>
-
+<li><a href="#rakenne">Väijyntäpaikkojen anatomia</a></li>
+<li><a href="#vuodenajat">Vuodenajat yhdellä silmäyksellä</a></li>
+<li><a href="#viehe">Viehe ja väri veden mukaan</a></li>
+<li><a href="#valineet">Välineet</a></li>
+<li><a href="#virheet">Yleisimmät virheet</a></li>
+<li><a href="#vastuullisuus">Säännöt ja vastuullinen kalastus</a></li>
+<li><a href="#faq">Usein kysytyt kysymykset</a></li>
 </ul>
+</details>
 
+<article class="card" id="rakenne">
+<h2>Väijyntäpaikkojen anatomia</h2>
 <p>
-
-Jos järvessä näkyy pikkukalaparvia tai lokkeja syömässä,
-alueella liikkuu usein myös haukia.
-
+Hauki on väijyjä, ei jahtaaja. Sen keho on rakennettu räjähtävään lyhyeen kiihdytykseen, ei pitkään takaa-ajoon, joten se valitsee paikan, josta se näkee ohikulkevan saaliin mutta johon saalis ei näe sitä. Käytännössä tämä tarkoittaa reunoja: kasvillisuuden reunaa, syvyyden reunaa, virtauksen reunaa. Tasainen, muuttumaton alue – oli se sitten avoin hiekkapohja tai tiheä yhtenäinen ruovikko – on haukikalastajalle lähes aina hiljaisempi kuin kohta, jossa kaksi erilaista ympäristöä kohtaa.
 </p>
-
+<p>
+Parhaita reunoja ovat esimerkiksi kaislikon tai lumpeikon ulkoreuna siinä kohtaa missä kasvillisuus loppuu ja pohja syvenee, niemenkärjet joissa virtaus vaihtaa suuntaa, sekä yksittäiset kivet tai kannot avoimella matalikolla. Tällainen yksittäinen poikkeama muuten tasaisella alueella on usein parempi merkki kuin koko lahden kasvillisuusreuna, koska hauki tietää, että se on ainoa suoja kilometrin säteellä – ja käyttää sitä sen mukaisesti.
+</p>
+<div class="tip">
+<strong>Vinkki:</strong> Kun löydät toimivan väijyntäpaikan, merkitse se muistiin (tai suoraan kaikuluotaimeen). Sama kivi tai sama kasvillisuuden nurkka tuottaa usein kalaa vuodesta toiseen, koska rakenne pysyy samana vaikka yksilö vaihtuisikin.
+</div>
 </article>
 
-<article>
-
-<h2>Paras sää hauen kalastukseen</h2>
-
+<article class="card" id="vuodenajat">
+<h2>Vuodenajat yhdellä silmäyksellä</h2>
 <p>
-
-Moni kalastaja seuraa ilmanpainetta, tuulta ja pilvisyyttä ennen
-kalastusreissua. Syystäkin.
-
+Hauen sijainti liikkuu vuoden mittaan lämpötilan ja ravinnon perässä. Alla oleva taulukko tiivistää, mistä kalaa kannattaa lähteä hakemaan kunakin vuodenaikana – tarkemmat vieheperusteet löytyvät seuraavasta osiosta.
 </p>
-
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Olosuhde</th>
-<th>Vaikutus</th>
-</tr>
-
-<tr>
-<td>Kevyt tuuli</td>
-<td>Erittäin hyvä</td>
-</tr>
-
-<tr>
-<td>Pilvinen sää</td>
-<td>Hyvä</td>
-</tr>
-
-<tr>
-<td>Sateen alku</td>
-<td>Usein hyvä</td>
-</tr>
-
-<tr>
-<td>Kirkas tyyni keskipäivä</td>
-<td>Usein heikompi</td>
-</tr>
-
-<tr>
-<td>Laskeva ilmanpaine</td>
-<td>Voi aktivoida haukea</td>
-</tr>
-
+<tr><th>Vuodenaika</th><th>Missä hauki on</th><th>Miksi</th></tr>
+<tr><td>Kevät (jäiden lähdöstä kutuun)</td><td>Matalat, lämpimät kutulahdet, alle 1&nbsp;m</td><td>Kutu vaatii lämmintä vettä ja kasvillisuutta mätimunille</td></tr>
+<tr><td>Alkukesä (kudun jälkeen)</td><td>Kutulahtien lähireunat, 1–3&nbsp;m</td><td>Kala palauttaa voimiaan lähellä kutualuetta</td></tr>
+<tr><td>Kesä, helteellä</td><td>Syvemmät pudotukset ja varjoisat alueet</td><td>Lämmin pintavesi ajaa hapekkaampaan syvempään veteen</td></tr>
+<tr><td>Syksy</td><td>Rantavyöhyke, kasvillisuuden reunat uudelleen</td><td>Ravintokala palaa matalaan viilenevän veden mukana</td></tr>
+<tr><td>Talvi, jään alla</td><td>Kasvillisuuden aukot, syvänteen reunat</td><td>Aineenvaihdunta hidastuu, kala hakeutuu vakaaseen lämpötilaan</td></tr>
 </table>
-
-<p>
-
-FastFishingin kelimittari yhdistää nämä tekijät yhdeksi pisteytykseksi,
-jotta voit arvioida päivän kalakelin nopeasti.
-
-</p>
-
-</article><article>
-
-<h2>Hauen kalastus keväällä</h2>
-
-<p>
-Heti jäiden lähdön jälkeen hauki siirtyy kutemaan mataliin lahtiin,
-ruovikoihin ja lämpeneville ranta-alueille. Kutemisen jälkeen kala alkaa
-syödä aktiivisesti palauttaakseen energiavarastonsa. Tämä on yksi vuoden
-parhaista ajoista tavoitella isoa haukea.
-</p>
-
-<p>
-Keväällä kannattaa keskittyä alle kahden metrin syvyisiin alueisiin,
-joissa aurinko lämmittää vettä nopeasti. Tällaisilta alueilta löytyy myös
-runsaasti pikkukalaa.
-</p>
-
-<h3>Kevään parhaat vieheet</h3>
-
-<ul>
-<li>Pienet ja keskikokoiset vaaput</li>
-<li>Lusikkauistimet</li>
-<li>Hitaasti uitettavat kumijigit</li>
-<li>Spinnerbaitit kaislikon reunoille</li>
-</ul>
-
-<div class="tip">
-<strong>Vinkki:</strong> Keväällä hidas uitto on usein tehokkaampi kuin nopea
-kelaaminen.
 </div>
-
+<p>
+Syksyä pidetään yleisesti vuoden parhaana aikana isolle hauelle: kala syö runsaasti ennen talvea, ja koska vesi viilenee tasaisesti koko rantavyöhykkeellä, myös suurimmat yksilöt uskaltautuvat matalaan päivälläkin – ei vain hämärässä niin kuin keskikesällä.
+</p>
 </article>
 
-<article>
-
-<h2>Hauen kalastus kesällä</h2>
-
+<article class="card" id="viehe">
+<h2>Viehe ja väri veden mukaan</h2>
 <p>
-Kesällä veden lämpötila nousee ja hauki hakeutuu usein viileämpään veteen
-tai tiheän kasvillisuuden suojaan. Aikainen aamu ja myöhäinen ilta ovat
-yleensä päivän parhaat kalastusajat.
+Vieheen koko kannattaa sitoa siihen, mitä hauki syö juuri sillä hetkellä, ei kalenteriin sinänsä. Keväällä ravintokala on pientä, joten 10–15&nbsp;cm vaappu tai lusikkauistin toimii; syksyllä ravintokalakin on kasvanut kesän yli, ja 15–22&nbsp;cm vieheet sekä isot jerkbaitit alkavat houkutella juuri suurimpia yksilöitä paremmin kuin pienet.
 </p>
-
-<p>
-Keskipäivällä kala voi olla passiivinen erityisesti kirkkaalla säällä.
-Silloin kannattaa kokeilla syvempiä penkkoja tai varjoisia alueita.
-</p>
-
-<h3>Kesän parhaat vieheet</h3>
-
-<ul>
-<li>Spinnerbaitit</li>
-<li>Pintavieheet iltaisin</li>
-<li>Jerkbaitit</li>
-<li>Keskisyvälle sukeltavat vaaput</li>
-</ul>
-
-</article>
-
-<article>
-
-<h2>Hauen kalastus syksyllä</h2>
-
-<p>
-Monien mielestä syksy on koko vuoden paras haukikausi. Veden viiletessä
-hauki alkaa syödä runsaasti valmistautuakseen talveen. Samalla myös suuret
-yksilöt liikkuvat aktiivisemmin.
-</p>
-
-<p>
-Syksyllä kannattaa kalastaa syvänteiden reunoja, selkävesien penkkoja sekä
-alueita, joilla liikkuu runsaasti muikkua tai muuta pikkukalaa.
-</p>
-
-<h3>Syksyn suosikkivieheet</h3>
-
-<ul>
-<li>Suuret kumijigit</li>
-<li>Isot jerkbaitit</li>
-<li>Raskaat lusikkauistimet</li>
-<li>Vetouistelussa suuret vaaput</li>
-</ul>
-
-</article>
-
-<article>
-
-<h2>Talvella hauen pilkintä</h2>
-
-<p>
-Haukea voidaan pyytää myös talvella pilkillä. Parhaita paikkoja ovat
-ruovikoiden reunat, matalien lahtien läheisyys ja syvänteiden reunat.
-Talvella vieheen liikettä kannattaa rauhoittaa, sillä kylmä vesi hidastaa
-kalan aineenvaihduntaa.
-</p>
-
-<p>
-Tasapainopilkit ja suuret pystypilkit ovat yleisimpiä valintoja.
-</p>
-
-</article><article>
-
-<h2>Vieheen väri ja koko</h2>
-
-<p>
-Vieheen värillä on merkitystä erityisesti veden kirkkauden mukaan.
-Kirkkaassa vedessä luonnolliset värit, kuten hopea, ahven ja muikku,
-toimivat usein parhaiten. Sameassa vedessä taas kirkkaat värit, kuten
-oranssi, chartreuse ja punainen, näkyvät paremmin ja voivat herättää
-hauen huomion.
-</p>
-
+<div class="table-wrap">
 <table>
-<tr>
-<th>Veden tila</th>
-<th>Suositeltu väri</th>
-</tr>
-
-<tr>
-<td>Kirkas</td>
-<td>Hopea, muikku, ahven</td>
-</tr>
-
-<tr>
-<td>Hieman samea</td>
-<td>Kulta, kupari</td>
-</tr>
-
-<tr>
-<td>Samea</td>
-<td>Chartreuse, oranssi, Firetiger</td>
-</tr>
-
+<tr><th>Veden kirkkaus</th><th>Toimiva väri</th><th>Miksi</th></tr>
+<tr><td>Kirkas</td><td>Hopea, muikku, luonnonvärit</td><td>Hauki näkee hyvin – liika kontrasti pelottaa varovaisen kalan</td></tr>
+<tr><td>Hieman samea</td><td>Kulta, kupari</td><td>Erottuu ilman että näyttää epäluonnolliselta</td></tr>
+<tr><td>Samea</td><td>Chartreuse, oranssi, musta siluetti</td><td>Kala reagoi ääriviivaan ja väriin näön sijaan tärinän lisäksi</td></tr>
 </table>
-
-<p>
-Vieheen koko kannattaa sovittaa vuodenaikaan. Keväällä ja alkukesällä
-keskikokoiset vieheet ovat usein tehokkaita, kun taas syksyllä suuret
-kumijigit ja jerkbaitit houkuttelevat myös isoja yksilöitä.
-</p>
-
-</article>
-
-<article>
-
-<h2>Miten sää vaikuttaa haukeen?</h2>
-
-<p>
-Sää vaikuttaa hauen aktiivisuuteen enemmän kuin moni aloittelija uskoo.
-Pilvinen päivä, kevyt tuuli ja tasainen ilmanpaine luovat usein erinomaiset
-olosuhteet kalastukselle. Voimakkaat säänmuutokset voivat kuitenkin saada
-hauen joko syömään hyvin tai passivoitumaan hetkellisesti.
-</p>
-
-<ul>
-<li>Pilvinen sää lisää usein hauen aktiivisuutta.</li>
-<li>Kevyt tuuli liikuttaa ravintokaloja rantaan.</li>
-<li>Kova helle voi hidastaa syöntiä keskellä päivää.</li>
-<li>Viileä syyspäivä on usein erinomainen suurhauelle.</li>
-</ul>
-
-<div class="tip">
-<strong>Muista:</strong> Tarkista ennen lähtöä FastFishingin kelimittari.
-Se auttaa arvioimaan, kuinka suotuisat olosuhteet ovat juuri kyseisenä päivänä.
 </div>
-
+<p>
+Käytä aina teräs- tai titaaniperukea. Hauen hampaat lävistävät tavallisen fluorocarbon- tai monofiilisiiman helposti, ja peruke on ainoa varuste tässä listassa, josta ei koskaan kannata tinkiä.
+</p>
 </article>
 
-<article>
+<article class="card" id="valineet">
+<h2>Välineet</h2>
+<div class="table-wrap">
+<table>
+<tr><th>Varuste</th><th>Suositus</th></tr>
+<tr><td>Vapa</td><td>8–9 jalkaa, Medium–Heavy</td></tr>
+<tr><td>Kela</td><td>Koko 3000–4000</td></tr>
+<tr><td>Punottu siima</td><td>0,14–0,20&nbsp;mm</td></tr>
+<tr><td>Peruke</td><td>Teräs tai titaani, vähintään 20&nbsp;kg murtolujuus</td></tr>
+</table>
+</div>
+<p>
+Pidä mukana myös pitkävartiset koukunirrotuspihdit ja tarttumapihdit (esim. lip grip -tyyppinen ote leukaperästä). Hauella on terävät hampaat ja se nielaisee vieheen helposti syvälle – oikeat välineet nopeuttavat irrotusta ja pienentävät kalan vahingoittumisen riskiä.
+</p>
+</article>
 
+<article class="card" id="virheet">
 <h2>Yleisimmät virheet</h2>
-
 <ol>
-
-<li>Kalastetaan liian nopeasti.</li>
-
-<li>Vaihdetaan kalastuspaikkaa liian harvoin.</li>
-
-<li>Käytetään liian pientä viehettä syksyllä.</li>
-
-<li>Kalastetaan vain keskellä päivää helteellä.</li>
-
-<li>Unohdetaan teräksinen peruke.</li>
-
-<li>Ei teroiteta koukkuja.</li>
-
-<li>Luovutetaan liian aikaisin.</li>
-
+<li>Kalastetaan vain avoimia, tasaisia alueita rakenteen sijaan.</li>
+<li>Vieheen kokoa ei kasvateta syksyllä ravintokalan mukana.</li>
+<li>Teräsperuke jätetään pois "vain tällä kertaa" – ja viehe jää siihen.</li>
+<li>Yhdellä uittonopeudella kalastetaan koko reissu, vaikka kala ei reagoi.</li>
+<li>Toimiva paikka hylätään yhden tuloksettoman kerran jälkeen.</li>
 </ol>
-
 <p>
-Usein pieni muutos uittonopeuteen tai kalastuspaikkaan riittää muuttamaan
-hiljaisen päivän onnistuneeksi kalareissuksi.
+Rakenne ei katoa huonolla kalaonnenkaan päivänä – jos tiedät väijyntäpaikan olevan oikea, kannattaa palata siihen toisella vieheellä tai toisena kellonaikana ennen kuin luovutat kokonaan.
 </p>
-
 </article>
 
-<article>
-
-<h2>Parhaat kellonajat hauen kalastukseen</h2>
-
+<article class="card" id="vastuullisuus">
+<h2>Säännöt ja vastuullinen kalastus</h2>
 <p>
-Vaikka haukea voi saada mihin aikaan tahansa, aktiivisuus vaihtelee päivän
-mittaan. Erityisesti kesällä aamu ja ilta ovat yleensä parhaat hetket.
-Keväällä ja syksyllä myös päiväsaikaan voi olla erinomainen syönti.
+Vapavälineillä ja vieheellä kalastaminen (viehekalastus) edellyttää Suomessa pääsääntöisesti kalastonhoitomaksun maksamista 18–69-vuotiailta. Maksun voi hoitaa helpoiten <a href="https://www.eraluvat.fi/kalastus/kalastonhoitomaksu" target="_blank" rel="noopener">eraluvat.fi:n kalastonhoitomaksu-sivulla</a>. Onkiminen ja pilkkiminen ovat sen sijaan kaikille maksuttomia yleiskalastusoikeuksia.
 </p>
-
-<table>
-
-<tr>
-<th>Vuodenaika</th>
-<th>Paras aika</th>
-</tr>
-
-<tr>
-<td>Kevät</td>
-<td>9–17</td>
-</tr>
-
-<tr>
-<td>Kesä</td>
-<td>04–09 ja 19–23</td>
-</tr>
-
-<tr>
-<td>Syksy</td>
-<td>Koko päivä</td>
-</tr>
-
-<tr>
-<td>Talvi</td>
-<td>10–15</td>
-</tr>
-
-</table>
-
-</article><article>
-
-<h2>Usein kysytyt kysymykset (FAQ)</h2>
-
-<h3>Mikä on paras kuukausi hauen kalastukseen?</h3>
-
 <p>
-Touko- ja syyskuu ovat yleensä parhaita kuukausia. Keväällä hauki syö
-aktiivisesti kudun jälkeen ja syksyllä se kerää ravintoa talvea varten.
+Hauelle ei ole valtakunnallista alamittaa, mutta monilla vesistöillä on omia, paikallisia rajoituksiaan – osa kalastusalueista suosittelee myös suurimpien, lisääntymisen kannalta arvokkaiden yksilöiden vapauttamista. Ajantasaiset, vesistökohtaiset rajoitukset kannattaa tarkistaa <a href="https://kalastusrajoitus.fi" target="_blank" rel="noopener">kalastusrajoitus.fi</a>-palvelusta ennen reissua.
 </p>
-
-<h3>Mikä viehe toimii parhaiten?</h3>
-
-<p>
-Yhtä oikeaa vastausta ei ole. Lusikkauistin, jerkbait, kumijigi ja vaappu
-ovat kaikki tehokkaita oikeissa olosuhteissa. Viehe kannattaa valita veden
-syvyyden, kirkkauden ja vuodenajan mukaan.
-</p>
-
-<h3>Mihin aikaan päivästä kannattaa kalastaa?</h3>
-
-<p>
-Kesällä paras aika on usein aikaisin aamulla ja myöhään illalla. Keväällä
-ja syksyllä hauki voi syödä aktiivisesti koko päivän.
-</p>
-
-<h3>Kuinka paksu siima hauelle?</h3>
-
-<p>
-Heittokalastuksessa noin 0,15–0,20 mm punottu siima on hyvä yleisvalinta.
-Muista käyttää aina teräs- tai titaaniperuketta, jotta hauen hampaat eivät
-katkaise siimaa.
-</p>
-
+<div class="note">
+<strong>Ison hauen käsittely:</strong> Jos aiot vapauttaa saaliin, pidä kala mahdollisimman lyhyen aikaa ilmassa, kannattele sitä vaakatasossa vartalon ja hännän kohdalta äläkä koskaan kiikuta pystyasennossa leuoista roikkuen – se voi vahingoittaa suurta kalaa. Kastele kädet ennen käsittelyä, jotta kalan suojaava limakerros säilyy.
+</div>
 </article>
 
-<article>
+<article class="card" id="faq">
+<h2>Usein kysytyt kysymykset</h2>
 
-<h2>Yhteenveto</h2>
+<details class="faq">
+<summary>Kannattaako hauen perässä käyttää venettä vai riittääkö rannalta kalastus?</summary>
+<p>Molemmat toimivat. Moni parhaista väijyntäpaikoista – kaislikon reuna, niemenkärki, yksittäinen kivi – on heiton mitalla myös rannalta. Vene tuo lähinnä lisää kalapaikkoja ulottuville, ei ole edellytys onnistumiselle.</p>
+</details>
+<details class="faq">
+<summary>Miksi hauki irtoaa niin usein juuri rannan tuntumassa?</summary>
+<p>Suuri hauki taistelee voimakkaasti vasta nähdessään rannan tai veneen, ei heti iskun jälkeen. Pidä siima koko ajan kireällä ja väljennä vavan kulmaa väsytyksen loppuvaiheessa sen sijaan, että nostat sitä suoraan pystyyn.</p>
+</details>
+<details class="faq">
+<summary>Onko pilvinen sää oikeasti parempi kuin aurinkoinen?</summary>
+<p>Yleensä kyllä, mutta ei aina yksiselitteisesti – ratkaisevaa on ennemmin ilmanpaineen ja tuulen yhdistelmä kuin pilvisyys yksinään. FastFishingin kelimittari laskee nämä tekijät yhteen yhdeksi arvioksi, jos haluat nopean suunnan ennen lähtöä.</p>
+</details>
+<details class="faq">
+<summary>Kannattaako talvella pilkkiä vai onko avovesi ainoa toimiva tapa?</summary>
+<p>Haukea saa myös pilkkimällä, mutta se ei ole yhtä suosittu pilkkikala kuin ahven – iskut ovat harvempia ja kala usein passiivisempi kylmässä vedessä. Parhaat paikat talvella ovat samat kasvillisuuden aukot ja syvänteen reunat kuin avovedelläkin.</p>
+</details>
+</article>
 
-<p>
-
-Hauen kalastus on palkitsevaa ympäri vuoden, kun kalastaja osaa huomioida
-vuodenajan, veden lämpötilan ja sääolosuhteet. Keväällä kannattaa suunnata
-mataliin lahtiin, kesällä kasvillisuuden reunoille ja syksyllä syvänteiden
-läheisyyteen. Oikea viehe, rauhallinen uitto ja sopivan kalastuspaikan
-etsiminen ovat usein onnistuneen kalareissun tärkeimmät tekijät.
-
-</p>
-
-<p>
-
-Muista tarkistaa myös FastFishingin kelimittari ennen lähtöä. Se auttaa
-arvioimaan, kuinka suotuisat kalastusolosuhteet ovat juuri kyseisenä päivänä.
-
-</p>
-
-<p>
-
-Tutustu myös muihin oppaisiin:
-
-</p>
-
-<ul>
-
+<article class="card">
+<h2>Muut oppaat</h2>
+<ul class="related">
 <li><a href="ahvenen-kalastus.html">Ahvenen kalastus</a></li>
-
 <li><a href="kuhan-kalastus.html">Kuhan kalastus</a></li>
-
-
-
+<li><a href="hauen-vetouistelu.html">Hauen vetouistelu</a></li>
 <li><a href="vieheen-valinta.html">Vieheen valinta</a></li>
-
 </ul>
-
-<p>
-
-Onnistuneita kalastushetkiä ja kireitä siimoja!
-
-</p>
-
+<p style="margin-top:22px">Löytöretkeä rantaviivalle ja painavaa nostoa!</p>
 </article>
 
 </div>
 
 <footer>
-
 <p>&copy; 2026 FastFishing – Kalastusoppaat ja kelimittari.</p>
-
 <p>
 <a href="index.html">Etusivu</a> |
 <a href="tietoa-meista.html">Tietoa meistä</a> |
 <a href="tietosuoja.html">Tietosuojaseloste</a>
 </p>
-
 </footer>
 
 <div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto kayttaa evasteita (mainosten personointiin Google AdSense) ja kavijatilastointiin (Google Analytics). Lue lisaa <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
+    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
     <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkaa valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyvaksy kaikki</button>
+      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
+      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
     </div>
   </div>
 </div>

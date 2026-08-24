@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <script>
-// Asetetaan tumma/vaalea tila heti ennen ensimmäistä piirtoa, jotta sivu ei välähdä väärällä teemalla.
 (function () {
   try {
     var stored = null;
@@ -21,98 +20,71 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Kuhan kalastus – Kattava opas | FastFishing</title>
+<title>Kuhan kalastus: miksi hämärä ratkaisee | FastFishing</title>
 
-<meta name="description" content="Lue kattava opas kuhan kalastukseen. Parhaat vieheet, vuodenajat, kalapaikat, sääolosuhteet ja vinkit suuremman kuhan saamiseen.">
+<meta name="description" content="Kuha näkee pimeässä muita petokaloja paremmin ja saalistaa siksi eri tavalla. Opas käy läpi hämäräkalastuksen, pohjanmuodot, alamitat ja saaliin käsittelyn.">
 
 <link rel="canonical" href="https://www.fastfishin.com/kuhan-kalastus.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#f4f0e5;
-color:#17342f;
-line-height:1.8;
+:root{
+  --ink:#17342f; --ink-soft:#45645e; --lake:#2f6f73; --lake-deep:#24585c;
+  --mist:#d9e8e4; --paper:#f4f0e5; --paper-bright:#fffdf7; --line:#c9d5cf;
+  --orange:#d5752c; --orange-dark:#ad571e; --link:#24585c;
+  --shadow-small:0 8px 24px rgba(23,52,47,.09); --radius:20px;
 }
-
-header{
-background:#24585c;
-color:#fff;
-padding:80px 20px;
+html[data-theme="dark"]{
+  color-scheme: dark;
+  --ink:#eef3f0; --ink-soft:#a8c2b9; --lake:#59a3a7; --lake-deep:#123234;
+  --mist:#17302c; --paper:#0d1a16; --paper-bright:#142522; --line:#29423b;
+  --orange:#e2884a; --orange-dark:#e2884a; --link:#8dd0d2;
+  --shadow-small:0 8px 24px rgba(0,0,0,.35);
 }
-
-.container{
-width:min(1100px,92%);
-margin:auto;
-}
-
-h1{
-font-size:54px;
-margin-bottom:20px;
-}
-
-h2{
-font-size:34px;
-margin-top:60px;
-color:#24585c;
-}
-
-article{
-background:#fff;
-padding:40px;
-margin:40px 0;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-.button{
-display:inline-block;
-margin-top:25px;
-padding:14px 22px;
-background:#d97706;
-color:#fff;
-text-decoration:none;
-border-radius:10px;
-font-weight:bold;
-}
-
-.tip{
-background:#eef8f6;
-border-left:5px solid #2f6f73;
-padding:18px;
-margin:25px 0;
-border-radius:8px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-th,td{
-padding:14px;
-border-bottom:1px solid #ddd;
-text-align:left;
-}
-
-footer{
-padding:40px;
-text-align:center;
-color:#666;
-}
-
-
-html[data-theme="dark"] body{background:#0d1a16;color:#eef3f0;}
-html[data-theme="dark"] header{background:#0a2224;}
+html[data-theme="light"], html:not([data-theme]) { color-scheme: light; }
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:17px;}
+a{color:var(--link);}
+.container{width:min(880px,92%);margin:auto;}
+header.hero{background:var(--lake-deep);color:#fff;padding:clamp(40px,8vw,76px) 20px 46px;}
+.crumb{font:600 .78rem/1 'JetBrains Mono',monospace;letter-spacing:.03em;color:#bfe3e0;margin-bottom:16px;}
+.crumb a{color:#bfe3e0;}
+.eyebrow{font:700 .74rem/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f3c393;margin-bottom:14px;display:block;}
+h1{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(2.1rem,5.2vw,3.3rem);line-height:1.06;margin:0 0 18px;letter-spacing:-.01em;}
+h2{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(1.5rem,3.4vw,1.9rem);margin:0 0 14px;color:var(--lake-deep);scroll-margin-top:16px;}
 html[data-theme="dark"] h2{color:#7fd6d6;}
-html[data-theme="dark"] article{background:#142522;box-shadow:0 10px 30px rgba(0,0,0,.4);}
-html[data-theme="dark"] .tip{background:#132a26;border-left-color:#59a3a7;}
-html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom:1px solid #29423b;}
-html[data-theme="dark"] footer{color:#9db3ab;}
-
+h3{margin-top:26px;margin-bottom:8px;font-size:1.1rem;}
+p{margin:0 0 16px;}
+article.card{background:var(--paper-bright);padding:clamp(24px,4vw,38px);margin:26px 0;border-radius:var(--radius);box-shadow:var(--shadow-small);border:1px solid var(--line);}
+.button{display:inline-block;margin-top:22px;padding:13px 20px;background:var(--orange);color:#fff !important;text-decoration:none;border-radius:10px;font-weight:700;}
+.tip{background:var(--mist);border-left:4px solid var(--lake);padding:16px 18px;margin:22px 0;border-radius:8px;}
+.tip strong{color:var(--lake-deep);}
+html[data-theme="dark"] .tip strong{color:#7fd6d6;}
+.note{border:1px dashed var(--line);padding:18px 20px;margin:24px 0;border-radius:12px;color:var(--ink-soft);font-size:.96rem;}
+.note strong{color:var(--ink);}
+.table-wrap{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:460px;}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem;vertical-align:top;}
+th{color:var(--ink-soft);font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;}
+.toc{background:var(--paper-bright);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:.94rem;}
+.toc summary{cursor:pointer;font-weight:700;color:var(--lake-deep);}
+html[data-theme="dark"] .toc summary{color:#7fd6d6;}
+.toc ul{margin:12px 0 0;padding-left:20px;columns:2;column-gap:24px;}
+.toc li{break-inside:avoid;margin-bottom:6px;}
+details.faq{border-bottom:1px solid var(--line);padding:14px 0;}
+details.faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;}
+details.faq summary::-webkit-details-marker{display:none;}
+details.faq summary::before{content:'+ ';color:var(--orange);font-weight:700;}
+details.faq[open] summary::before{content:'– ';}
+details.faq p{margin-top:10px;}
+.related{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:10px;}
+.related li a{display:inline-block;padding:9px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:.9rem;}
+footer{margin-top:40px;padding:36px 20px;text-align:center;color:var(--ink-soft);font-size:.85rem;}
 .theme-toggle-fab{position:fixed;top:16px;right:16px;z-index:9999;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(23,52,47,.55);backdrop-filter:blur(8px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s;}
 .theme-toggle-fab:hover{transform:translateY(-2px);}
 .theme-toggle-fab svg{width:18px;height:18px;display:block;}
@@ -122,7 +94,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-sun{display:block;}
 html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 </style>
 
-<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
+<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes käyttäjä hyväksyy evästeet. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -151,7 +123,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
-<!-- Google AdSense: ladataan AINA suoraan headissa, EI evastesuostumuksen taakse (vaaditaan sivuston hyvaksyntaa varten). -->
+<!-- Google AdSense: ladataan AINA suoraan headissa, EI evästesuostumuksen taakse (vaaditaan sivuston hyväksyntää varten). -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
 </head>
 
@@ -161,637 +133,159 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
 </button>
 
-<header>
-
+<header class="hero">
 <div class="container">
-
-<h1>Kuhan kalastus – kattava opas</h1>
-
+<div class="crumb"><a href="index.html">Etusivu</a> → Kalastusoppaat → Kuhan kalastus</div>
+<span class="eyebrow">Hämärän mestari</span>
+<h1>Kuhan kalastus: miksi hämärä ratkaisee kaiken</h1>
 <p>
-
-Kuha (Sander lucioperca) on yksi Suomen arvostetuimmista petokaloista.
-Se tunnetaan varovaisesta syönnistään, voimakkaista tärpeistään ja
-erinomaisesta ruokakalana. Kuhan kalastus vaatii usein hieman enemmän
-kärsivällisyyttä kuin hauen tai ahvenen pyynti, mutta onnistuminen
-palkitsee kalastajan.
-
+Kuha ei käyttäydy kuten hauki tai ahven, koska se ei näe kuten ne. Sen silmässä on heijastava kalvorakenne, sama ominaisuus kuin sen pohjoisamerikkalaisella sukulaisella kanadankuhalla (walleye), joka tehostaa heikkoa valoa ja tekee kuhasta ylivoimaisen saalistajan juuri silloin kun muut petokalat lepäävät. Tämä opas käsittelee sitä, miten valo, pohjanmuoto ja kellonaika ohjaavat kuhan liikkeitä.
 </p>
-
-<p>
-
-Tässä oppaassa opit, mistä kuhaa kannattaa etsiä eri vuodenaikoina,
-mitkä vieheet toimivat parhaiten ja miten sää sekä veden lämpötila
-vaikuttavat kuhan aktiivisuuteen.
-
-</p>
-
-<a class="button" href="index.html">
-← Takaisin FastFishingiin
-</a>
-
+<a class="button" href="index.html">← Takaisin FastFishingiin</a>
 </div>
-
 </header>
 
 <div class="container">
 
-<article>
+<details class="toc">
+<summary>Sisällys</summary>
+<ul>
+<li><a href="#valo">Miksi valo ratkaisee kuhan käytöksen</a></li>
+<li><a href="#pohja">Pohjanmuodot ja rakenteet</a></li>
+<li><a href="#kausi">Vuodenaikataulu</a></li>
+<li><a href="#viehe">Vieheet ja jigipään paino</a></li>
+<li><a href="#kasittely">Saaliin käsittely</a></li>
+<li><a href="#saannot">Alamitta ja säännöt</a></li>
+<li><a href="#faq">Usein kysytyt kysymykset</a></li>
+</ul>
+</details>
 
-<h2>Miksi kuha on niin suosittu saaliskala?</h2>
-
+<article class="card" id="valo">
+<h2>Miksi valo ratkaisee kuhan käytöksen</h2>
 <p>
-
-Kuha on tehokas petokala, joka saalistaa pääasiassa pikkukaloja,
-kuten kuoretta, salakkaa ja särjen poikasia. Sen erinomainen näkö
-hämärässä tekee siitä aktiivisimman erityisesti iltaisin, öisin
-ja pilvisellä säällä.
-
+Päiväsaikaan kuha vetäytyy tyypillisesti syvään veteen tai sameuden suojaan, koska sen näkökyky on niin herkkä, että kirkas valo on sille pikemminkin haitta kuin etu tarkassa saalistuksessa – muut kalat näkevät sen yhtä hyvin kuin se näkee ne. Auringonlaskun jälkeen tilanne kääntyy: kuha alkaa nousta matalammalle ja saalistaa tehokkaasti hämärässä ja pimeässä, jolloin sen näköetu ravintokaloihin nähden on suurimmillaan.
 </p>
-
 <p>
-
-Monet kalastajat pitävät kuhaa yhtenä parhaista ruokakaloista sen
-kiinteän, vaalean lihan ja miedon maun vuoksi. Suuret yksilöt voivat
-kasvaa yli 10 kilogramman painoisiksi.
-
+Tästä syystä moni kokenut kuhankalastaja suunnittelee koko kalastusreissunsa auringonlaskun ympärille sen sijaan, että kalastaisi keskellä päivää – ensimmäinen tunti hämärän jälkeen tuottaa usein enemmän kuin koko edeltävä päivä yhteensä.
 </p>
-
 <div class="tip">
-
-<strong>Vinkki:</strong><br>
-
-Kuha on usein aktiivisimmillaan juuri auringonlaskun aikaan ja
-ensimmäisten pimeiden tuntien aikana.
-
+<strong>Vinkki:</strong> Pilvinen päivä tasoittaa tätä eroa, koska valoa on koko päivän vähemmän. Jos sää on pilvinen, kuha voi syödä kohtalaisesti jo iltapäivällä eikä pelkästään illalla.
 </div>
-
 </article>
 
-<article>
-
-<h2>Missä kuhaa kannattaa etsiä?</h2>
-
+<article class="card" id="pohja">
+<h2>Pohjanmuodot ja rakenteet</h2>
 <p>
-
-Kuha viihtyy lämpimissä ja usein hieman sameissa vesissä. Päivällä
-se oleskelee tavallisesti syvemmällä, mutta iltaisin ja öisin se
-nousee matalammille alueille saalistamaan.
-
+Kuha suosii kovaa pohjaa – kivikkoa, soraa tai hiekkaa – pehmeän mudan sijaan, ja liikkuu mielellään pitkin pohjan muodonvaihteluita: syvänteen reunoja, vedenalaisia harjanteita ja äkillisiä syvyyshyppäyksiä kutsutaan usein "hyllyiksi". Näillä alueilla ravintokala kerääntyy virtausten ja lämpötilaerojen vuoksi, ja kuha seuraa perässä.
 </p>
-
-<p>
-
-Parhaita kuhapaikkoja ovat:
-
-</p>
-
 <ul>
-
-<li>Syvänteiden reunat</li>
-
-<li>Vedenalaiset harjanteet</li>
-
-<li>Karikot</li>
-
-<li>Kivikkopohjat</li>
-
-<li>Salmet</li>
-
-<li>Virtaavien alueiden reunat</li>
-
-<li>Matalat hiekkapohjat iltaisin</li>
-
+<li>Syvänteiden reunat ja hyllyt</li>
+<li>Vedenalaiset harjanteet ja karikot</li>
+<li>Salmet, joissa on virtausta</li>
+<li>Matalat hiekkapohjat – mutta vain hämärän ja yön aikaan</li>
 </ul>
-
-<p>
-
-Kaikuluotain helpottaa huomattavasti kuhan löytämistä erityisesti
-kesällä ja syksyllä.
-
-</p>
-
 </article>
 
-<article>
-
-<h2>Paras sää kuhan kalastukseen</h2>
-
-<p>
-
-Kuha viihtyy usein lämpimässä vedessä ja hämärissä olosuhteissa.
-Pilvinen sää, kevyt tuuli ja lämmin kesäilta ovat monesti
-erinomaisia kalastuskeliä.
-
-</p>
-
+<article class="card" id="kausi">
+<h2>Vuodenaikataulu</h2>
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Olosuhde</th>
-<th>Vaikutus</th>
-</tr>
-
-<tr>
-<td>Pilvinen ilta</td>
-<td>Erittäin hyvä</td>
-</tr>
-
-<tr>
-<td>Lämmin kesäyö</td>
-<td>Erittäin hyvä</td>
-</tr>
-
-<tr>
-<td>Kevyt tuuli</td>
-<td>Hyvä</td>
-</tr>
-
-<tr>
-<td>Kirkas aurinkoinen päivä</td>
-<td>Usein heikompi</td>
-</tr>
-
-<tr>
-<td>Lämmin vesi (18–24 °C)</td>
-<td>Erinomainen</td>
-</tr>
-
+<tr><th>Vuodenaika</th><th>Syvyys</th><th>Paras hetki</th></tr>
+<tr><td>Kevät (kudun jälkeen)</td><td>Matalat hiekkapohjat ja lahdet</td><td>Ilta</td></tr>
+<tr><td>Kesä</td><td>Syvänteet päivällä, matalikot yöllä</td><td>Ilta, yö, aikainen aamu</td></tr>
+<tr><td>Syksy</td><td>Syvänteiden reunat, pohjan lähellä</td><td>Iltapäivä–ilta</td></tr>
+<tr><td>Talvi (pilkki)</td><td>Syvänteiden reunat, harjanteet</td><td>Iltapäivä</td></tr>
 </table>
-
-<p>
-
-FastFishingin kelimittari auttaa arvioimaan päivän kalastusolosuhteita
-ennen vesille lähtöä.
-
-</p>
-
-</article><article>
-
-<h2>Kuhan kalastus keväällä</h2>
-
-<p>
-
-Keväällä kuhan kalastus alkaa veden lämmetessä noin 10–12 asteeseen.
-Kutu tapahtuu yleensä touko–kesäkuussa alueesta riippuen, minkä jälkeen
-kuha alkaa syödä aktiivisesti palauttaakseen energiavarastonsa.
-
-</p>
-
-<p>
-
-Keväällä kannattaa kalastaa matalia hiekkapohjia, kivikkorantoja sekä
-lämpeneviä lahtia. Erityisesti ilta-aika on usein kaikkein tehokkain.
-
-</p>
-
-<h3>Kevään parhaat vieheet</h3>
-
-<ul>
-
-<li>7–10 cm jigit</li>
-
-<li>Pienet vaaput</li>
-
-<li>Lipat</li>
-
-<li>Kevyet lusikkauistimet</li>
-
-</ul>
-
-<div class="tip">
-
-<strong>Vinkki:</strong><br>
-
-Keväällä hidas uitto aivan pohjan tuntumassa toimii usein paremmin kuin
-nopea kelaaminen.
-
 </div>
-
+<p>
+Kesä on kuhan kalastuksen ydinkautta: veden lämpötila on kuhalle otollinen ja päivät pitkiä, mikä antaa pitkän hämäräjakson kalastukselle. Talvella kuha muuttuu selvästi varovaisemmaksi, ja vieheeseen tarttuminen voi olla hyvin kevyt nykäisy.
+</p>
 </article>
 
-<article>
-
-<h2>Kuhan kalastus kesällä</h2>
-
+<article class="card" id="viehe">
+<h2>Vieheet ja jigipään paino</h2>
 <p>
-
-Kesä on kuhan kalastuksen parasta aikaa. Lämpimässä vedessä kuha liikkuu
-aktiivisesti erityisesti iltaisin, öisin ja aikaisin aamulla. Päivällä
-se oleskelee usein syvänteissä tai niiden reunoilla.
-
+Jigi on kuhan yleisin ja tehokkain viehe ympäri vuoden. Koska kuha saalistaa pohjan tuntumassa, jigipään painon täytyy olla riittävä pitämään kosketus pohjaan ilman että uitosta tulee luonnoton – tarkempi taulukko syvyyden mukaisesta painosta löytyy <a href="jigikalastus.html">Jigikalastus-oppaasta</a>. Kesällä myös syvälle sukeltavat vaaput ja vetouistelu toimivat erinomaisesti, erityisesti iltaisin.
 </p>
-
-<p>
-
-Monet kalastajat käyttävät kesällä jigikalastusta, mutta myös vetouistelu
-on erittäin tehokas tapa tavoittaa suurempia kuhia.
-
-</p>
-
-<h3>Kesän parhaat vieheet</h3>
-
-<ul>
-
-<li>7–12 cm jigit</li>
-
-<li>Syvälle sukeltavat vaaput</li>
-
-<li>Shad-jigit</li>
-
-<li>Vetouisteluvaaput</li>
-
-</ul>
-
-</article>
-
-<article>
-
-<h2>Kuhan kalastus syksyllä</h2>
-
-<p>
-
-Syksyllä veden viiletessä kuha jatkaa aktiivista syöntiä ennen talven
-saapumista. Suuret yksilöt liikkuvat usein syvänteiden läheisyydessä ja
-ravintokalaparvien tuntumassa.
-
-</p>
-
-<p>
-
-Syksyllä kannattaa kalastaa hitaasti pohjan läheltä. Jigikalastus on
-monien mielestä tehokkain menetelmä tähän vuodenaikaan.
-
-</p>
-
-<h3>Syksyn parhaat vieheet</h3>
-
-<ul>
-
-<li>10–15 cm jigit</li>
-
-<li>Pohjan lähellä uitettavat vaaput</li>
-
-<li>Raskaat jigipäät syvään veteen</li>
-
-<li>Vetouisteluun tarkoitetut vaaput</li>
-
-</ul>
-
-</article>
-
-<article>
-
-<h2>Kuhan kalastus talvella</h2>
-
-<p>
-
-Talvella kuhan pilkintä voi olla erittäin palkitsevaa, vaikka kala onkin
-selvästi kesää varovaisempi. Kuhaa tavoitellaan yleensä syvänteiden
-reunoilta sekä vedenalaisten harjanteiden läheisyydestä.
-
-</p>
-
-<p>
-
-Tasapainopilkit ja pystypilkit ovat talvella yleisimpiä vieheitä.
-Liikkeiden kannattaa olla rauhallisia, sillä kylmä vesi hidastaa kuhan
-aineenvaihduntaa.
-
-</p>
-
-<div class="tip">
-
-<strong>Muista:</strong><br>
-
-Talvella kuha saattaa ottaa vieheeseen hyvin varovasti. Kevytkin nykäisy
-voi olla tärppi, joten vastaisku kannattaa tehdä nopeasti.
-
+<div class="table-wrap">
+<table>
+<tr><th>Veden kirkkaus</th><th>Suositeltu väri</th></tr>
+<tr><td>Kirkas</td><td>Kuore, salakka, hopea</td></tr>
+<tr><td>Hieman samea</td><td>Kulta, kupari</td></tr>
+<tr><td>Samea / pimeä</td><td>Chartreuse, Firetiger, musta siluetti</td></tr>
+</table>
 </div>
-
-</article><article>
-
-<h2>Vieheiden värit ja koko</h2>
-
-<p>
-
-Kuhan näkö toimii erinomaisesti hämärässä, minkä vuoksi vieheen värillä
-on merkitystä erityisesti veden kirkkauden mukaan. Kirkkaassa vedessä
-luonnolliset värit ovat yleensä tehokkaimpia, kun taas sameassa vedessä
-kirkkaat värit näkyvät paremmin.
-
-</p>
-
-<table>
-
-<tr>
-<th>Veden kirkkaus</th>
-<th>Suositeltu väri</th>
-</tr>
-
-<tr>
-<td>Kirkas</td>
-<td>Kuore, salakka, hopea</td>
-</tr>
-
-<tr>
-<td>Hieman samea</td>
-<td>Kulta, kupari</td>
-</tr>
-
-<tr>
-<td>Samea</td>
-<td>Chartreuse, Firetiger, oranssi</td>
-</tr>
-
-</table>
-
-<p>
-
-Yleisimmin kuhalle käytetään 7–12 cm jigejä ja vaappuja.
-Syksyllä myös 12–15 cm vieheet voivat houkutella suuria yksilöitä.
-
-</p>
-
 </article>
 
-<article>
-
-<h2>Parhaat välineet kuhan kalastukseen</h2>
-
+<article class="card" id="kasittely">
+<h2>Saaliin käsittely</h2>
 <p>
-
-Kuhan kalastuksessa tunnokas välineistö helpottaa varovaisten tärppien
-havaitsemista. Kevyt mutta jämäkkä avokelasarja on hyvä yleisvalinta.
-
+Kuha on yksi Suomen arvostetuimmista ruokakaloista kiinteän, vaalean lihansa ansiosta – juuri siksi sen käsittely saaliiksi otettaessa kannattaa tehdä kunnolla. Perkaa ja jäähdytä saalis mahdollisimman pian pyynnin jälkeen, mielellään jääkylmässä vedessä tai kylmälaukussa, jotta liha säilyy kiinteänä ja makuvirheiltä vältytään erityisesti lämpiminä kesäöinä.
 </p>
-
-<table>
-
-<tr>
-<th>Varuste</th>
-<th>Suositus</th>
-</tr>
-
-<tr>
-<td>Vapa</td>
-<td>7–8 jalkaa, Medium Light tai Medium</td>
-</tr>
-
-<tr>
-<td>Kela</td>
-<td>Koko 2500–3000</td>
-</tr>
-
-<tr>
-<td>Punottu siima</td>
-<td>0,10–0,15 mm</td>
-</tr>
-
-<tr>
-<td>Peruke</td>
-<td>Fluorocarbon 0,30–0,40 mm</td>
-</tr>
-
-</table>
-
 <p>
-
-Jos alueella esiintyy paljon haukia, ohut teräs- tai titaaniperuke voi
-säästää vieheet katkeamiselta.
-
+Ota aina vain sen verran kalaa kuin tarvitset, ja vapauta ylimääräiset sekä alamittaiset yksilöt varovasti takaisin veteen.
 </p>
-
 </article>
 
-<article>
-
-<h2>Miten sää vaikuttaa kuhan syöntiin?</h2>
-
+<article class="card" id="saannot">
+<h2>Alamitta ja säännöt</h2>
 <p>
-
-Kuha on aktiivisimmillaan lämpimässä vedessä sekä hämärissä olosuhteissa.
-Pilvinen sää ja kevyt tuuli ovat usein erittäin hyviä kalastuskeliä.
-Kesällä kuhan syönti painottuu iltaan ja yöhön.
-
+Kuhalla on Suomessa valtakunnallinen alamitta, joka on pääsääntöisesti <strong>42&nbsp;senttimetriä</strong> – monilla yksittäisillä vesistöillä on kuitenkin tätä tiukempia, paikallisia alamittoja, jotka voivat vaihdella noin 37–50 senttimetrin välillä esimerkiksi kalakannan tilan mukaan. Alamittaa pienempi kuha on aina vapautettava. Ajantasaiset, vesistökohtaiset rajoitukset kannattaa tarkistaa ennen reissua <a href="https://kalastusrajoitus.fi" target="_blank" rel="noopener">kalastusrajoitus.fi</a>-palvelusta.
 </p>
-
-<ul>
-
-<li>Lämmin kesäilta on usein erinomainen.</li>
-
-<li>Kevyt 2–5 m/s tuuli parantaa kalastusta.</li>
-
-<li>Pilvinen sää lisää kuhan aktiivisuutta.</li>
-
-<li>Kirkas keskipäivä voi hiljentää syöntiä.</li>
-
-<li>Syksyllä viilenevä vesi pitää kuhan aktiivisena pitkään.</li>
-
-</ul>
-
-<div class="tip">
-
-<strong>Muista:</strong><br>
-
-FastFishingin kelimittari auttaa arvioimaan päivän kalastusolosuhteita
-ennen vesille lähtöä.
-
-</div>
-
+<p>
+Vieheellä kalastaminen edellyttää 18–69-vuotiailta valtion kalastonhoitomaksua, joka hoituu <a href="https://www.eraluvat.fi/kalastus/kalastonhoitomaksu" target="_blank" rel="noopener">eraluvat.fi:ssä</a>.
+</p>
 </article>
 
-<article>
+<article class="card" id="faq">
+<h2>Usein kysytyt kysymykset</h2>
 
-<h2>Yleisimmät virheet kuhan kalastuksessa</h2>
-
-<ol>
-
-<li>Jigi uitetaan liian nopeasti.</li>
-
-<li>Kalastetaan liian matalasta keskellä päivää.</li>
-
-<li>Vastaisku tehdään liian aikaisin tai liian myöhään.</li>
-
-<li>Vieheen annetaan nousta liian korkealle pohjasta.</li>
-
-<li>Kalastetaan vain päivällä kesäaikaan.</li>
-
-<li>Jigipää on liian kevyt syvään veteen.</li>
-
-<li>Kalapaikka vaihdetaan liian nopeasti.</li>
-
-</ol>
-
-<p>
-
-Kuha ottaa usein varovasti, joten siiman seuraaminen ja hyvä tuntuma
-vieheeseen ovat erittäin tärkeitä.
-
-</p>
-
+<details class="faq">
+<summary>Miksi kuha ei tartu kunnolla vieheeseen, vaikka tärppejä tulee?</summary>
+<p>Kuhan suu on kova ja se ottaa usein varovaisesti – kevyt nykäisy siimassa voi jo olla tärppi. Pidä siima kohtuullisen kireällä koko ajan ja tee vastaisku heti kun tunnet muutoksen, älä odota selvää nykäisyä niin kuin haukea kalastaessa.</p>
+</details>
+<details class="faq">
+<summary>Kannattaako kuhaa kalastaa keskellä päivää ollenkaan?</summary>
+<p>Voi kannattaa, jos vesi on sameaa tai sää pilvinen, jolloin kuha uskaltautuu matalammalle myös päivällä. Kirkkaalla säällä ja kirkkaassa vedessä paras saalisikkuna on kuitenkin selvästi auringonlaskun molemmin puolin.</p>
+</details>
+<details class="faq">
+<summary>Onko vetouistelu vai jigikalastus tehokkaampaa kuhalle?</summary>
+<p>Molemmat toimivat, ja moni käyttää molempia eri tilanteissa. Jigi sopii tarkkaan pohjan lähellä kalasteluun tunnetulla paikalla, vetouistelu taas laajan alueen kartoittamiseen – katso tarkemmat perusteet <a href="kuhan-vetouistelu.html">Kuhan vetouistelu -oppaasta</a>.</p>
+</details>
+<details class="faq">
+<summary>Voiko alamittaisen kuhan tunnistaa nopeasti ilman mittanauhaa?</summary>
+<p>Ei luotettavasti – 42 senttiä on lähellä monen keskikokoisen kuhan pituutta, joten silmämääräinen arvio pettää helposti. Pidä mittanauha aina mukana ja mittaa epävarmat tapaukset.</p>
+</details>
 </article>
 
-<article>
-
-<h2>Parhaat kellonajat kuhan kalastukseen</h2>
-
-<table>
-
-<tr>
-<th>Vuodenaika</th>
-<th>Paras aika</th>
-</tr>
-
-<tr>
-<td>Kevät</td>
-<td>18–23</td>
-</tr>
-
-<tr>
-<td>Kesä</td>
-<td>20–02</td>
-</tr>
-
-<tr>
-<td>Syksy</td>
-<td>16–22</td>
-</tr>
-
-<tr>
-<td>Talvi</td>
-<td>11–15</td>
-</tr>
-
-</table>
-
-<p>
-
-Kesällä kuhan kalastus kannattaa ajoittaa iltaan, hämärään tai yöhön.
-Monet suurimmat kuhat saadaan juuri auringonlaskun jälkeen.
-
-</p>
-
-</article><article>
-
-<h2>Usein kysytyt kysymykset (FAQ)</h2>
-
-<h3>Mikä on paras viehe kuhalle?</h3>
-
-<p>
-
-Jigit ovat yksi tehokkaimmista kuhavieheistä ympäri vuoden. Kesällä myös
-syvälle sukeltavat vaaput toimivat erinomaisesti erityisesti iltaisin ja
-vetouistelussa.
-
-</p>
-
-<h3>Mihin aikaan kuha syö parhaiten?</h3>
-
-<p>
-
-Kesällä kuha on aktiivisimmillaan illalla, hämärässä ja yöllä. Keväällä
-ja syksyllä syönti voi alkaa jo iltapäivällä ja jatkua pitkälle iltaan.
-
-</p>
-
-<h3>Mistä isot kuhat löytyvät?</h3>
-
-<p>
-
-Suuret kuhat viihtyvät usein syvänteiden reunoilla, vedenalaisilla
-harjanteilla, karikoiden läheisyydessä sekä alueilla, joissa liikkuu
-runsaasti pikkukalaa.
-
-</p>
-
-<h3>Mikä siima sopii kuhan kalastukseen?</h3>
-
-<p>
-
-0,10–0,15 mm punottu siima on useimmille kalastajille erinomainen
-yleisvalinta. Se välittää pienetkin tärpit tehokkaasti ja parantaa
-tuntumaa erityisesti jigikalastuksessa.
-
-</p>
-
-</article>
-
-<article>
-
-<h2>Yhteenveto</h2>
-
-<p>
-
-Kuha on yksi Suomen arvostetuimmista petokaloista ja sen kalastus tarjoaa
-haastetta niin aloittelijoille kuin kokeneillekin kalastajille. Parhaat
-tulokset saavutetaan, kun kalastus ajoitetaan oikeaan vuodenaikaan,
-kalastetaan oikealla syvyydellä ja valitaan olosuhteisiin sopiva viehe.
-
-</p>
-
-<p>
-
-Kesällä kuha liikkuu aktiivisesti iltaisin ja öisin, kun taas syksyllä
-se syö runsaasti valmistautuessaan talveen. Jigikalastus, vetouistelu ja
-vaappujen käyttö ovat tehokkaimpia menetelmiä eri tilanteissa.
-
-</p>
-
-<p>
-
-Ennen vesille lähtöä kannattaa tarkistaa FastFishingin kelimittari.
-Sääolosuhteiden huomioiminen voi ratkaista, tuleeko päivästä tavallinen
-vai ikimuistoinen kalareissu.
-
-</p>
-
-<h3>Tutustu myös muihin oppaisiin</h3>
-
-<ul>
-
+<article class="card">
+<h2>Muut oppaat</h2>
+<ul class="related">
 <li><a href="hauen-kalastus.html">Hauen kalastus</a></li>
-
 <li><a href="ahvenen-kalastus.html">Ahvenen kalastus</a></li>
-
+<li><a href="kuhan-vetouistelu.html">Kuhan vetouistelu</a></li>
 <li><a href="jigikalastus.html">Jigikalastus</a></li>
-
-<li><a href="vieheen-valinta.html">Vieheen valinta</a></li>
-
-
 </ul>
-
-<p>
-
-Kireitä siimoja ja onnistuneita kalastushetkiä!
-
-</p>
-
+<p style="margin-top:22px">Malttia hämärään ja tukevaa tarttumaa!</p>
 </article>
 
 </div>
 
 <footer>
-
 <p>&copy; 2026 FastFishing – Kalastusoppaat ja kelimittari.</p>
-
 <p>
-
 <a href="index.html">Etusivu</a> |
-
 <a href="tietoa-meista.html">Tietoa meistä</a> |
-
 <a href="tietosuoja.html">Tietosuojaseloste</a>
-
 </p>
-
 </footer>
 
 <div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto kayttaa evasteita (mainosten personointiin Google AdSense) ja kavijatilastointiin (Google Analytics). Lue lisaa <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
+    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
     <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkaa valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyvaksy kaikki</button>
+      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
+      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
     </div>
   </div>
 </div>

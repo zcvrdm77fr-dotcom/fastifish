@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <script>
-// Asetetaan tumma/vaalea tila heti ennen ensimmäistä piirtoa, jotta sivu ei välähdä väärällä teemalla.
 (function () {
   try {
     var stored = null;
@@ -21,98 +20,74 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ahvenen kalastus – Parhaat vieheet, vuodenajat ja vinkit | FastFishing</title>
+<title>Ahvenen kalastus ja pilkkiminen: parven metsästys | FastFishing</title>
 
-<meta name="description" content="Kattava opas ahvenen kalastukseen. Lue mistä ahventa löytyy eri vuodenaikoina, mitkä vieheet toimivat parhaiten ja miten sää vaikuttaa ahvenen syöntiin.">
+<meta name="description" content="Ahven liikkuu parvissa ympäri vuoden. Opas käy läpi parven löytämisen avovedessä, ahventen pilkkimisen talvella sekä turvallisen jääkalastuksen perusteet.">
 
 <link rel="canonical" href="https://www.fastfishin.com/ahvenen-kalastus.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#f4f0e5;
-color:#17342f;
-line-height:1.8;
+:root{
+  --ink:#17342f; --ink-soft:#45645e; --lake:#2f6f73; --lake-deep:#24585c;
+  --mist:#d9e8e4; --paper:#f4f0e5; --paper-bright:#fffdf7; --line:#c9d5cf;
+  --orange:#d5752c; --orange-dark:#ad571e; --link:#24585c;
+  --shadow-small:0 8px 24px rgba(23,52,47,.09); --radius:20px;
 }
-
-header{
-background:#24585c;
-color:#fff;
-padding:80px 20px;
+html[data-theme="dark"]{
+  color-scheme: dark;
+  --ink:#eef3f0; --ink-soft:#a8c2b9; --lake:#59a3a7; --lake-deep:#123234;
+  --mist:#17302c; --paper:#0d1a16; --paper-bright:#142522; --line:#29423b;
+  --orange:#e2884a; --orange-dark:#e2884a; --link:#8dd0d2;
+  --shadow-small:0 8px 24px rgba(0,0,0,.35);
 }
-
-.container{
-width:min(1100px,92%);
-margin:auto;
-}
-
-h1{
-font-size:54px;
-margin-bottom:20px;
-}
-
-h2{
-font-size:34px;
-margin-top:60px;
-color:#24585c;
-}
-
-article{
-background:#fff;
-padding:40px;
-margin:40px 0;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-.button{
-display:inline-block;
-margin-top:25px;
-padding:14px 22px;
-background:#d97706;
-color:#fff;
-text-decoration:none;
-border-radius:10px;
-font-weight:bold;
-}
-
-.tip{
-background:#eef8f6;
-border-left:5px solid #2f6f73;
-padding:18px;
-margin:25px 0;
-border-radius:8px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-th,td{
-padding:14px;
-border-bottom:1px solid #ddd;
-text-align:left;
-}
-
-footer{
-padding:40px;
-text-align:center;
-color:#666;
-}
-
-
-html[data-theme="dark"] body{background:#0d1a16;color:#eef3f0;}
-html[data-theme="dark"] header{background:#0a2224;}
+html[data-theme="light"], html:not([data-theme]) { color-scheme: light; }
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:17px;}
+a{color:var(--link);}
+.container{width:min(880px,92%);margin:auto;}
+header.hero{background:var(--lake-deep);color:#fff;padding:clamp(40px,8vw,76px) 20px 46px;}
+.crumb{font:600 .78rem/1 'JetBrains Mono',monospace;letter-spacing:.03em;color:#bfe3e0;margin-bottom:16px;}
+.crumb a{color:#bfe3e0;}
+.eyebrow{font:700 .74rem/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f3c393;margin-bottom:14px;display:block;}
+h1{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(2.1rem,5.2vw,3.3rem);line-height:1.06;margin:0 0 18px;letter-spacing:-.01em;}
+h2{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(1.5rem,3.4vw,1.9rem);margin:0 0 14px;color:var(--lake-deep);scroll-margin-top:16px;}
 html[data-theme="dark"] h2{color:#7fd6d6;}
-html[data-theme="dark"] article{background:#142522;box-shadow:0 10px 30px rgba(0,0,0,.4);}
-html[data-theme="dark"] .tip{background:#132a26;border-left-color:#59a3a7;}
-html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom:1px solid #29423b;}
-html[data-theme="dark"] footer{color:#9db3ab;}
-
+h3{margin-top:26px;margin-bottom:8px;font-size:1.1rem;}
+p{margin:0 0 16px;}
+article.card{background:var(--paper-bright);padding:clamp(24px,4vw,38px);margin:26px 0;border-radius:var(--radius);box-shadow:var(--shadow-small);border:1px solid var(--line);}
+.button{display:inline-block;margin-top:22px;padding:13px 20px;background:var(--orange);color:#fff !important;text-decoration:none;border-radius:10px;font-weight:700;}
+.tip{background:var(--mist);border-left:4px solid var(--lake);padding:16px 18px;margin:22px 0;border-radius:8px;}
+.tip strong{color:var(--lake-deep);}
+html[data-theme="dark"] .tip strong{color:#7fd6d6;}
+.warn{background:#f6e3d6;border-left:4px solid var(--orange-dark);padding:16px 18px;margin:22px 0;border-radius:8px;}
+html[data-theme="dark"] .warn{background:#2a2019;}
+.warn strong{color:var(--orange-dark);}
+.note{border:1px dashed var(--line);padding:18px 20px;margin:24px 0;border-radius:12px;color:var(--ink-soft);font-size:.96rem;}
+.note strong{color:var(--ink);}
+.table-wrap{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:460px;}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem;vertical-align:top;}
+th{color:var(--ink-soft);font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;}
+.toc{background:var(--paper-bright);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:.94rem;}
+.toc summary{cursor:pointer;font-weight:700;color:var(--lake-deep);}
+html[data-theme="dark"] .toc summary{color:#7fd6d6;}
+.toc ul{margin:12px 0 0;padding-left:20px;columns:2;column-gap:24px;}
+.toc li{break-inside:avoid;margin-bottom:6px;}
+details.faq{border-bottom:1px solid var(--line);padding:14px 0;}
+details.faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;}
+details.faq summary::-webkit-details-marker{display:none;}
+details.faq summary::before{content:'+ ';color:var(--orange);font-weight:700;}
+details.faq[open] summary::before{content:'– ';}
+details.faq p{margin-top:10px;}
+.related{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:10px;}
+.related li a{display:inline-block;padding:9px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:.9rem;}
+footer{margin-top:40px;padding:36px 20px;text-align:center;color:var(--ink-soft);font-size:.85rem;}
 .theme-toggle-fab{position:fixed;top:16px;right:16px;z-index:9999;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(23,52,47,.55);backdrop-filter:blur(8px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s;}
 .theme-toggle-fab:hover{transform:translateY(-2px);}
 .theme-toggle-fab svg{width:18px;height:18px;display:block;}
@@ -122,7 +97,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-sun{display:block;}
 html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 </style>
 
-<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
+<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes käyttäjä hyväksyy evästeet. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -151,7 +126,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
-<!-- Google AdSense: ladataan AINA suoraan headissa, EI evastesuostumuksen taakse (vaaditaan sivuston hyvaksyntaa varten). -->
+<!-- Google AdSense: ladataan AINA suoraan headissa, EI evästesuostumuksen taakse (vaaditaan sivuston hyväksyntää varten). -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
 </head>
 
@@ -161,642 +136,154 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
 </button>
 
-<header>
-
+<header class="hero">
 <div class="container">
-
-<h1>Ahvenen kalastus – kattava opas</h1>
-
+<div class="crumb"><a href="index.html">Etusivu</a> → Kalastusoppaat → Ahvenen kalastus</div>
+<span class="eyebrow">Parvikala ympäri vuoden</span>
+<h1>Ahvenen kalastus ja pilkkiminen: näin löydät parven</h1>
 <p>
-
-Ahven (Perca fluviatilis) on Suomen yleisin petokala ja yksi suosituimmista
-vapakalastuksen saaliskaloista. Se elää lähes kaikissa järvissä, joissa,
-lammissa ja rannikkovesissä. Ahven tunnetaan aggressiivisesta syönnistään,
-vahvasta taistelustaan sekä erinomaisesta maustaan ruokakalana.
-
+Ahventa ei kannata kalastaa yksilö kerrallaan – se liikkuu parvissa, ja yhden kalan löytäminen tarkoittaa yleensä, että lähistöllä on kymmeniä lisää. Tämä opas keskittyy siihen, miten parvi löydetään sekä avovedessä että jään alla, koska ahven on Suomen suosituin ja lapsiystävällisin pilkkikala.
 </p>
-
-<p>
-
-Pienempiä ahvenia löytyy lähes kaikkialta, mutta suuremmat yksilöt vaativat
-oikeiden kalapaikkojen, vieheiden ja olosuhteiden tuntemista. Tässä oppaassa
-käydään läpi kaikki tärkeimmät asiat, joiden avulla voit saada enemmän ja
-suurempia ahvenia ympäri vuoden.
-
-</p>
-
-<a class="button" href="index.html">
-← Takaisin FastFishingiin
-</a>
-
+<a class="button" href="index.html">← Takaisin FastFishingiin</a>
 </div>
-
 </header>
 
 <div class="container">
 
-<article>
-
-<h2>Miksi ahven on yksi Suomen suosituimmista saaliskaloista?</h2>
-
-<p>
-
-Ahven on aktiivinen petokala, jonka ravintoon kuuluvat hyönteiset,
-vesihyönteisten toukat, äyriäiset sekä erityisesti pikkukalat. Tämän vuoksi
-se ottaa monenlaisiin vieheisiin, kuten jigeihin, lippoihin, pieniin vaappuihin
-ja lusikkauistimiin.
-
-</p>
-
-<p>
-
-Ahven liikkuu usein parvissa. Kun löydät aktiivisen parven, voit saada useita
-kaloja samasta paikasta. Erityisesti syksyllä isot ahvenet kerääntyvät
-syvänteiden reunoille ja karikoiden läheisyyteen syömään ennen talvea.
-
-</p>
-
-<div class="tip">
-
-<strong>Vinkki:</strong><br>
-
-Jos saat yhden ahvenen, älä vaihda paikkaa heti. Tee muutama lisäheitto,
-sillä samalla alueella voi olla koko parvi.
-
-</div>
-
-</article>
-
-<article>
-
-<h2>Missä ahventa kannattaa etsiä?</h2>
-
-<p>
-
-Ahven viihtyy alueilla, joissa on suojaa ja runsaasti ravintoa. Keväällä
-se hakeutuu lämpeneville matalille lahdille, kun taas kesällä suuremmat
-yksilöt siirtyvät kivikoille, penkoille ja syvänteiden reunoille.
-
-</p>
-
-<p>
-
-Parhaita ahvenpaikkoja ovat esimerkiksi:
-
-</p>
-
+<details class="toc">
+<summary>Sisällys</summary>
 <ul>
-
-<li>Kaislikon reunat</li>
-
-<li>Kivikkorannat</li>
-
-<li>Karikot</li>
-
-<li>Laitureiden ympäristö</li>
-
-<li>Syvänteiden reunat</li>
-
-<li>Siltojen läheisyys</li>
-
-<li>Virtapaikkojen suvannot</li>
-
+<li><a href="#parvi">Parven metsästys avovedessä</a></li>
+<li><a href="#kausi">Avoveden kausi tiivistettynä</a></li>
+<li><a href="#pilkki">Ahventen pilkkiminen talvella</a></li>
+<li><a href="#viehe">Vieheet ja koko</a></li>
+<li><a href="#virheet">Yleisimmät virheet</a></li>
+<li><a href="#saannot">Säännöt ja maksut</a></li>
+<li><a href="#faq">Usein kysytyt kysymykset</a></li>
 </ul>
+</details>
 
+<article class="card" id="parvi">
+<h2>Parven metsästys avovedessä</h2>
 <p>
-
-Jos veden pinnassa näkyy pikkukalojen liikettä tai lokit syövät aktiivisesti,
-alueella liikkuu usein myös ahvenparvia.
-
+Ahven on utelias ja sosiaalinen petokala – kun yksi yksilö parvesta iskee vieheeseen, muut usein seuraavat perässä nähdäkseen mitä tapahtui. Tämä tekee ahvenesta poikkeuksellisen: siinä missä hauki tai kuha vaatii yleensä tarkan väijyntäpaikan löytämistä, ahvenen kohdalla tärkeintä on löytää liikkuva parvi ja pysyä sen mukana.
 </p>
-
+<p>
+Parhaita merkkejä aktiivisesta parvesta ovat pintaan nousevat pikkukalat, lokkien tai tiirojen syöminen vedenpinnalla, sekä kaikuluotaimessa näkyvä tiivis kalaparvi lähellä pohjaa tai sen yläpuolella. Jos saat yhden kalan, älä vaihda paikkaa – tee muutama lisäheitto samaan kohtaan, sillä koko parvi on todennäköisesti yhä siellä.
+</p>
+<div class="tip">
+<strong>Vinkki:</strong> Kokeneet ahvenenkalastajat kelaavat ensimmäisen kalan hitaasti veneen tai rannan lähelle ja pitävät sen hetken vedessä ennen nostoa – tämä pitää parven kiinnostuneena ja aktiivisena vielä seuraavaa heittoa varten.
+</div>
 </article>
 
-<article>
-
-<h2>Paras sää ahvenen kalastukseen</h2>
-
-<p>
-
-Ahven reagoi herkästi säätilaan. Pilvinen sää ja kevyt tuuli ovat usein
-parhaita olosuhteita, sillä ne aktivoivat pikkukaloja ja lisäävät ahvenen
-saalistusintoa.
-
-</p>
-
+<article class="card" id="kausi">
+<h2>Avoveden kausi tiivistettynä</h2>
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Sääolosuhde</th>
-<th>Vaikutus</th>
-</tr>
-
-<tr>
-<td>Pilvinen ja kevyt tuuli</td>
-<td>Erittäin hyvä</td>
-</tr>
-
-<tr>
-<td>Pieni sade</td>
-<td>Hyvä</td>
-</tr>
-
-<tr>
-<td>Kirkas tyyni päivä</td>
-<td>Usein heikompi</td>
-</tr>
-
-<tr>
-<td>Viileä syyssää</td>
-<td>Erittäin hyvä</td>
-</tr>
-
-<tr>
-<td>Kova helle</td>
-<td>Kalasta aamulla tai illalla</td>
-</tr>
-
+<tr><th>Vuodenaika</th><th>Syvyys ja paikka</th><th>Vieheen koko</th></tr>
+<tr><td>Kevät</td><td>1–3&nbsp;m lämpimät lahdenpohjat, ruovikon reunat</td><td>5–7&nbsp;cm</td></tr>
+<tr><td>Kesä</td><td>Rantavesi aamuin illoin, syvemmät penkat päivällä</td><td>5–10&nbsp;cm</td></tr>
+<tr><td>Syksy</td><td>Syvänteiden reunat, karikot, ravintokalan lähellä</td><td>7–10&nbsp;cm</td></tr>
 </table>
-
-<p>
-
-FastFishingin kelimittari auttaa arvioimaan päivän kalastusolosuhteita ennen
-vesille lähtöä.
-
-</p>
-
-</article><article>
-
-<h2>Ahvenen kalastus keväällä</h2>
-
-<p>
-
-Kevät on yksi vuoden parhaista ajoista ahvenen kalastukseen. Heti jäiden
-lähdettyä matalat lahdet lämpenevät nopeasti, mikä houkuttelee pikkukaloja
-ja niiden perässä liikkuvia ahvenia. Kutua ennen ja sen jälkeen ahven syö
-aktiivisesti, joten oikealla vieheellä voi saada useita kaloja samalta alueelta.
-
-</p>
-
-<p>
-
-Keväällä kannattaa kalastaa erityisesti 1–3 metrin syvyydessä olevia
-lahdenpohjia, ruovikoiden reunoja sekä kivikkoisia rantoja. Aurinkoisina
-päivinä lämpimimmät vesialueet ovat usein kaikkein tuottoisimpia.
-
-</p>
-
-<h3>Kevään parhaat vieheet</h3>
-
-<ul>
-
-<li>5–7 cm jigit</li>
-
-<li>Pienet lipat</li>
-
-<li>Kevyet lusikkauistimet</li>
-
-<li>Pienet vaaput</li>
-
-</ul>
-
-<div class="tip">
-
-<strong>Vinkki:</strong><br>
-
-Keväällä rauhallinen uitto toimii yleensä paremmin kuin nopea kelaaminen.
-
 </div>
-
+<p>
+Syksy kerää usein vuoden suurimmat ahvenparvet, kun kala syö aktiivisesti ennen talvea ja seuraa tiiviisti pikkukalaparvia avoimilla penkoilla. Kaikuluotaimesta on tällöin poikkeuksellisen paljon apua, koska parvet voivat liikkua laajallakin alueella päivän mittaan.
+</p>
 </article>
 
-<article>
-
-<h2>Ahvenen kalastus kesällä</h2>
-
+<article class="card" id="pilkki">
+<h2>Ahventen pilkkiminen talvella</h2>
 <p>
-
-Kesällä ahvenet hajaantuvat laajemmalle alueelle. Pienemmät kalat löytyvät
-usein rantavesistä ja kasvillisuuden läheltä, kun taas suuremmat yksilöt
-siirtyvät syvemmille penkoille, kivikoille ja karikoille.
-
+Ahven on Suomen suosituin pilkkikala, eikä syyttä: se pysyy aktiivisena jään alla läpi talven, tarttuu pieneen ja edulliseen vieheeseen, ja parven löytäminen yhdestä reiästä tarkoittaa usein tasaista tarjontaa koko aamun. Parhaita paikkoja ovat syvänteiden reunat, vedenalaiset harjanteet ja kivikot – samat rakenteet kuin avovedelläkin, vain syvemmällä.
 </p>
-
 <p>
-
-Kuumina päivinä kalastus kannattaa ajoittaa aikaiselle aamulle tai
-myöhäiselle illalle, jolloin ahven liikkuu aktiivisemmin ravinnon perässä.
-
+Koska parvi voi olla kapealla alueella, reikien poraaminen useaan kohtaan ja niiden välillä kiertäminen on usein tehokkaampaa kuin yhden reiän vieressä odottelu. Jos tärppiä ei tule muutamassa minuutissa, siirry rohkeasti seuraavaan reikään.
 </p>
-
-<h3>Kesän parhaat vieheet</h3>
-
-<ul>
-
-<li>Jigit 5–10 cm</li>
-
-<li>Spinnerit</li>
-
-<li>Pienet vaaput</li>
-
-<li>Dropshot- ja Carolina-rigit</li>
-
-</ul>
-
-</article>
-
-<article>
-
-<h2>Ahvenen kalastus syksyllä</h2>
-
-<p>
-
-Syksyllä ahven alkaa syödä runsaasti valmistautuakseen talveen.
-Tämä on monien kalastajien mielestä vuoden paras aika tavoitella suuria
-yli puolen kilon ahvenia.
-
-</p>
-
-<p>
-
-Parhaat kalapaikat löytyvät usein syvänteiden reunoilta,
-karikoiden läheisyydestä sekä paikoista, joissa liikkuu paljon pikkukalaa.
-Kaikuluotaimesta on syksyllä suuri apu ahvenparvien löytämisessä.
-
-</p>
-
-<h3>Syksyn parhaat vieheet</h3>
-
-<ul>
-
-<li>7–10 cm jigit</li>
-
-<li>Painavat lipat</li>
-
-<li>Pienet jerkit</li>
-
-<li>Tasapainoisesti uivat vaaput</li>
-
-</ul>
-
-</article>
-
-<article>
-
-<h2>Ahvenen pilkintä talvella</h2>
-
-<p>
-
-Talvella ahven on yksi suosituimmista pilkkikaloista. Parhaita paikkoja
-ovat syvänteiden reunat, vedenalaiset harjanteet ja kivikot.
-Päivän aikana parvet voivat liikkua paljon, joten reikien vaihtaminen
-on tärkeää.
-
-</p>
-
-<p>
-
-Tasapainopilkit, pystypilkit ja pienet morrit ovat talvella tehokkaita.
-Usein pienikin syötin liike riittää houkuttelemaan ahvenen iskemään.
-
-</p>
-
-<div class="tip">
-
-<strong>Muista:</strong><br>
-
-Jos yhdestä reiästä ei tule tärppiä muutamassa minuutissa,
-siirry rohkeasti seuraavaan paikkaan.
-
+<div class="warn">
+<strong>Jääturvallisuus ensin:</strong> Jään kantavuus vaihtelee alueen, virtausten ja talven mukaan eikä sitä voi koskaan arvioida silmämääräisesti luotettavasti. Vältä alueita, joilla on virtausta, jokisuita tai lähteitä, kulje mielellään yhdessä muiden kanssa, ja pidä mukana jääpiikit sekä heittoköysi. Tarkista aina paikallinen ajantasainen jäätilanne ennen jäälle menoa.
 </div>
+</article>
 
-</article><article>
-
-<h2>Vieheen väri ja koko</h2>
-
-<p>
-
-Vieheen värillä on suuri merkitys erityisesti veden kirkkauden mukaan.
-Kirkkaassa vedessä luonnolliset värit, kuten ahven, kuore, hopea ja
-muikku, toimivat usein parhaiten. Sameassa vedessä kirkkaammat värit
-näkyvät paremmin ja herättävät ahvenen huomion.
-
-</p>
-
+<article class="card" id="viehe">
+<h2>Vieheet ja koko</h2>
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Veden kirkkaus</th>
-<th>Suositeltu väri</th>
-</tr>
-
-<tr>
-<td>Kirkas</td>
-<td>Hopea, ahven, kuore</td>
-</tr>
-
-<tr>
-<td>Hieman samea</td>
-<td>Kulta, kupari</td>
-</tr>
-
-<tr>
-<td>Samea</td>
-<td>Chartreuse, oranssi, Firetiger</td>
-</tr>
-
+<tr><th>Kausi</th><th>Toimivat vieheet</th></tr>
+<tr><td>Avovesi</td><td>Jigit, pienet lipat, kevyet lusikkauistimet, dropshot-rigit</td></tr>
+<tr><td>Jään alla</td><td>Tasapainopilkit, pystypilkit, pienet morrit</td></tr>
 </table>
-
-<p>
-
-Pienille ahvenille riittävät usein 3–5 senttimetrin vieheet, mutta
-suuremmat yli puolen kilon ahvenet iskevät rohkeasti myös 7–10 senttimetrin
-jigeihin ja vaappuihin.
-
-</p>
-
-</article>
-
-<article>
-
-<h2>Millaiset välineet sopivat ahvenen kalastukseen?</h2>
-
-<p>
-
-Kevyt avokelasarja on useimmille kalastajille paras valinta. Herkkäkärkinen
-vapa auttaa havaitsemaan pienetkin tärpit ja tekee kevyiden vieheiden
-heittämisestä tarkkaa.
-
-</p>
-
-<table>
-
-<tr>
-<th>Varuste</th>
-<th>Suositus</th>
-</tr>
-
-<tr>
-<td>Vapa</td>
-<td>6–7 jalkaa, kevyt tai medium light</td>
-</tr>
-
-<tr>
-<td>Kela</td>
-<td>Koko 1000–2500</td>
-</tr>
-
-<tr>
-<td>Punottu siima</td>
-<td>0,08–0,12 mm</td>
-</tr>
-
-<tr>
-<td>Peruke</td>
-<td>Fluorocarbon 0,20–0,30 mm</td>
-</tr>
-
-</table>
-
-<p>
-
-Jos samalla alueella liikkuu haukia, kannattaa käyttää ohutta
-teräs- tai titaaniperuketta vieheiden menetyksen välttämiseksi.
-
-</p>
-
-</article>
-
-<article>
-
-<h2>Sään vaikutus ahvenen syöntiin</h2>
-
-<p>
-
-Ahven reagoi nopeasti sään muutoksiin. Kevyt tuuli sekoittaa pintavettä,
-kuljettaa ravintoa rantaan ja saa pikkukalat liikkeelle. Tämä lisää myös
-ahvenen aktiivisuutta.
-
-</p>
-
-<ul>
-
-<li>Pilvinen sää on usein erinomainen.</li>
-
-<li>Kevyt 2–5 m/s tuuli parantaa kalastusta.</li>
-
-<li>Pitkä hellejakso voi siirtää isot ahvenet syvemmälle.</li>
-
-<li>Syksyn viileät päivät ovat usein vuoden parhaita.</li>
-
-<li>Aamulla ja illalla syönti on kesällä yleensä vilkkainta.</li>
-
-</ul>
-
-<div class="tip">
-
-<strong>Muista:</strong><br>
-
-FastFishingin kelimittari auttaa arvioimaan, milloin sääolosuhteet
-ovat ahvenen kannalta parhaimmillaan.
-
 </div>
-
+<p>
+Kirkkaassa vedessä luonnonväriset vieheet (hopea, kuore, ahven) toimivat yleensä parhaiten, sameassa vedessä kannattaa vaihtaa kirkkaampaan chartreuseen tai oranssiin. Pidä mukana muutama eri koko: pieni parvi pienempiin ahveniin, suurempi kokoluokka jos merkkejä isommista yksilöistä on nähtävissä.
+</p>
 </article>
 
-<article>
-
-<h2>Yleisimmät virheet ahvenen kalastuksessa</h2>
-
+<article class="card" id="virheet">
+<h2>Yleisimmät virheet</h2>
 <ol>
-
-<li>Kalastetaan liian suurilla vieheillä pientä ahventa.</li>
-
-<li>Jigin uitto on liian nopeaa.</li>
-
-<li>Kalapaikkaa ei vaihdeta riittävän usein.</li>
-
-<li>Kalastetaan vain rantaa, vaikka isot ahvenet ovat syvemmällä.</li>
-
-<li>Käytetään liian paksua siimaa kevyillä vieheillä.</li>
-
-<li>Kalastetaan keskellä hellepäivää kesällä.</li>
-
-<li>Lopetetaan liian aikaisin ensimmäisten heittojen jälkeen.</li>
-
+<li>Paikkaa vaihdetaan heti ensimmäisen kalan jälkeen, vaikka koko parvi olisi vielä paikalla.</li>
+<li>Vieheen annetaan uida liian nopeasti – ahven ottaa usein hitaammin liikkuvan syötin.</li>
+<li>Jäällä porataan vain yksi reikä eikä lähdetä etsimään parvea laajemmalta alueelta.</li>
+<li>Liian paksu siima vaimentaa varovaisimmat tärpit tuntumattomiin.</li>
 </ol>
-
-<p>
-
-Ahven liikkuu parvissa, joten aktiivisen parven löytäminen on usein
-tärkeämpää kuin vieheen jatkuva vaihtaminen.
-
-</p>
-
 </article>
 
-<article>
-
-<h2>Parhaat kellonajat ahvenen kalastukseen</h2>
-
-<table>
-
-<tr>
-<th>Vuodenaika</th>
-<th>Paras kalastusaika</th>
-</tr>
-
-<tr>
-<td>Kevät</td>
-<td>09–17</td>
-</tr>
-
-<tr>
-<td>Kesä</td>
-<td>05–10 ja 18–22</td>
-</tr>
-
-<tr>
-<td>Syksy</td>
-<td>Koko päivä</td>
-</tr>
-
-<tr>
-<td>Talvi</td>
-<td>10–15</td>
-</tr>
-
-</table>
-
+<article class="card" id="saannot">
+<h2>Säännöt ja maksut</h2>
 <p>
-
-Vaikka ahventa voi saada mihin aikaan tahansa, kesällä aikainen aamu ja
-myöhäinen ilta ovat yleensä kaikkein tehokkaimmat ajankohdat.
-
+Hyvä uutinen ahvenenkalastajalle: onkiminen ja pilkkiminen ovat Suomessa kaikille maksuttomia yleiskalastusoikeuksia riippumatta iästä tai asuinpaikasta. Jos taas kalastat ahventa vieheellä heittäen tai vetouistellen, 18–69-vuotiaat tarvitsevat valtion kalastonhoitomaksun, jonka voi maksaa <a href="https://www.eraluvat.fi/kalastus/kalastonhoitomaksu" target="_blank" rel="noopener">eraluvat.fi:ssä</a>. Ajantasaiset vesistökohtaiset rajoitukset kannattaa aina tarkistaa <a href="https://kalastusrajoitus.fi" target="_blank" rel="noopener">kalastusrajoitus.fi</a>-palvelusta.
 </p>
-
-</article><article>
-
-<h2>Usein kysytyt kysymykset (FAQ)</h2>
-
-<h3>Mikä on paras viehe ahvenelle?</h3>
-
-<p>
-
-Jigit ovat yksi tehokkaimmista vieheistä ympäri vuoden. Lisäksi pienet
-vaaput, lipat ja lusikkauistimet toimivat erinomaisesti erityisesti
-keväällä ja kesällä.
-
-</p>
-
-<h3>Mihin aikaan ahven syö parhaiten?</h3>
-
-<p>
-
-Kesällä parhaat hetket ovat yleensä aikaisin aamulla ja myöhään illalla.
-Keväällä ja syksyllä ahven voi syödä aktiivisesti lähes koko päivän.
-
-</p>
-
-<h3>Mistä löytää isot ahvenet?</h3>
-
-<p>
-
-Suuret ahvenet liikkuvat usein syvänteiden reunoilla, kivikoiden
-läheisyydessä, karikoilla sekä alueilla, joilla liikkuu runsaasti
-pikkukalaa.
-
-</p>
-
-<h3>Kannattaako käyttää punottua siimaa?</h3>
-
-<p>
-
-Kyllä. Punottu siima välittää pienetkin tärpit tehokkaasti ja parantaa
-tuntumaa erityisesti jigikalastuksessa. Ohut 0,08–0,12 mm punottu siima
-on hyvä yleisvalinta.
-
-</p>
-
 </article>
 
-<article>
+<article class="card" id="faq">
+<h2>Usein kysytyt kysymykset</h2>
 
-<h2>Yhteenveto</h2>
+<details class="faq">
+<summary>Sopiiko ahvenen kalastus lapsille?</summary>
+<p>Erittäin hyvin. Ahven ottaa usein aktiivisesti, tärpit ovat selkeitä ja pilkkiminen on maksutonta ilman erillisiä lupavaatimuksia. Moni suomalainen kalastaja on aloittanut harrastuksensa juuri ahventa pilkkimällä tai onkimalla lapsena.</p>
+</details>
+<details class="faq">
+<summary>Miksi parvi katoaa yhtäkkiä kesken kalastuksen?</summary>
+<p>Ahvenparvet liikkuvat ravintokalan perässä eivätkä pysy paikallaan tuntikausia. Jos tärpit loppuvat äkillisesti, parvi on todennäköisesti siirtynyt – kannattaa kokeilla lähialuetta kaikuluotaimella tai muutamalla koeheitolla ennen kokonaan uudelle alueelle siirtymistä.</p>
+</details>
+<details class="faq">
+<summary>Kannattaako pilkillä käyttää syöttiä vai pelkkää vieheen väriä ja liikettä?</summary>
+<p>Molemmat toimivat, mutta pieni syötinpala (esim. toukka) koukun kärjessä nostaa usein varmuutta hitailla pilkeillä, erityisesti kun kala on passiivista. Aktiivisella parvella pelkkä vieheen liike riittää usein hyvin.</p>
+</details>
+<details class="faq">
+<summary>Mistä tietää, onko jää turvallista ahventen pilkkimiseen?</summary>
+<p>Ei silmämääräisesti koskaan täysin varmasti. Kysy paikallisilta tai kalastusseuralta ajantasaista tietoa, vältä virtapaikkoja ja jokisuita, ja käytä aina jääpiikkejä. Älä mene yksin ohuelle tai tuntemattomalle jäälle.</p>
+</details>
+</article>
 
-<p>
-
-Ahven on yksi Suomen monipuolisimmista petokaloista ja sitä voidaan
-kalastaa onnistuneesti kaikkina vuodenaikoina. Keväällä ahven hakeutuu
-lämpeneville matalikoille, kesällä kasvillisuuden reunoille ja
-syvemmille penkoille, syksyllä ravintokalojen läheisyyteen ja talvella
-syvänteiden tuntumaan.
-
-</p>
-
-<p>
-
-Oikea viehe, sopiva kalastuspaikka ja sääolosuhteiden huomioiminen voivat
-parantaa saalista merkittävästi. Erityisesti aktiivisen ahvenparven
-löytäminen ratkaisee usein koko kalastusreissun onnistumisen.
-
-</p>
-
-<p>
-
-Ennen vesille lähtöä kannattaa tarkistaa FastFishingin kelimittari, joka
-auttaa arvioimaan päivän kalastusolosuhteita ja valitsemaan parhaat
-kalastusajat.
-
-</p>
-
-<h3>Tutustu myös muihin oppaisiin</h3>
-
-<ul>
-
+<article class="card">
+<h2>Muut oppaat</h2>
+<ul class="related">
 <li><a href="hauen-kalastus.html">Hauen kalastus</a></li>
-
 <li><a href="kuhan-kalastus.html">Kuhan kalastus</a></li>
-
+<li><a href="ahvenen-vetouistelu.html">Ahvenen vetouistelu</a></li>
 <li><a href="jigikalastus.html">Jigikalastus</a></li>
-
-<li><a href="vieheen-valinta.html">Vieheen valinta</a></li>
-
-
 </ul>
-
-<p>
-
-Kireitä siimoja ja onnistuneita kalastushetkiä!
-
-</p>
-
+<p style="margin-top:22px">Antoisia parvilöytöjä, kesällä ja jään alla!</p>
 </article>
 
 </div>
 
 <footer>
-
 <p>&copy; 2026 FastFishing – Kalastusoppaat ja kelimittari.</p>
-
 <p>
-
 <a href="index.html">Etusivu</a> |
-
 <a href="tietoa-meista.html">Tietoa meistä</a> |
-
 <a href="tietosuoja.html">Tietosuojaseloste</a>
-
 </p>
-
 </footer>
 
 <div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto kayttaa evasteita (mainosten personointiin Google AdSense) ja kavijatilastointiin (Google Analytics). Lue lisaa <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
+    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
     <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkaa valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyvaksy kaikki</button>
+      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
+      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
     </div>
   </div>
 </div>

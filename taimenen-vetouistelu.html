@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <script>
-// Asetetaan tumma/vaalea tila heti ennen ensimmäistä piirtoa, jotta sivu ei välähdä väärällä teemalla.
 (function () {
   try {
     var stored = null;
@@ -21,103 +20,74 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Taimenen vetouistelu – Kattava opas | FastFishing</title>
+<title>Taimenen vetouistelu ja vastuullinen kalastus | FastFishing</title>
 
-<meta name="description" content="Lue kattava opas taimenen vetouisteluun merellä ja järvillä. Parhaat syvyydet, nopeudet, vieheet, sääolosuhteet ja vinkit.">
+<meta name="description" content="Meritaimen on vaeltava ja osin uhanalainen laji. Opas käsittelee nousukalan jäljittämisen, kesän syvävetouistelun sekä rasvaevän ja vapautusvelvoitteen.">
 
 <link rel="canonical" href="https://www.fastfishin.com/taimenen-vetouistelu.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#f4f0e5;
-color:#17342f;
-line-height:1.8;
+:root{
+  --ink:#17342f; --ink-soft:#45645e; --lake:#2f6f73; --lake-deep:#24585c;
+  --mist:#d9e8e4; --paper:#f4f0e5; --paper-bright:#fffdf7; --line:#c9d5cf;
+  --orange:#d5752c; --orange-dark:#ad571e; --link:#24585c;
+  --shadow-small:0 8px 24px rgba(23,52,47,.09); --radius:20px;
 }
-
-header{
-background:#24585c;
-color:white;
-padding:80px 20px;
+html[data-theme="dark"]{
+  color-scheme: dark;
+  --ink:#eef3f0; --ink-soft:#a8c2b9; --lake:#59a3a7; --lake-deep:#123234;
+  --mist:#17302c; --paper:#0d1a16; --paper-bright:#142522; --line:#29423b;
+  --orange:#e2884a; --orange-dark:#e2884a; --link:#8dd0d2;
+  --shadow-small:0 8px 24px rgba(0,0,0,.35);
 }
-
-.container{
-width:min(1100px,92%);
-margin:auto;
-}
-
-h1{
-font-size:56px;
-margin-bottom:20px;
-}
-
-h2{
-font-size:34px;
-margin-top:60px;
-color:#24585c;
-}
-
-h3{
-margin-top:35px;
-}
-
-article{
-background:white;
-padding:40px;
-margin:40px 0;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-.button{
-display:inline-block;
-margin-top:25px;
-padding:14px 22px;
-background:#d5752c;
-color:white;
-text-decoration:none;
-border-radius:10px;
-font-weight:bold;
-}
-
-.tip{
-background:#eef8f6;
-border-left:5px solid #2f6f73;
-padding:18px;
-margin:25px 0;
-border-radius:8px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-th,td{
-padding:14px;
-border-bottom:1px solid #ddd;
-text-align:left;
-}
-
-footer{
-margin-top:60px;
-padding:40px;
-text-align:center;
-color:#666;
-}
-
-
-html[data-theme="dark"] body{background:#0d1a16;color:#eef3f0;}
-html[data-theme="dark"] header{background:#0a2224;}
+html[data-theme="light"], html:not([data-theme]) { color-scheme: light; }
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:17px;}
+a{color:var(--link);}
+.container{width:min(880px,92%);margin:auto;}
+header.hero{background:var(--lake-deep);color:#fff;padding:clamp(40px,8vw,76px) 20px 46px;}
+.crumb{font:600 .78rem/1 'JetBrains Mono',monospace;letter-spacing:.03em;color:#bfe3e0;margin-bottom:16px;}
+.crumb a{color:#bfe3e0;}
+.eyebrow{font:700 .74rem/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f3c393;margin-bottom:14px;display:block;}
+h1{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(2.1rem,5.2vw,3.3rem);line-height:1.06;margin:0 0 18px;letter-spacing:-.01em;}
+h2{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(1.5rem,3.4vw,1.9rem);margin:0 0 14px;color:var(--lake-deep);scroll-margin-top:16px;}
 html[data-theme="dark"] h2{color:#7fd6d6;}
-html[data-theme="dark"] article{background:#142522;box-shadow:0 10px 30px rgba(0,0,0,.4);}
-html[data-theme="dark"] .tip{background:#132a26;border-left-color:#59a3a7;}
-html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom:1px solid #29423b;}
-html[data-theme="dark"] footer{color:#9db3ab;}
-
+h3{margin-top:26px;margin-bottom:8px;font-size:1.1rem;}
+p{margin:0 0 16px;}
+article.card{background:var(--paper-bright);padding:clamp(24px,4vw,38px);margin:26px 0;border-radius:var(--radius);box-shadow:var(--shadow-small);border:1px solid var(--line);}
+.button{display:inline-block;margin-top:22px;padding:13px 20px;background:var(--orange);color:#fff !important;text-decoration:none;border-radius:10px;font-weight:700;}
+.tip{background:var(--mist);border-left:4px solid var(--lake);padding:16px 18px;margin:22px 0;border-radius:8px;}
+.tip strong{color:var(--lake-deep);}
+html[data-theme="dark"] .tip strong{color:#7fd6d6;}
+.warn{background:#f6e3d6;border-left:4px solid var(--orange-dark);padding:16px 18px;margin:22px 0;border-radius:8px;}
+html[data-theme="dark"] .warn{background:#2a2019;}
+.warn strong{color:var(--orange-dark);}
+.note{border:1px dashed var(--line);padding:18px 20px;margin:24px 0;border-radius:12px;color:var(--ink-soft);font-size:.96rem;}
+.note strong{color:var(--ink);}
+.table-wrap{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:460px;}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem;vertical-align:top;}
+th{color:var(--ink-soft);font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;}
+.toc{background:var(--paper-bright);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:.94rem;}
+.toc summary{cursor:pointer;font-weight:700;color:var(--lake-deep);}
+html[data-theme="dark"] .toc summary{color:#7fd6d6;}
+.toc ul{margin:12px 0 0;padding-left:20px;columns:2;column-gap:24px;}
+.toc li{break-inside:avoid;margin-bottom:6px;}
+details.faq{border-bottom:1px solid var(--line);padding:14px 0;}
+details.faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;}
+details.faq summary::-webkit-details-marker{display:none;}
+details.faq summary::before{content:'+ ';color:var(--orange);font-weight:700;}
+details.faq[open] summary::before{content:'– ';}
+details.faq p{margin-top:10px;}
+.related{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:10px;}
+.related li a{display:inline-block;padding:9px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:.9rem;}
+footer{margin-top:40px;padding:36px 20px;text-align:center;color:var(--ink-soft);font-size:.85rem;}
 .theme-toggle-fab{position:fixed;top:16px;right:16px;z-index:9999;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(23,52,47,.55);backdrop-filter:blur(8px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s;}
 .theme-toggle-fab:hover{transform:translateY(-2px);}
 .theme-toggle-fab svg{width:18px;height:18px;display:block;}
@@ -127,7 +97,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-sun{display:block;}
 html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 </style>
 
-<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
+<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes käyttäjä hyväksyy evästeet. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -156,7 +126,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
-<!-- Google AdSense: ladataan AINA suoraan headissa, EI evastesuostumuksen taakse (vaaditaan sivuston hyvaksyntaa varten). -->
+<!-- Google AdSense: ladataan AINA suoraan headissa, EI evästesuostumuksen taakse (vaaditaan sivuston hyväksyntää varten). -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
 </head>
 
@@ -166,371 +136,128 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
 </button>
 
-<header>
-
+<header class="hero">
 <div class="container">
-
-<h1>Taimenen vetouistelu – täydellinen opas aloittelijalle ja kokeneelle kalastajalle</h1>
-
+<div class="crumb"><a href="index.html">Etusivu</a> → Kalastusoppaat → Taimenen vetouistelu</div>
+<span class="eyebrow">Vaeltava ja vastuu</span>
+<h1>Taimenen vetouistelu: nousukalasta kesän syvävesiin</h1>
 <p>
-Taimen liikkuu vetouistelijan ulottuvilla eri syvyyksillä vuodenajasta riippuen – keväällä ja syksyllä pinnan tuntumassa, kesällä usein syvemmällä viileässä vedessä.
+Meritaimen ei ole kuin muut tässä oppaassa käsitellyt kalat. Se on vaeltava laji, jonka luonnonkannat ovat monin paikoin taantuneet, ja siksi sen kalastukseen liittyy tavallista tarkempia sääntöjä. Tämä opas käy läpi sekä pyyntitekniikan että sen, mitä jokaisen taimenkalastajan on hyvä tietää ennen vesille lähtöä.
 </p>
-
-<p>
-Tässä oppaassa käydään läpi taimenen vetouistelun perusteet rannikolla ja järvillä: parhaat ajankohdat, syvyydet, nopeudet ja vieheet.
-</p>
-
-<a class="button" href="index.html">
-← Palaa FastFishing-kelimittariin
-</a>
-
+<a class="button" href="index.html">← Palaa FastFishing-kelimittariin</a>
 </div>
-
 </header>
 
 <div class="container">
 
-<article>
+<details class="toc">
+<summary>Sisällys</summary>
+<ul>
+<li><a href="#nousukala">Nousukalan jäljillä jokisuilla</a></li>
+<li><a href="#kesa">Kesän syvävetouistelu</a></li>
+<li><a href="#viehe">Vieheet ja värit</a></li>
+<li><a href="#vastuu">Rasvaevä, alamitat ja vapautusvelvoite</a></li>
+<li><a href="#faq">Usein kysytyt kysymykset</a></li>
+</ul>
+</details>
 
-<h2>Miksi vetouistelu sopii taimenelle niin hyvin?</h2>
-
+<article class="card" id="nousukala">
+<h2>Nousukalan jäljillä jokisuilla</h2>
 <p>
-Taimen on vaeltava ja liikkuva kala, joka seuraa usein ravintokalaparvia
-laajalla alueella – niin merellä kuin järvilläkin. Vetouistelu
-mahdollistaa suurten alueiden kartoittamisen tehokkaasti, kunnes kala
-löytyy.
+Keväällä ja syksyllä taimen kerääntyy jokisuiden ja virtapaikkojen tuntumaan valmistautuessaan nousemaan kutujokeen. Tällöin kala liikkuu tyypillisesti lähellä pintaa, 0–3 metrin syvyydessä, ja parhaita alueita ovat virran ja avoveden rajapinnat sekä saarten ja luotojen ulkopuoliset selkävedet, joilla näkyy silakka- tai muikkuparvia.
 </p>
-
-<p>
-Taimen reagoi tyypillisesti ripeään vetonopeuteen, ja oikea syvyys
-löytyy usein seuraamalla veden lämpötilaa ja lämpötilan
-harppauskerrosta.
-</p>
-
 <div class="tip">
-<strong>Vinkki:</strong><br>
-Seuraa veden lämpötilaa ja etsi lämpötilan harppauskerrosta
-(termokliinia) kesäuistelussa. Taimen viihtyy usein juuri sen
-yläpuolella tai tuntumassa.
+<strong>Vinkki:</strong> Nousuaikaan kannattaa kartoittaa jokisuun lähialue huolellisesti useaan kertaan – taimen saattaa odotella virran tuntumassa pitkiäkin aikoja ennen nousuaan, jolloin sama alue voi tuottaa useita kaloja päivän mittaan.
 </div>
-
 </article>
 
-<article>
-
-<h2>Missä taimen liikkuu vetouistelun aikana?</h2>
-
+<article class="card" id="kesa">
+<h2>Kesän syvävetouistelu</h2>
 <p>
-Rannikolla kannattaa keskittyä jokisuiden ja virtapaikkojen läheisyyteen
-erityisesti kevään ja syksyn nousuaikaan. Järvillä taimen liikkuu usein
-avoimella selkävedellä ravintokalaparvien perässä.
+Kesän lämpimimpinä kuukausina taimen vetäytyy viileämpään veteen, usein 5–15 metrin syvyyteen lämpötilan harppauskerroksen tuntumaan – sama ilmiö, joka ohjaa myös kuhan liikkeitä kesällä (katso tarkempi selitys termokliinista <a href="kuhan-vetouistelu.html">Kuhan vetouistelu -oppaasta</a>). Tällöin syvyydenhallinta downriggerillä tai paravaanilla muuttuu tärkeäksi, koska pelkkä sukeltava vaappu ei enää yllä riittävän syvälle tasaisesti.
 </p>
-
-<ul>
-<li>Jokisuiden ja virtapaikkojen läheisyys rannikolla</li>
-<li>Saarien ja luotojen ulkopuoliset selkävedet</li>
-<li>Lämpötilan harppauskerroksen tuntumassa kesällä</li>
-<li>Alueet, joilla näkyy silakka- tai muikkuparvia</li>
-</ul>
-
-</article>
-
-<article>
-
-<h2>Paras sää taimenen vetouisteluun</h2>
-
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Olosuhde</th>
-<th>Vaikutus</th>
-</tr>
-
-<tr>
-<td>Aamu- ja iltahämärä</td>
-<td>Erittäin hyvä</td>
-</tr>
-
-<tr>
-<td>Pilvinen sää</td>
-<td>Hyvä</td>
-</tr>
-
-<tr>
-<td>Kevyt tuuli</td>
-<td>Hyvä</td>
-</tr>
-
-<tr>
-<td>Kirkas, tyyni keskipäivä</td>
-<td>Usein heikompi</td>
-</tr>
-
-<tr>
-<td>Tasainen ilmanpaine</td>
-<td>Suosii tasaista syöntiä</td>
-</tr>
-
+<tr><th>Ajankohta</th><th>Syvyys</th><th>Nopeus</th></tr>
+<tr><td>Kevät / syksy (nousuaika)</td><td>0–3&nbsp;m</td><td>4–6&nbsp;km/h</td></tr>
+<tr><td>Kesä</td><td>5–15&nbsp;m</td><td>4–6&nbsp;km/h</td></tr>
 </table>
-
-<p>
-FastFishingin kelimittari yhdistää nämä tekijät yhdeksi pisteytykseksi,
-jotta voit arvioida päivän kalakelin nopeasti ennen vesille lähtöä.
-</p>
-
-</article>
-
-<article>
-
-<h2>Taimenen vetouistelu keväällä ja syksyllä</h2>
-
-<p>
-Keväällä ja alkukesästä sekä syksyllä taimen liikkuu usein lähellä
-pintaa, 0–3 metrin syvyydessä, erityisesti rannikolla jokisuiden ja
-virtapaikkojen läheisyydessä nousukalan aikaan.
-</p>
-
-<h3>Kevään ja syksyn parhaat vieheet</h3>
-
-<ul>
-<li>Keskikokoiset lusikat</li>
-<li>Uivat vaaput, hopean- tai kuparinväriset</li>
-<li>Luonnolliset, hopeanhohtoiset värit</li>
-</ul>
-
-<div class="tip">
-<strong>Vinkki:</strong> Nousuaikaan jokisuiden läheisyys kannattaa
-kartoittaa huolellisesti – taimen kerääntyy usein virran tuntumaan
-ennen jokeen nousua.
 </div>
-
 </article>
 
-<article>
-
-<h2>Taimenen vetouistelu kesällä</h2>
-
-<p>
-Kesän lämpimimpinä kuukausina taimen vetäytyy viileämpään veteen,
-jolloin uistelusyvyys voi olla 5–15 metriä. Tällöin downrigger tai muu
-syvyydenhallintajärjestelmä on tarpeen syvyyden pitämiseksi tasaisena.
-</p>
-
-<h3>Kesän parhaat vieheet</h3>
-
-<ul>
-<li>Keskikokoiset lusikat ja vaaput, 8–12 cm</li>
-<li>Hopean- ja kuparinväriset mallit</li>
-<li>Kirkkaat tehostevärit sameammassa vedessä</li>
-</ul>
-
-</article>
-
-<article>
-
-<h2>Uistelunopeus ja syvyys – yhteenvetotaulukko</h2>
-
+<article class="card" id="viehe">
+<h2>Vieheet ja värit</h2>
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Vuodenaika</th>
-<th>Syvyys</th>
-<th>Nopeus</th>
-</tr>
-
-<tr>
-<td>Kevät / syksy</td>
-<td>0–3 m</td>
-<td>4–6 km/h</td>
-</tr>
-
-<tr>
-<td>Kesä</td>
-<td>5–15 m</td>
-<td>4–6 km/h</td>
-</tr>
-
+<tr><th>Veden tila / valo</th><th>Suositeltu väri</th></tr>
+<tr><td>Kirkas vesi</td><td>Hopea, luonnolliset kalakuviot</td></tr>
+<tr><td>Pilvinen sää</td><td>Kupari, tummemmat sävyt</td></tr>
+<tr><td>Samea vesi</td><td>Oranssi, chartreuse</td></tr>
 </table>
-
-<p>
-Taimen reagoi usein ripeämpään vetoon paremmin kuin esimerkiksi kuha,
-joten 4–6 km/h on hyvä lähtökohta ympäri vuoden.
-</p>
-
-</article>
-
-<article>
-
-<h2>Vieheen väri ja koko</h2>
-
-<table>
-<tr>
-<th>Veden tila / valo</th>
-<th>Suositeltu väri</th>
-</tr>
-
-<tr>
-<td>Kirkas vesi</td>
-<td>Hopea, luonnolliset kalakuviot</td>
-</tr>
-
-<tr>
-<td>Pilvinen sää</td>
-<td>Kupari, tummemmat sävyt</td>
-</tr>
-
-<tr>
-<td>Samea vesi</td>
-<td>Oranssi, chartreuse</td>
-</tr>
-
-</table>
-
-<p>
-Toimiva vieheen koko taimenelle on tyypillisesti 8–12 cm, joka matkii
-silakan tai muikun kokoista ravintokalaa.
-</p>
-
-</article>
-
-<article>
-
-<h2>Miten sää vaikuttaa taimeneen?</h2>
-
-<ul>
-<li>Aamu- ja iltahämärä lisäävät usein taimenen aktiivisuutta.</li>
-<li>Kevyt tuuli ja pilvinen sää suosivat pintalähellä liikkumista.</li>
-<li>Kirkas helle työntää taimenen syvemmälle keskipäivällä.</li>
-<li>Tasainen sää suosii ennustettavaa, tasaista syöntiä.</li>
-</ul>
-
-<div class="tip">
-<strong>Muista:</strong> Tarkista ennen lähtöä FastFishingin kelimittari.
-Se auttaa arvioimaan, kuinka suotuisat olosuhteet ovat juuri kyseisenä
-päivänä.
 </div>
-
+<p>
+Toimiva vieheen koko on tyypillisesti 8–12&nbsp;cm, joka matkii silakan tai muikun kokoista ravintokalaa. Taimen reagoi yleensä ripeämpään vetonopeuteen paremmin kuin esimerkiksi kuha.
+</p>
 </article>
 
-<article>
-
-<h2>Yleisimmät virheet</h2>
-
-<ol>
-
-<li>Vedetään liian hitaasti.</li>
-
-<li>Ei seurata veden lämpötilaa kesällä.</li>
-
-<li>Kalastetaan liian kaukana jokisuista nousuaikaan.</li>
-
-<li>Käytetään liian tummaa väriä kirkkaassa vedessä.</li>
-
-<li>Unohdetaan syvyydenhallinta kesäuistelussa.</li>
-
-</ol>
-
+<article class="card" id="vastuu">
+<h2>Rasvaevä, alamitat ja vapautusvelvoite</h2>
+<p>
+Tämä on osio, joka kannattaa lukea ennen ensimmäistä taimenreissua. Luonnonkudusta syntynyt meritaimen tunnistetaan ehjästä <strong>rasvaevästä</strong> (pieni pehmeä evä selän ja pyrstön välissä) – tällainen luonnonkala on Suomessa täysin rauhoitettu ja se on aina vapautettava, koosta riippumatta. Istutettu, viljelty meritaimen tunnistetaan siitä, että rasvaevä on leikattu pois; tällaisen kalan valtakunnallinen alamitta on 50&nbsp;senttimetriä, ja sitä pienemmät on vapautettava välittömästi.
+</p>
+<p>
+Vuoden 2024 alusta lähtien taimenta vieheellä kalastettaessa on käytettävä koukkua, jossa on enintään yksi väkäsetön kolmihaarakoukku tai kaksi väkäsetöntä yksihaarakoukkua – tämä helpottaa sivusaaliiksi jääneen rauhoitetun luonnonkalan turvallista vapauttamista. Vuodesta 2025 alkaen taimenen saalis on lisäksi ilmoitettava Luonnonvarakeskuksen Omakala-järjestelmään kahden viikon kuluessa saaliin saamisesta.
+</p>
+<div class="warn">
+<strong>Tarkista aina ennen reissua:</strong> Säännöt, koukkurajoitukset ja paikalliset rauhoitusalueet erityisesti jokisuiden lähellä muuttuvat ja tarkentuvat ajoittain. Ajantasaiset tiedot löytyvät <a href="https://kalastusrajoitus.fi" target="_blank" rel="noopener">kalastusrajoitus.fi</a>-palvelusta ja oman alueen kalatalousalueen sivuilta.
+</div>
 </article>
 
-<article>
+<article class="card" id="faq">
+<h2>Usein kysytyt kysymykset</h2>
 
-<h2>Usein kysytyt kysymykset (FAQ)</h2>
-
-<h3>Mikä on paras kuukausi taimenen vetouisteluun?</h3>
-
-<p>
-Touko-kesäkuu ja syys-lokakuu ovat yleensä parhaita, kun taimen liikkuu
-lähellä pintaa ja jokisuiden läheisyydessä nousuaikaan.
-</p>
-
-<h3>Kuinka syvältä taimenta kannattaa vetouistella kesällä?</h3>
-
-<p>
-Kesällä toimiva syvyys on usein 5–15 metriä, riippuen veden
-lämpötilasta ja harppauskerroksen sijainnista.
-</p>
-
-<h3>Tarvitaanko downrigger taimenen vetouisteluun?</h3>
-
-<p>
-Kesäuistelussa downrigger helpottaa syvyyden pitämistä tasaisena.
-Keväällä ja syksyllä, kun taimen on lähellä pintaa, downrigger ei
-yleensä ole tarpeen.
-</p>
-
+<details class="faq">
+<summary>Miten erotan luonnontaimenen istutetusta kalasta nopeasti?</summary>
+<p>Tarkista rasvaevä – pieni pyöreähkö evä selkäevän ja pyrstön välissä. Jos se on ehjä, kyseessä on luonnonkala, joka on vapautettava aina. Jos rasvaevä puuttuu tai on selvästi typistetty, kyseessä on istutettu kala.</p>
+</details>
+<details class="faq">
+<summary>Onko taimenen vetouistelu sallittua kaikkialla?</summary>
+<p>Ei välttämättä – erityisesti jokisuiden lähellä on usein paikallisia rauhoitusalueita ja -aikoja nousukalan suojelemiseksi. Tarkista aina kohdealueen ajantasaiset rajoitukset ennen kalastusta.</p>
+</details>
+<details class="faq">
+<summary>Tarvitaanko downrigger välttämättä?</summary>
+<p>Kesäuistelussa se helpottaa syvyyden pitämistä tasaisena, mutta ei ole pakollinen – paravaani tai lyijysiima riittää monessa tilanteessa. Keväällä ja syksyllä, kun taimen on lähellä pintaa, downrigger ei yleensä ole tarpeen lainkaan.</p>
+</details>
 </article>
 
-<article>
-
-<h2>Yhteenveto</h2>
-
-<p>
-
-Taimenen vetouistelu on palkitsevaa niin merellä kuin järvilläkin, kun
-kalastaja osaa huomioida vuodenajan, veden lämpötilan ja
-sääolosuhteet. Keväällä ja syksyllä kannattaa suunnata jokisuiden
-läheisyyteen lähelle pintaa, kesällä syvemmälle viileään veteen. Oikea
-syvyys, ripeä vetonopeus ja sopiva vieheen väri ovat usein onnistuneen
-taimenreissun tärkeimmät tekijät.
-
-</p>
-
-<p>
-
-Muista tarkistaa myös FastFishingin kelimittari ennen lähtöä. Se auttaa
-arvioimaan, kuinka suotuisat kalastusolosuhteet ovat juuri kyseisenä
-päivänä.
-
-</p>
-
-<p>
-
-Tutustu myös muihin oppaisiin:
-
-</p>
-
-<ul>
-
-<li><a href="hauen-kalastus.html">Hauen kalastus</a></li>
-
-<li><a href="ahvenen-kalastus.html">Ahvenen kalastus</a></li>
-
-<li><a href="kuhan-kalastus.html">Kuhan kalastus</a></li>
-
-<li><a href="jigikalastus.html">Jigikalastus</a></li>
-
+<article class="card">
+<h2>Muut oppaat</h2>
+<ul class="related">
+<li><a href="kuhan-vetouistelu.html">Kuhan vetouistelu</a></li>
+<li><a href="hauen-vetouistelu.html">Hauen vetouistelu</a></li>
 <li><a href="vieheen-valinta.html">Vieheen valinta</a></li>
-
+<li><a href="tietoa-meista.html">Tietoa meistä</a></li>
 </ul>
-
-<p>
-
-Onnistuneita kalastushetkiä ja kireitä siimoja!
-
-</p>
-
+<p style="margin-top:22px">Kunnioittavaa kalastusta ja kiiltävää saalista!</p>
 </article>
 
 </div>
 
 <footer>
-
 <p>&copy; 2026 FastFishing – Kalastusoppaat ja kelimittari.</p>
-
 <p>
 <a href="index.html">Etusivu</a> |
 <a href="tietoa-meista.html">Tietoa meistä</a> |
 <a href="tietosuoja.html">Tietosuojaseloste</a>
 </p>
-
 </footer>
 
 <div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto kayttaa evasteita (mainosten personointiin Google AdSense) ja kavijatilastointiin (Google Analytics). Lue lisaa <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
+    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
     <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkaa valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyvaksy kaikki</button>
+      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
+      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
     </div>
   </div>
 </div>

@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-
 <meta charset="UTF-8">
 <script>
-// Asetetaan tumma/vaalea tila heti ennen ensimmäistä piirtoa, jotta sivu ei välähdä väärällä teemalla.
 (function () {
   try {
     var stored = null;
@@ -22,92 +20,75 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Vieheen valinta – Miten valita oikea viehe? | FastFishing</title>
+<title>Vieheen valinta: neljä kysymystä ennen heittoa | FastFishing</title>
 
-<meta name="description" content="Opi valitsemaan oikea viehe eri kalalajeille ja olosuhteisiin. Kattava opas vieheiden kokoon, väriin, uintiin ja käyttötarkoitukseen.">
+<meta name="description" content="Vieheen valinta ei ole taulukon ulkoa opettelua vaan neljän kysymyksen sarja: mitä kala syö, missä syvyydessä, kuinka paljon valoa ja kuinka aktiivinen kala on.">
 
 <link rel="canonical" href="https://www.fastfishin.com/vieheen-valinta.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#f4f0e5;
-color:#17342f;
-line-height:1.8;
+:root{
+  --ink:#17342f; --ink-soft:#45645e; --lake:#2f6f73; --lake-deep:#24585c;
+  --mist:#d9e8e4; --paper:#f4f0e5; --paper-bright:#fffdf7; --line:#c9d5cf;
+  --orange:#d5752c; --orange-dark:#ad571e; --link:#24585c;
+  --shadow-small:0 8px 24px rgba(23,52,47,.09); --radius:20px;
 }
-
-header{
-background:#24585c;
-color:#fff;
-padding:80px 20px;
+html[data-theme="dark"]{
+  color-scheme: dark;
+  --ink:#eef3f0; --ink-soft:#a8c2b9; --lake:#59a3a7; --lake-deep:#123234;
+  --mist:#17302c; --paper:#0d1a16; --paper-bright:#142522; --line:#29423b;
+  --orange:#e2884a; --orange-dark:#e2884a; --link:#8dd0d2;
+  --shadow-small:0 8px 24px rgba(0,0,0,.35);
 }
-
-.container{
-width:min(1100px,92%);
-margin:auto;
-}
-
-h1{
-font-size:54px;
-margin-bottom:20px;
-}
-
-h2{
-font-size:34px;
-margin-top:60px;
-color:#24585c;
-}
-
-article{
-background:#fff;
-padding:40px;
-margin:40px 0;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-.button{
-display:inline-block;
-margin-top:25px;
-padding:14px 22px;
-background:#d97706;
-color:#fff;
-text-decoration:none;
-border-radius:10px;
-font-weight:bold;
-}
-
-.tip{
-background:#eef8f6;
-border-left:5px solid #2f6f73;
-padding:18px;
-margin:25px 0;
-border-radius:8px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-th,td{
-padding:14px;
-border-bottom:1px solid #ddd;
-text-align:left;
-}
-
-
-html[data-theme="dark"] body{background:#0d1a16;color:#eef3f0;}
-html[data-theme="dark"] header{background:#0a2224;}
+html[data-theme="light"], html:not([data-theme]) { color-scheme: light; }
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:17px;}
+a{color:var(--link);}
+.container{width:min(880px,92%);margin:auto;}
+header.hero{background:var(--lake-deep);color:#fff;padding:clamp(40px,8vw,76px) 20px 46px;}
+.crumb{font:600 .78rem/1 'JetBrains Mono',monospace;letter-spacing:.03em;color:#bfe3e0;margin-bottom:16px;}
+.crumb a{color:#bfe3e0;}
+.eyebrow{font:700 .74rem/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f3c393;margin-bottom:14px;display:block;}
+h1{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(2.1rem,5.2vw,3.3rem);line-height:1.06;margin:0 0 18px;letter-spacing:-.01em;}
+h2{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(1.5rem,3.4vw,1.9rem);margin:0 0 14px;color:var(--lake-deep);scroll-margin-top:16px;}
 html[data-theme="dark"] h2{color:#7fd6d6;}
-html[data-theme="dark"] article{background:#142522;box-shadow:0 10px 30px rgba(0,0,0,.4);}
-html[data-theme="dark"] .tip{background:#132a26;border-left-color:#59a3a7;}
-html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom:1px solid #29423b;}
-html[data-theme="dark"] footer{color:#9db3ab;}
-
+h3{margin-top:26px;margin-bottom:8px;font-size:1.1rem;}
+p{margin:0 0 16px;}
+article.card{background:var(--paper-bright);padding:clamp(24px,4vw,38px);margin:26px 0;border-radius:var(--radius);box-shadow:var(--shadow-small);border:1px solid var(--line);}
+.button{display:inline-block;margin-top:22px;padding:13px 20px;background:var(--orange);color:#fff !important;text-decoration:none;border-radius:10px;font-weight:700;}
+.tip{background:var(--mist);border-left:4px solid var(--lake);padding:16px 18px;margin:22px 0;border-radius:8px;}
+.tip strong{color:var(--lake-deep);}
+html[data-theme="dark"] .tip strong{color:#7fd6d6;}
+.note{border:1px dashed var(--line);padding:18px 20px;margin:24px 0;border-radius:12px;color:var(--ink-soft);font-size:.96rem;}
+.note strong{color:var(--ink);}
+.scenario{background:var(--mist);border-radius:14px;padding:18px 20px;margin:18px 0;}
+html[data-theme="dark"] .scenario{background:#132a26;}
+.scenario h3{margin-top:0;font-size:1rem;color:var(--lake-deep);}
+html[data-theme="dark"] .scenario h3{color:#7fd6d6;}
+.table-wrap{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:460px;}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem;vertical-align:top;}
+th{color:var(--ink-soft);font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;}
+.toc{background:var(--paper-bright);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:.94rem;}
+.toc summary{cursor:pointer;font-weight:700;color:var(--lake-deep);}
+html[data-theme="dark"] .toc summary{color:#7fd6d6;}
+.toc ul{margin:12px 0 0;padding-left:20px;columns:2;column-gap:24px;}
+.toc li{break-inside:avoid;margin-bottom:6px;}
+details.faq{border-bottom:1px solid var(--line);padding:14px 0;}
+details.faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;}
+details.faq summary::-webkit-details-marker{display:none;}
+details.faq summary::before{content:'+ ';color:var(--orange);font-weight:700;}
+details.faq[open] summary::before{content:'– ';}
+details.faq p{margin-top:10px;}
+.related{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:10px;}
+.related li a{display:inline-block;padding:9px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:.9rem;}
+footer{margin-top:40px;padding:36px 20px;text-align:center;color:var(--ink-soft);font-size:.85rem;}
 .theme-toggle-fab{position:fixed;top:16px;right:16px;z-index:9999;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(23,52,47,.55);backdrop-filter:blur(8px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s;}
 .theme-toggle-fab:hover{transform:translateY(-2px);}
 .theme-toggle-fab svg{width:18px;height:18px;display:block;}
@@ -117,7 +98,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-sun{display:block;}
 html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 </style>
 
-<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
+<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes käyttäjä hyväksyy evästeet. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -146,7 +127,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
-<!-- Google AdSense: ladataan AINA suoraan headissa, EI evastesuostumuksen taakse (vaaditaan sivuston hyvaksyntaa varten). -->
+<!-- Google AdSense: ladataan AINA suoraan headissa, EI evästesuostumuksen taakse (vaaditaan sivuston hyväksyntää varten). -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
 </head>
 
@@ -156,625 +137,135 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
 </button>
 
-<header>
-
+<header class="hero">
 <div class="container">
-
-<h1>Vieheen valinta – kattava opas</h1>
-
+<div class="crumb"><a href="index.html">Etusivu</a> → Kalastusoppaat → Vieheen valinta</div>
+<span class="eyebrow">Ajattelutapa, ei taulukko</span>
+<h1>Vieheen valinta: neljä kysymystä ennen heittoa</h1>
 <p>
-
-Oikean vieheen valinta on yksi tärkeimmistä onnistuneen kalastusreissun
-tekijöistä. Vieheen kokoon, väriin, uintiin ja painoon vaikuttavat
-kalalaji, vuodenaika, veden kirkkaus sekä sääolosuhteet.
-
+Tässä oppaassa ei toisteta taas kerran samoja koko- ja väritaulukoita, jotka löytyvät jo jokaisesta kalalajikohtaisesta oppaasta. Sen sijaan käydään läpi ajattelutapa: neljä kysymystä, jotka kokenut kalastaja käy läpi ennen kuin edes avaa vieherasian – ja kolme käytännön esimerkkiä siitä, miten vastaukset johtavat suoraan viehevalintaan.
 </p>
-
-<p>
-
-Tässä oppaassa opit valitsemaan oikean vieheen hauelle, ahvenelle,
-kuhalle sekä muihin yleisimpiin kalastustilanteisiin.
-
-</p>
-
-<a class="button" href="index.html">
-
-← Takaisin FastFishingiin
-
-</a>
-
+<a class="button" href="index.html">← Takaisin FastFishingiin</a>
 </div>
-
 </header>
 
 <div class="container">
 
-<article>
-
-<h2>Miksi vieheen valinta on tärkeää?</h2>
-
-<p>
-
-Petokalat eivät syö aina samalla tavalla. Joskus ne saalistavat
-pieniä pikkukaloja, toisinaan suurempaa ravintoa. Oikean kokoinen ja
-luonnollisesti liikkuva viehe lisää huomattavasti mahdollisuuksia
-saada tärppi.
-
-</p>
-
-<p>
-
-Myös veden lämpötila, vuodenaika ja ilmanpaine vaikuttavat kalojen
-aktiivisuuteen. Siksi vieheen vaihtaminen voi ratkaista, jääkö reissu
-ilman saalista vai saatko useita kaloja.
-
-</p>
-
-<div class="tip">
-
-<strong>Vinkki:</strong><br>
-
-Jos kala ei ota 15–20 minuuttiin, kokeile ensin vaihtaa vieheen väriä
-tai kokoa ennen kuin vaihdat kalastuspaikkaa.
-
-</div>
-
-</article>
-
-<article>
-
-<h2>Yleisimmät viehetyypit</h2>
-
-<table>
-
-<tr>
-<th>Viehe</th>
-<th>Sopii parhaiten</th>
-</tr>
-
-<tr>
-<td>Jigi</td>
-<td>Ahven, kuha, hauki</td>
-</tr>
-
-<tr>
-<td>Vaappu</td>
-<td>Hauki, kuha, taimen</td>
-</tr>
-
-<tr>
-<td>Lippa</td>
-<td>Ahven, taimen, kirjolohi</td>
-</tr>
-
-<tr>
-<td>Lusikkauistin</td>
-<td>Hauki, taimen</td>
-</tr>
-
-<tr>
-<td>Jerkki</td>
-<td>Suuri hauki</td>
-</tr>
-
-</table>
-
-<p>
-
-Jokaisella viehetyypillä on omat vahvuutensa. Siksi kokeneilla
-kalastajilla on mukana useita erilaisia vieheitä erilaisia tilanteita
-varten.
-
-</p>
-
-</article>
-
-<article>
-
-<h2>Miten valita oikea vieheen koko?</h2>
-
-<p>
-
-Vieheen koko kannattaa sovittaa kalalajin lisäksi siihen, minkä kokoista
-ravintoa kalat syövät juuri sillä hetkellä. Keväällä pienemmät vieheet
-ovat usein tehokkaita, kun taas syksyllä suuremmat vieheet houkuttelevat
-isompia petokaloja.
-
-</p>
-
-<table>
-
-<tr>
-
-<th>Kalalaji</th>
-
-<th>Suositeltu koko</th>
-
-</tr>
-
-<tr>
-
-<td>Ahven</td>
-
-<td>5–8 cm</td>
-
-</tr>
-
-<tr>
-
-<td>Kuha</td>
-
-<td>7–12 cm</td>
-
-</tr>
-
-<tr>
-
-<td>Hauki</td>
-
-<td>12–20 cm</td>
-
-</tr>
-
-</table>
-
-</article><article>
-
-<h2>Vieheen väri – milloin mikäkin toimii?</h2>
-
-<p>
-
-Vieheen väri kannattaa valita veden kirkkauden, sään ja valaistuksen
-mukaan. Kirkkaassa vedessä luonnolliset värit näyttävät aidolta
-saaliilta, kun taas sameassa vedessä kirkkaat värit erottuvat paremmin.
-
-</p>
-
-<table>
-
-<tr>
-<th>Olosuhde</th>
-<th>Suositeltu väri</th>
-</tr>
-
-<tr>
-<td>Kirkas vesi</td>
-<td>Hopea, kuore, ahven</td>
-</tr>
-
-<tr>
-<td>Pilvinen sää</td>
-<td>Kulta, kupari</td>
-</tr>
-
-<tr>
-<td>Samea vesi</td>
-<td>Chartreuse, Firetiger, oranssi</td>
-</tr>
-
-<tr>
-<td>Ilta ja yö</td>
-<td>Musta, tumma violetti</td>
-</tr>
-
-</table>
-
-<p>
-
-Kannattaa pitää mukana muutamia eri värisiä vieheitä, sillä kalojen
-mieltymykset voivat muuttua nopeasti päivän aikana.
-
-</p>
-
-</article>
-
-<article>
-
-<h2>Miten vuodenajat vaikuttavat vieheen valintaan?</h2>
-
-<p>
-
-Kalojen käyttäytyminen muuttuu vuodenaikojen mukana. Myös vieheen koko,
-väri ja uittonopeus kannattaa sovittaa vuodenaikaan.
-
-</p>
-
-<table>
-
-<tr>
-<th>Vuodenaika</th>
-<th>Suositus</th>
-</tr>
-
-<tr>
-<td>Kevät</td>
-<td>Pienet vieheet ja rauhallinen uitto</td>
-</tr>
-
-<tr>
-<td>Kesä</td>
-<td>Normaalikokoiset vieheet, aktiivinen uitto</td>
-</tr>
-
-<tr>
-<td>Syksy</td>
-<td>Suuremmat vieheet ja hitaampi uitto</td>
-</tr>
-
-<tr>
-<td>Talvi</td>
-<td>Pilkit ja hitaat liikkeet</td>
-</tr>
-
-</table>
-
-<div class="tip">
-
-<strong>Vinkki:</strong><br>
-
-Syksyllä isot petokalat syövät runsaasti ennen talvea, joten suuremmat
-vieheet voivat houkutella vuoden suurimmat kalat.
-
-</div>
-
-</article>
-
-<article>
-
-<h2>Vieheen valinta kalalajin mukaan</h2>
-
-<p>
-
-Eri kalalajit reagoivat erilaisiin vieheisiin. Alla oleva taulukko auttaa
-valitsemaan sopivan vaihtoehdon.
-
-</p>
-
-<table>
-
-<tr>
-<th>Kalalaji</th>
-<th>Parhaat vieheet</th>
-</tr>
-
-<tr>
-<td>Hauki</td>
-<td>Vaaput, lusikat, jerkit, isot jigit</td>
-</tr>
-
-<tr>
-<td>Ahven</td>
-<td>Jigit, lipat, pienet vaaput</td>
-</tr>
-
-<tr>
-<td>Kuha</td>
-<td>Jigit, syvännevaaput</td>
-</tr>
-
-<tr>
-<td>Taimen</td>
-<td>Vaaput, lipat, lusikat</td>
-</tr>
-
-</table>
-
-</article>
-
-<article>
-
-<h2>Milloin viehe kannattaa vaihtaa?</h2>
-
-<p>
-
-Viehettä ei kannata käyttää tuntikausia, jos kala ei reagoi siihen.
-Usein pelkkä värin, koon tai uintisyvyyden vaihtaminen riittää
-aktivoimaan kalat.
-
-</p>
-
+<details class="toc">
+<summary>Sisällys</summary>
 <ul>
-
-<li>Ei tärppejä 15–20 minuuttiin.</li>
-
-<li>Kalat seuraavat mutta eivät iske.</li>
-
-<li>Veden väri muuttuu.</li>
-
-<li>Sää vaihtuu nopeasti.</li>
-
-<li>Siirryt eri syvyyteen.</li>
-
+<li><a href="#kysymykset">Neljä kysymystä ennen heittoa</a></li>
+<li><a href="#valo">Miksi väri toimii niin kuin toimii</a></li>
+<li><a href="#esimerkit">Kolme käytännön esimerkkiä</a></li>
+<li><a href="#peruspaketti">Peruspaketti aloittelijalle</a></li>
+<li><a href="#faq">Usein kysytyt kysymykset</a></li>
 </ul>
+</details>
 
-<p>
-
-Kokeneet kalastajat vaihtavat viehettä rohkeasti ja kokeilevat useita
-vaihtoehtoja saman kalastusreissun aikana.
-
-</p>
-
-</article><article>
-
-<h2>Miten viehettä uitetaan oikein?</h2>
-
-<p>
-
-Oikea uitto on usein tärkeämpää kuin itse vieheen merkki tai väri.
-Petokalat saalistavat yleensä heikentyneitä tai pakenevia pikkukaloja,
-joten vieheen tulisi liikkua mahdollisimman luonnollisesti.
-
-</p>
-
-<p>
-
-Kokeile vaihdella uittonopeutta päivän aikana. Jos kalat eivät reagoi,
-hidasta kelaamista tai lisää pieniä pysäytyksiä. Monet tärpit tulevat
-juuri silloin, kun viehe pysähtyy tai vaihtaa suuntaa.
-
-</p>
-
-<div class="tip">
-
-<strong>Vinkki:</strong><br>
-
-Kelaa muutama kierros, pysäytä hetkeksi ja jatka uudelleen.
-Tämä jäljittelee haavoittunutta pikkukalaa ja houkuttelee usein
-petokalan iskemään.
-
-</div>
-
-</article>
-
-<article>
-
-<h2>Yleisimmät virheet vieheen valinnassa</h2>
-
-<p>
-
-Moni kalastaja käyttää samaa viehettä koko päivän, vaikka olosuhteet
-muuttuvat jatkuvasti. Alla ovat yleisimmät virheet, jotka heikentävät
-saalista.
-
-</p>
-
+<article class="card" id="kysymykset">
+<h2>Neljä kysymystä ennen heittoa</h2>
 <ol>
-
-<li>Viehe on liian suuri tai liian pieni.</li>
-
-<li>Väärä väri veden kirkkauteen nähden.</li>
-
-<li>Uitto on liian nopeaa.</li>
-
-<li>Viehe kulkee väärässä syvyydessä.</li>
-
-<li>Viehettä ei vaihdeta, vaikka kala ei reagoi.</li>
-
-<li>Kalastetaan vain yhtä aluetta.</li>
-
-<li>Sääolosuhteita ei huomioida.</li>
-
+<li><strong>Mitä kala syö juuri nyt?</strong> Ravintokalan koko ja laji vaihtelee vuodenajan mukaan – vieheen koon ja profiilin kannattaa jäljitellä sitä, ei kalenteria.</li>
+<li><strong>Kuinka syvällä kala on?</strong> Tämä ratkaisee vieheen tyypin (pinta, keskivesi, pohja) ja jigipään tai uposvaapun painon.</li>
+<li><strong>Kuinka paljon valoa ja näkyvyyttä vedessä on?</strong> Ratkaisee värin – tästä tarkemmin seuraavassa osiossa.</li>
+<li><strong>Kuinka aktiivinen kala on?</strong> Ratkaisee uittonopeuden: passiivinen kala vaatii hitaamman ja pienemmän esityksen kuin aktiivisesti syövä.</li>
 </ol>
-
 <p>
-
-Usein jo yksi pieni muutos, kuten eri väri tai hieman hitaampi uitto,
-riittää muuttamaan hiljaisen päivän onnistuneeksi kalastusreissuksi.
-
+Kun näihin neljään on vastannut, viehevalinta kaventuu yleensä muutamaan järkevään vaihtoehtoon suoraan koko vieherasian sijaan.
 </p>
-
 </article>
 
-<article>
-
-<h2>Millaiset välineet helpottavat vieheen käyttöä?</h2>
-
+<article class="card" id="valo">
+<h2>Miksi väri toimii niin kuin toimii</h2>
 <p>
-
-Hyvä viehe toimii parhaiten oikeiden välineiden kanssa. Kevyille
-vieheille kannattaa käyttää herkkää vapaa, kun taas suurille
-haukivieheille tarvitaan jämäkämpi kalusto.
-
+Vesi suodattaa valon aallonpituuksia eri tavoin syvyyden kasvaessa: punainen häviää näkyvistä ensimmäisenä jo muutaman metrin syvyydessä, kun taas keltainen, vihreä ja sininen kantavat pidemmälle. Tämä on fysiikkaa, ei makuasia – syvällä tai sameassa vedessä punainen viehe voi näyttää kalan silmin lähes mustalta siluetilta, kun taas chartreuse tai oranssi erottuu edelleen selvästi.
 </p>
-
-<table>
-
-<tr>
-<th>Viehe</th>
-<th>Suositeltu vapa</th>
-</tr>
-
-<tr>
-<td>Jigit</td>
-<td>Medium Light</td>
-</tr>
-
-<tr>
-<td>Lipat</td>
-<td>Light</td>
-</tr>
-
-<tr>
-<td>Vaaput</td>
-<td>Medium</td>
-</tr>
-
-<tr>
-<td>Lusikkauistimet</td>
-<td>Medium</td>
-</tr>
-
-<tr>
-<td>Jerkit</td>
-<td>Heavy</td>
-</tr>
-
-</table>
-
 <p>
-
-Oikein valitut välineet parantavat heittopituutta, vieheen hallintaa ja
-auttavat tunnistamaan pienimmätkin tärpit.
-
+Kirkkaassa vedessä ja kirkkaassa valossa liika kontrasti voi kääntyä haitaksi: luonnonvärinen, hillitty viehe näyttää aidolta saaliilta, kun taas räikeä väri voi säikäyttää varovaisen kalan. Sameassa vedessä tilanne kääntyy päinvastaiseksi – kala nojaa enemmän tärinään ja ääriviivaan kuin väriin, joten suuri kontrasti ja tumma siluetti auttavat kalaa ylipäätään löytämään vieheen.
 </p>
-
 </article>
 
-<article>
+<article class="card" id="esimerkit">
+<h2>Kolme käytännön esimerkkiä</h2>
 
-<h2>Vinkit suurempien petokalojen saamiseen</h2>
-
-<p>
-
-Suuret petokalat eivät yleensä käyttäydy samalla tavalla kuin pienemmät
-yksilöt. Ne liikkuvat usein syvemmissä vesissä ja saalistavat suurempaa
-ravintoa.
-
-</p>
-
-<ul>
-
-<li>Kokeile hieman suurempia vieheitä syksyllä.</li>
-
-<li>Kalasta syvänteiden reunoilla ja karikoilla.</li>
-
-<li>Hyödynnä aamun ja illan aktiiviset syöntiajat.</li>
-
-<li>Vaihtele uittonopeutta.</li>
-
-<li>Älä pelkää vaihtaa viehettä useita kertoja päivän aikana.</li>
-
-</ul>
-
-<div class="tip">
-
-<strong>Muista:</strong><br>
-
-Kalastuksessa ei ole yhtä ainoaa oikeaa viehettä. Paras viehe on se,
-joka sopii juuri sen hetken olosuhteisiin.
-
+<div class="scenario">
+<h3>Esimerkki 1: Aurinkoinen heinäkuun keskipäivä, kirkas järvi</h3>
+<p>Valoa on paljon, kala näkee hyvin ja on todennäköisesti varovainen kirkkaan valon vuoksi. Vastaus: pieni, luonnonvärinen viehe (hopea tai kuore), rauhallinen uitto, ja syvemmät alueet tai varjoisat kohdat suositaan avoimen matalikon sijaan.</p>
 </div>
 
-</article><article>
+<div class="scenario">
+<h3>Esimerkki 2: Sateen jälkeinen samea vesi syksyllä</h3>
+<p>Näkyvyys on heikko, joten kala nojaa tärinään ja kontrastiin. Vastaus: suurempi, äänekkäämpi tai enemmän vettä liikuttava viehe (esim. spinnerbait tai suuri lusikkauistin) kirkkaassa värissä, kuten chartreuse tai oranssi.</p>
+</div>
 
-<h2>Usein kysytyt kysymykset (FAQ)</h2>
-
-<h3>Mikä on paras yleisviehe Suomessa?</h3>
-
-<p>
-
-Jos pitäisi valita vain yksi viehe, 7–10 cm jigi on erittäin monipuolinen
-vaihtoehto. Sillä voi saada ahventa, kuhaa ja myös haukea oikeissa
-olosuhteissa.
-
-</p>
-
-<h3>Vaikuttaako vieheen väri oikeasti?</h3>
-
-<p>
-
-Kyllä. Veden kirkkaus, sää ja valaistus vaikuttavat siihen, kuinka hyvin
-petokalat havaitsevat vieheen. Jos syönti on heikkoa, pelkkä värin
-vaihtaminen voi riittää saamaan tärpin.
-
-</p>
-
-<h3>Pitääkö käyttää kallista viehettä?</h3>
-
-<p>
-
-Ei. Kalat eivät tunnista vieheen hintaa. Oikea koko, väri, uitto ja
-kalastuspaikka ovat yleensä paljon tärkeämpiä kuin vieheen merkki.
-
-</p>
-
-<h3>Kuinka monta viehettä kannattaa ottaa mukaan?</h3>
-
-<p>
-
-Hyvä perusvalikoima sisältää muutaman jigin, vaapun, lusikkauistimen ja
-lipan eri väreissä. Näin pystyt reagoimaan nopeasti muuttuviin
-olosuhteisiin.
-
-</p>
+<div class="scenario">
+<h3>Esimerkki 3: Tyyni, pilvinen ilta alkukesästä</h3>
+<p>Valoisuus on tasainen, kala usein kohtalaisen aktiivinen mutta ei vielä täydessä hyökkäysvireessä. Vastaus: keskikokoinen viehe kultaisessa tai kuparinvärissä, tasainen uitto, jossa on silloin tällöin lyhyt pysähdys herättämässä epäröivän kalan iskuun.</p>
+</div>
 
 </article>
 
-<article>
-
-<h2>Yhteenveto</h2>
-
+<article class="card" id="peruspaketti">
+<h2>Peruspaketti aloittelijalle</h2>
 <p>
-
-Vieheen valinta on yksi tärkeimmistä onnistuneen kalastusreissun
-tekijöistä. Oikean vieheen koko, väri, uinti ja käyttötapa kannattaa
-sovittaa kalalajin, vuodenajan, veden kirkkauden ja sääolosuhteiden
-mukaan.
-
+Jos vieherasia on vielä tyhjä, tällä yhdistelmällä pääsee liikkeelle useimmissa tilanteissa ilman suurta alkuinvestointia:
 </p>
-
-<p>
-
-Jos kalat eivät syö, älä luovuta liian nopeasti. Vaihda vieheen väriä,
-kokoa tai uintia ja kokeile eri syvyyksiä. Pienet muutokset voivat tehdä
-suuren eron päivän saaliiseen.
-
-</p>
-
-<p>
-
-Ennen vesille lähtöä kannattaa tarkistaa myös FastFishingin kelimittari,
-sillä sääolosuhteet vaikuttavat merkittävästi kalojen aktiivisuuteen.
-
-</p>
-
-<h3>Tutustu myös muihin oppaisiin</h3>
-
 <ul>
-
-<li><a href="hauen-kalastus.html">Hauen kalastus</a></li>
-
-<li><a href="ahvenen-kalastus.html">Ahvenen kalastus</a></li>
-
-<li><a href="kuhan-kalastus.html">Kuhan kalastus</a></li>
-
-<li><a href="jigikalastus.html">Jigikalastus</a></li>
-
-
+<li>Muutama jigipää eri painoissa (5–18&nbsp;g) ja pari kumia luonnonvärissä ja chartreusessa</li>
+<li>Keskikokoinen uiva vaappu hopean- ja kullanvärisenä</li>
+<li>Yksi lusikkauistin sameaan veteen</li>
+<li>Pari pientä lippaa kevyempään, herkempään kalastukseen</li>
 </ul>
-
 <p>
-
-Kireitä siimoja ja onnistuneita kalastushetkiä!
-
+Loput täydentyvät ajan myötä sen mukaan, mitä lajeja ja vesistöjä kalastat useimmin – katso tarkemmat, lajikohtaiset vieheet kunkin kalan omasta oppaasta.
 </p>
+</article>
 
+<article class="card" id="faq">
+<h2>Usein kysytyt kysymykset</h2>
+
+<details class="faq">
+<summary>Pitääkö vieheen olla kallis toimiakseen?</summary>
+<p>Ei. Kala ei tunnista hintaa – oikea koko, syvyys, väri ja uittotapa ratkaisevat huomattavasti enemmän kuin vieheen merkki tai hinta.</p>
+</details>
+<details class="faq">
+<summary>Kuinka usein väriä kannattaa vaihtaa kesken kalastuksen?</summary>
+<p>Jos kala ei reagoi 15–20 minuuttiin eikä paikka ole muuten epäilyttävä, väri tai koko on usein ensimmäinen asia kannattaa vaihtaa ennen kuin vaihdat koko kalastuspaikkaa.</p>
+</details>
+<details class="faq">
+<summary>Toimiiko sama logiikka kaikille kalalajeille?</summary>
+<p>Nämä neljä kysymystä toimivat yleisenä ajattelumallina lajista riippumatta, mutta tarkat luvut – vieheen koko, syvyys, tyypilliset värit – vaihtelevat lajeittain. Katso tarkemmat lukemat hauen, ahvenen, kuhan ja taimenen omista oppaista.</p>
+</details>
+</article>
+
+<article class="card">
+<h2>Muut oppaat</h2>
+<ul class="related">
+<li><a href="hauen-kalastus.html">Hauen kalastus</a></li>
+<li><a href="ahvenen-kalastus.html">Ahvenen kalastus</a></li>
+<li><a href="kuhan-kalastus.html">Kuhan kalastus</a></li>
+<li><a href="jigikalastus.html">Jigikalastus</a></li>
+</ul>
+<p style="margin-top:22px">Rohkeita kokeiluja ja oikeaan osunutta valintaa!</p>
 </article>
 
 </div>
 
 <footer>
-
 <p>&copy; 2026 FastFishing – Kalastusoppaat ja kelimittari.</p>
-
 <p>
-
 <a href="index.html">Etusivu</a> |
-
 <a href="tietoa-meista.html">Tietoa meistä</a> |
-
 <a href="tietosuoja.html">Tietosuojaseloste</a>
-
 </p>
-
 </footer>
 
 <div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto kayttaa evasteita (mainosten personointiin Google AdSense) ja kavijatilastointiin (Google Analytics). Lue lisaa <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
+    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
     <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkaa valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyvaksy kaikki</button>
+      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
+      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
     </div>
   </div>
 </div>

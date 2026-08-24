@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <script>
-// Asetetaan tumma/vaalea tila heti ennen ensimmäistä piirtoa, jotta sivu ei välähdä väärällä teemalla.
 (function () {
   try {
     var stored = null;
@@ -21,103 +20,71 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Hauen vetouistelu – Kattava opas | FastFishing</title>
+<title>Hauen vetouistelu isoilla selkävesillä ja saaristossa | FastFishing</title>
 
-<meta name="description" content="Lue kattava opas hauen vetouisteluun. Parhaat vieheet, syvyydet, nopeudet, sääolosuhteet ja vinkit suuremman hauen saamiseen.">
+<meta name="description" content="Suurten selkävesien ja saariston hauenvetouistelu vaatii ison vieheen, reitin suunnittelua ja oikeat otteet ison kalan käsittelyyn veneen laidalla.">
 
 <link rel="canonical" href="https://www.fastfishin.com/hauen-vetouistelu.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
 
 <style>
-
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#f4f0e5;
-color:#17342f;
-line-height:1.8;
+:root{
+  --ink:#17342f; --ink-soft:#45645e; --lake:#2f6f73; --lake-deep:#24585c;
+  --mist:#d9e8e4; --paper:#f4f0e5; --paper-bright:#fffdf7; --line:#c9d5cf;
+  --orange:#d5752c; --orange-dark:#ad571e; --link:#24585c;
+  --shadow-small:0 8px 24px rgba(23,52,47,.09); --radius:20px;
 }
-
-header{
-background:#24585c;
-color:white;
-padding:80px 20px;
+html[data-theme="dark"]{
+  color-scheme: dark;
+  --ink:#eef3f0; --ink-soft:#a8c2b9; --lake:#59a3a7; --lake-deep:#123234;
+  --mist:#17302c; --paper:#0d1a16; --paper-bright:#142522; --line:#29423b;
+  --orange:#e2884a; --orange-dark:#e2884a; --link:#8dd0d2;
+  --shadow-small:0 8px 24px rgba(0,0,0,.35);
 }
-
-.container{
-width:min(1100px,92%);
-margin:auto;
-}
-
-h1{
-font-size:56px;
-margin-bottom:20px;
-}
-
-h2{
-font-size:34px;
-margin-top:60px;
-color:#24585c;
-}
-
-h3{
-margin-top:35px;
-}
-
-article{
-background:white;
-padding:40px;
-margin:40px 0;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-.button{
-display:inline-block;
-margin-top:25px;
-padding:14px 22px;
-background:#d5752c;
-color:white;
-text-decoration:none;
-border-radius:10px;
-font-weight:bold;
-}
-
-.tip{
-background:#eef8f6;
-border-left:5px solid #2f6f73;
-padding:18px;
-margin:25px 0;
-border-radius:8px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-th,td{
-padding:14px;
-border-bottom:1px solid #ddd;
-text-align:left;
-}
-
-footer{
-margin-top:60px;
-padding:40px;
-text-align:center;
-color:#666;
-}
-
-
-html[data-theme="dark"] body{background:#0d1a16;color:#eef3f0;}
-html[data-theme="dark"] header{background:#0a2224;}
+html[data-theme="light"], html:not([data-theme]) { color-scheme: light; }
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'Source Sans 3',Arial,Helvetica,sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:17px;}
+a{color:var(--link);}
+.container{width:min(880px,92%);margin:auto;}
+header.hero{background:var(--lake-deep);color:#fff;padding:clamp(40px,8vw,76px) 20px 46px;}
+.crumb{font:600 .78rem/1 'JetBrains Mono',monospace;letter-spacing:.03em;color:#bfe3e0;margin-bottom:16px;}
+.crumb a{color:#bfe3e0;}
+.eyebrow{font:700 .74rem/1 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f3c393;margin-bottom:14px;display:block;}
+h1{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(2.1rem,5.2vw,3.3rem);line-height:1.06;margin:0 0 18px;letter-spacing:-.01em;}
+h2{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(1.5rem,3.4vw,1.9rem);margin:0 0 14px;color:var(--lake-deep);scroll-margin-top:16px;}
 html[data-theme="dark"] h2{color:#7fd6d6;}
-html[data-theme="dark"] article{background:#142522;box-shadow:0 10px 30px rgba(0,0,0,.4);}
-html[data-theme="dark"] .tip{background:#132a26;border-left-color:#59a3a7;}
-html[data-theme="dark"] th,html[data-theme="dark"] td{border-bottom:1px solid #29423b;}
-html[data-theme="dark"] footer{color:#9db3ab;}
-
+h3{margin-top:26px;margin-bottom:8px;font-size:1.1rem;}
+p{margin:0 0 16px;}
+article.card{background:var(--paper-bright);padding:clamp(24px,4vw,38px);margin:26px 0;border-radius:var(--radius);box-shadow:var(--shadow-small);border:1px solid var(--line);}
+.button{display:inline-block;margin-top:22px;padding:13px 20px;background:var(--orange);color:#fff !important;text-decoration:none;border-radius:10px;font-weight:700;}
+.tip{background:var(--mist);border-left:4px solid var(--lake);padding:16px 18px;margin:22px 0;border-radius:8px;}
+.tip strong{color:var(--lake-deep);}
+html[data-theme="dark"] .tip strong{color:#7fd6d6;}
+.note{border:1px dashed var(--line);padding:18px 20px;margin:24px 0;border-radius:12px;color:var(--ink-soft);font-size:.96rem;}
+.note strong{color:var(--ink);}
+.table-wrap{overflow-x:auto;margin-top:14px;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;min-width:460px;}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:.95rem;vertical-align:top;}
+th{color:var(--ink-soft);font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em;}
+.toc{background:var(--paper-bright);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:26px 0;font-size:.94rem;}
+.toc summary{cursor:pointer;font-weight:700;color:var(--lake-deep);}
+html[data-theme="dark"] .toc summary{color:#7fd6d6;}
+.toc ul{margin:12px 0 0;padding-left:20px;columns:2;column-gap:24px;}
+.toc li{break-inside:avoid;margin-bottom:6px;}
+details.faq{border-bottom:1px solid var(--line);padding:14px 0;}
+details.faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;}
+details.faq summary::-webkit-details-marker{display:none;}
+details.faq summary::before{content:'+ ';color:var(--orange);font-weight:700;}
+details.faq[open] summary::before{content:'– ';}
+details.faq p{margin-top:10px;}
+.related{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:10px;}
+.related li a{display:inline-block;padding:9px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:.9rem;}
+footer{margin-top:40px;padding:36px 20px;text-align:center;color:var(--ink-soft);font-size:.85rem;}
 .theme-toggle-fab{position:fixed;top:16px;right:16px;z-index:9999;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(23,52,47,.55);backdrop-filter:blur(8px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s;}
 .theme-toggle-fab:hover{transform:translateY(-2px);}
 .theme-toggle-fab svg{width:18px;height:18px;display:block;}
@@ -127,7 +94,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-sun{display:block;}
 html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 </style>
 
-<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
+<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes käyttäjä hyväksyy evästeet. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -156,7 +123,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
-<!-- Google AdSense: ladataan AINA suoraan headissa, EI evastesuostumuksen taakse (vaaditaan sivuston hyvaksyntaa varten). -->
+<!-- Google AdSense: ladataan AINA suoraan headissa, EI evästesuostumuksen taakse (vaaditaan sivuston hyväksyntää varten). -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
 </head>
 
@@ -166,394 +133,134 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
 </button>
 
-<header>
-
+<header class="hero">
 <div class="container">
-
-<h1>Hauen vetouistelu – täydellinen opas aloittelijalle ja kokeneelle kalastajalle</h1>
-
+<div class="crumb"><a href="index.html">Etusivu</a> → Kalastusoppaat → Hauen vetouistelu</div>
+<span class="eyebrow">Isot vedet, isot vieheet</span>
+<h1>Hauen vetouistelu isoilla selkävesillä ja saaristossa</h1>
 <p>
-Hauki reagoi vetouistelussa usein isoihin, näyttäviin vieheisiin ja ripeään vetonopeuteen. Vetouistelu on tehokas tapa kartoittaa laajoja rantaviivoja ja löytää saalis nopeasti.
+Kun rantaviivaa on kilometrikaupalla eikä heittokalastus enää kata aluetta järkevässä ajassa, vetouistelu muuttuu välttämättömyydeksi. Tämä opas keskittyy siihen, miten iso vesialue – avoin selkävesi tai saaristo – kartoitetaan tehokkaasti, ja miten suuri hauki käsitellään turvallisesti veneen laidalla.
 </p>
-
-<p>
-Tässä oppaassa käydään läpi, mistä haukea kannattaa etsiä eri vuodenaikoina, mitkä vieheet ja nopeudet toimivat parhaiten ja miten sää vaikuttaa hauen syöntiin.
-</p>
-
-<a class="button" href="index.html">
-← Palaa FastFishing-kelimittariin
-</a>
-
+<a class="button" href="index.html">← Palaa FastFishing-kelimittariin</a>
 </div>
-
 </header>
 
 <div class="container">
 
-<article>
+<details class="toc">
+<summary>Sisällys</summary>
+<ul>
+<li><a href="#reitti">Rantaviivan lukeminen veneestä käsin</a></li>
+<li><a href="#nopeus">Nopeus, syvyys ja reitti</a></li>
+<li><a href="#viehe">Viehevalinta isossa vedessä</a></li>
+<li><a href="#valineet">Teräsvapa ja välineet</a></li>
+<li><a href="#kasittely">Ison kalan käsittely veneessä</a></li>
+<li><a href="#faq">Usein kysytyt kysymykset</a></li>
+</ul>
+</details>
 
-<h2>Miksi vetouistelu sopii hauelle niin hyvin?</h2>
-
+<article class="card" id="reitti">
+<h2>Rantaviivan lukeminen veneestä käsin</h2>
 <p>
-Hauki on väijyvä petokala, joka viihtyy rantaviivan mutkissa,
-kasvillisuuden reunoilla ja syvänteiden tuntumassa. Vetouistelu
-mahdollistaa pitkien rantaviivojen ja lahtien kartoittamisen tehokkaasti
-ilman, että joudutaan arvailemaan tarkkaa ottipaikkaa etukäteen.
+Saaristossa ja suurilla selkävesillä hauen parhaat paikat toistuvat samanlaisina kilometri toisensa jälkeen: niemenkärjet, salmien suut, luotojen tuulensuojainen puoli ja kasvillisuusreunat matalikoilla. Sen sijaan, että kartoittaisit koko rantaviivan tasaisesti, kannattaa suunnitella reitti niin, että se kulkee juuri näiden poikkeamien kautta – suora, tasainen rantaviiva ilman mitään erottuvaa piirrettä on lähes aina hiljaisempi kuin sen jälkeen tuleva niemenkärki.
 </p>
-
-<p>
-Hauki reagoi usein ripeästi liikkuvaan, näyttävään vieheeseen –
-tärppi voi tulla räjähtävästi kesken vedon.
-</p>
-
 <div class="tip">
-<strong>Vinkki:</strong><br>
-Kun viehe osuu kasvillisuuteen tai pohjaan ja irtoaa äkkinäisesti, pidä
-tauko vetonopeudessa hetken. Tämä äkillinen tempo- ja suunnanmuutos on
-klassinen tapa saada väijyvä hauki iskemään.
+<strong>Vinkki:</strong> Tuulen puoleinen ranta lämpiää ja samentuu aaltojen vaikutuksesta, mikä voi houkutella ravintokalaa ja sen mukana haukea – älä siis automaattisesti karta tuulista rantaa.
 </div>
-
 </article>
 
-<article>
-
-<h2>Missä hauki liikkuu vetouistelun aikana?</h2>
-
-<p>
-Hyviä vetouistelureittejä ovat rantaviivan mutkat, niemenkärjet,
-kasvillisuusreunat ja syvänteiden reunat, joiden tuntumassa hauki
-usein väijyy saalistaan.
-</p>
-
-<ul>
-<li>Kaislikon ja lumpeikon reunat</li>
-<li>Niemenkärjet ja salmet</li>
-<li>Kivikkoiset rantaviivat</li>
-<li>Syvänteen reunat syksyllä</li>
-<li>Alueet, joilla liikkuu pikkukalaa tai lokkeja</li>
-</ul>
-
-</article>
-
-<article>
-
-<h2>Paras sää hauen vetouisteluun</h2>
-
+<article class="card" id="nopeus">
+<h2>Nopeus, syvyys ja reitti</h2>
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Olosuhde</th>
-<th>Vaikutus</th>
-</tr>
-
-<tr>
-<td>Kevyt tuuli</td>
-<td>Erittäin hyvä</td>
-</tr>
-
-<tr>
-<td>Pilvinen sää</td>
-<td>Hyvä</td>
-</tr>
-
-<tr>
-<td>Sateen alku</td>
-<td>Usein hyvä</td>
-</tr>
-
-<tr>
-<td>Kirkas tyyni keskipäivä</td>
-<td>Usein heikompi</td>
-</tr>
-
-<tr>
-<td>Laskeva ilmanpaine</td>
-<td>Voi aktivoida haukea</td>
-</tr>
-
+<tr><th>Vuodenaika</th><th>Syvyys</th><th>Nopeus</th></tr>
+<tr><td>Kevät</td><td>1–3&nbsp;m</td><td>3&nbsp;km/h</td></tr>
+<tr><td>Kesä</td><td>4–8&nbsp;m</td><td>4–6&nbsp;km/h</td></tr>
+<tr><td>Syksy</td><td>2–5&nbsp;m</td><td>4–6&nbsp;km/h</td></tr>
 </table>
-
-<p>
-FastFishingin kelimittari yhdistää nämä tekijät yhdeksi pisteytykseksi,
-jotta voit arvioida päivän kalakelin nopeasti ennen vesille lähtöä.
-</p>
-
-</article>
-
-<article>
-
-<h2>Hauen vetouistelu keväällä</h2>
-
-<p>
-Heti kutuajan jälkeen touko-kesäkuussa hauki liikkuu matalissa,
-lämpimissä lahdissa ja kasvillisuuden reunoilla. Uistelusyvyys on tällöin
-usein vain 1–3 metriä.
-</p>
-
-<h3>Kevään parhaat vieheet</h3>
-
-<ul>
-<li>Keskikokoiset vaaput</li>
-<li>Lusikkauistimet</li>
-<li>Spinnerbaitit kaislikon reunoille</li>
-</ul>
-
-<div class="tip">
-<strong>Vinkki:</strong> Keväällä hidas ja tasainen 3 km/h vetonopeus on
-usein tehokkaampi kuin ripeä vetäminen.
 </div>
-
-</article>
-
-<article>
-
-<h2>Hauen vetouistelu kesällä</h2>
-
 <p>
-Kesähelteillä hauki vetäytyy usein syvemmälle viileämpään veteen,
-jolloin uistelusyvyys voi olla 4–8 metriä varsinkin päivän kuumimpina
-tunteina. Aikainen aamu ja myöhäinen ilta ovat päivän parhaat
-kalastusajat.
+Aja loivia S-käyriä suoran linjan sijaan – kaarteessa vieheen nopeus vaihtelee hetkellisesti, mikä usein herättää passiivisemmankin hauen iskemään. Käytä useampaa vapaa paravaanien avulla kattaaksesi leveämmän alueen kerralla, ja tarkista vieheiden uinti säännöllisesti: kasvillisuus tai lika lavassa pilaa toiminnan huomaamatta.
 </p>
-
-<h3>Kesän parhaat vieheet</h3>
-
-<ul>
-<li>Spinnerbaitit</li>
-<li>Keskisyvälle sukeltavat vaaput</li>
-<li>Isommat lusikkauistimet</li>
-</ul>
-
 </article>
 
-<article>
-
-<h2>Hauen vetouistelu syksyllä</h2>
-
-<p>
-Syksy on monelle hauenpyytäjälle vuoden paras vetouisteluaika. Veden
-viiletessä hauki palaa matalampiin vesiin ruokailemaan aktiivisesti
-ennen talvea, ja myös suuret yksilöt liikkuvat tavallista rohkeammin.
-</p>
-
-<h3>Syksyn suosikkivieheet</h3>
-
-<ul>
-<li>Isot vaaput ja lusikkauistimet, 12–20 cm</li>
-<li>Isot jerkbaitit</li>
-<li>Kontrastivärit pilvisellä säällä</li>
-</ul>
-
-</article>
-
-<article>
-
-<h2>Uistelunopeus ja syvyys – yhteenvetotaulukko</h2>
-
+<article class="card" id="viehe">
+<h2>Viehevalinta isossa vedessä</h2>
+<div class="table-wrap">
 <table>
-
-<tr>
-<th>Vuodenaika</th>
-<th>Syvyys</th>
-<th>Nopeus</th>
-</tr>
-
-<tr>
-<td>Kevät</td>
-<td>1–3 m</td>
-<td>3 km/h</td>
-</tr>
-
-<tr>
-<td>Kesä</td>
-<td>4–8 m</td>
-<td>4–6 km/h</td>
-</tr>
-
-<tr>
-<td>Syksy</td>
-<td>2–5 m</td>
-<td>4–6 km/h</td>
-</tr>
-
+<tr><th>Veden tila</th><th>Suositeltu väri</th></tr>
+<tr><td>Kirkas</td><td>Hopea, muikku, ahven</td></tr>
+<tr><td>Hieman samea</td><td>Kulta, kupari</td></tr>
+<tr><td>Samea</td><td>Chartreuse, oranssi, Firetiger</td></tr>
 </table>
-
-</article>
-
-<article>
-
-<h2>Vieheen väri ja koko</h2>
-
-<table>
-<tr>
-<th>Veden tila</th>
-<th>Suositeltu väri</th>
-</tr>
-
-<tr>
-<td>Kirkas</td>
-<td>Hopea, muikku, ahven</td>
-</tr>
-
-<tr>
-<td>Hieman samea</td>
-<td>Kulta, kupari</td>
-</tr>
-
-<tr>
-<td>Samea</td>
-<td>Chartreuse, oranssi, Firetiger</td>
-</tr>
-
-</table>
-
-<p>
-Vetouistelussa isot vieheet, 12–20 cm, ovat yleisin toimiva valinta.
-Muista aina käyttää teräs- tai titaaniperukeetta, jotta hauen hampaat
-eivät katkaise siimaa.
-</p>
-
-</article>
-
-<article>
-
-<h2>Miten sää vaikuttaa haukeen?</h2>
-
-<ul>
-<li>Pilvinen sää lisää usein hauen aktiivisuutta.</li>
-<li>Kevyt tuuli liikuttaa ravintokaloja rantaan.</li>
-<li>Kova helle voi hidastaa syöntiä keskellä päivää.</li>
-<li>Viileä syyspäivä on usein erinomainen suurhauelle.</li>
-</ul>
-
-<div class="tip">
-<strong>Muista:</strong> Tarkista ennen lähtöä FastFishingin kelimittari.
-Se auttaa arvioimaan, kuinka suotuisat olosuhteet ovat juuri kyseisenä
-päivänä.
 </div>
-
+<p>
+Vetouistelussa isot vieheet, 12–20&nbsp;cm, ovat yleisin toimiva valinta – avoimella vedellä liikkuva ravintokalakin on usein kookkaampaa kuin lahden pohjukassa. Syksyllä kokoa kannattaa kasvattaa entisestään, kun hauki syö runsaasti ennen talvea.
+</p>
 </article>
 
-<article>
-
-<h2>Yleisimmät virheet</h2>
-
-<ol>
-
-<li>Kalastetaan liian hitaasti syksyllä.</li>
-
-<li>Vaihdetaan reittiä liian harvoin.</li>
-
-<li>Käytetään liian pientä viehettä syksyllä.</li>
-
-<li>Unohdetaan teräksinen peruke.</li>
-
-<li>Ei teroiteta koukkuja.</li>
-
-<li>Ajetaan liian kaukana rantaviivasta.</li>
-
-</ol>
-
+<article class="card" id="valineet">
+<h2>Teräsvapa ja välineet</h2>
+<p>
+Teräs- tai titaaniperuke on vetouistelussa pakollinen, ei valinnainen – ilman sitä menetät vieheen ensimmäiseen kunnolliseen tärppiin. Isoille selkävesille kannattaa varata myös riittävän jämäkkä vapa ja kela, jotta iso kala saadaan väsytettyä hallitusti myös aallokossa.
+</p>
 </article>
 
-<article>
-
-<h2>Usein kysytyt kysymykset (FAQ)</h2>
-
-<h3>Mikä on paras kuukausi hauen vetouisteluun?</h3>
-
+<article class="card" id="kasittely">
+<h2>Ison kalan käsittely veneessä</h2>
 <p>
-Touko- ja syyskuu ovat yleensä parhaita kuukausia. Keväällä hauki syö
-aktiivisesti kudun jälkeen ja syksyllä se kerää ravintoa talvea varten.
+Suuri hauki taistelee usein voimakkaimmin juuri veneen vieressä, kun se näkee esteen ensimmäistä kertaa – pidä siima kireällä äläkä kiirehdi nostoa. Käytä haavia otteluun tai tartu kalaan peukalo-ote alaleuan alta, älä koskaan kiduksista.
 </p>
-
-<h3>Kuinka nopeasti haukea kannattaa vetouistella?</h3>
-
 <p>
-Yleisin toimiva nopeus on 3–6 km/h. Hauki reagoi usein ripeään
-vetonopeuteen paremmin kuin hitaaseen.
+Jos aiot vapauttaa saaliin, minimoi ilmassaoloaika, kannattele kalaa vaakatasossa vartalon ja hännän kohdalta, ja kastele kädet ennen käsittelyä suojaavan limakerroksen säilyttämiseksi. Pidä mukana pitkävartiset koukunirrotuspihdit – ison hauen terävät hampaat ja syvälle nielaistu viehe tekevät käsin irrottamisesta sekä hitaampaa että riskialttiimpaa.
 </p>
-
-<h3>Tarvitaanko teräsvapaa vetouistelussa?</h3>
-
-<p>
-Kyllä, aina. Hauen terävät hampaat katkaisevat tavallisen siiman
-helposti, joten teräs- tai titaaniperuke on pakollinen varuste.
-</p>
-
 </article>
 
-<article>
+<article class="card" id="faq">
+<h2>Usein kysytyt kysymykset</h2>
 
-<h2>Yhteenveto</h2>
+<details class="faq">
+<summary>Kuinka pitkä reitti kannattaa suunnitella yhdelle kalastuskerralle?</summary>
+<p>Parempi mitata reitin laatu kuin pituus. Muutama kilometri hyviä niemenkärkiä ja kasvillisuusreunoja tuottaa yleensä enemmän kuin kymmenen kilometriä tasaista, piirteetöntä rantaviivaa.</p>
+</details>
+<details class="faq">
+<summary>Miksi viehe lopettaa uimasta kesken vedon?</summary>
+<p>Yleisin syy on kasvillisuus tai roska koukussa tai lavassa. Tarkista viehe säännöllisin väliajoin, erityisesti kasvillisuusalueiden jälkeen.</p>
+</details>
+<details class="faq">
+<summary>Kannattaako aallokkoisella säällä lähteä ollenkaan vesille?</summary>
+<p>Kohtalainen aallokko sekoittaa pintavettä ja voi jopa parantaa kalastusta, mutta turvallisuus ratkaisee aina – tarkista sääennuste ja aallokkoarvio etukäteen, äläkä lähde isolle selkävedelle kalustolla, joka ei sovellu kyseisiin olosuhteisiin.</p>
+</details>
+</article>
 
-<p>
-
-Hauen vetouistelu on palkitsevaa ympäri avoveden kauden, kun kalastaja
-osaa huomioida vuodenajan, veden lämpötilan ja sääolosuhteet. Keväällä
-kannattaa suunnata mataliin lahtiin, kesällä syvemmälle viileään veteen
-ja syksyllä takaisin matalampiin, ravinnon äärelle. Isot vieheet,
-sopiva nopeus ja teräsvapa ovat usein onnistuneen haukireissun
-tärkeimmät tekijät.
-
-</p>
-
-<p>
-
-Muista tarkistaa myös FastFishingin kelimittari ennen lähtöä. Se auttaa
-arvioimaan, kuinka suotuisat kalastusolosuhteet ovat juuri kyseisenä
-päivänä.
-
-</p>
-
-<p>
-
-Tutustu myös muihin oppaisiin:
-
-</p>
-
-<ul>
-
+<article class="card">
+<h2>Muut oppaat</h2>
+<ul class="related">
 <li><a href="hauen-kalastus.html">Hauen kalastus</a></li>
-
-<li><a href="ahvenen-kalastus.html">Ahvenen kalastus</a></li>
-
-<li><a href="kuhan-kalastus.html">Kuhan kalastus</a></li>
-
-<li><a href="jigikalastus.html">Jigikalastus</a></li>
-
+<li><a href="kuhan-vetouistelu.html">Kuhan vetouistelu</a></li>
+<li><a href="taimenen-vetouistelu.html">Taimenen vetouistelu</a></li>
 <li><a href="vieheen-valinta.html">Vieheen valinta</a></li>
-
 </ul>
-
-<p>
-
-Onnistuneita kalastushetkiä ja kireitä siimoja!
-
-</p>
-
+<p style="margin-top:22px">Pitkiä linjoja ja järeää tärppiä!</p>
 </article>
 
 </div>
 
 <footer>
-
 <p>&copy; 2026 FastFishing – Kalastusoppaat ja kelimittari.</p>
-
 <p>
 <a href="index.html">Etusivu</a> |
 <a href="tietoa-meista.html">Tietoa meistä</a> |
 <a href="tietosuoja.html">Tietosuojaseloste</a>
 </p>
-
 </footer>
 
 <div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
   <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto kayttaa evasteita (mainosten personointiin Google AdSense) ja kavijatilastointiin (Google Analytics). Lue lisaa <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
+    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
     <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkaa valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyvaksy kaikki</button>
+      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
+      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
     </div>
   </div>
 </div>
