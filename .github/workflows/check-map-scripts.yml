@@ -1,0 +1,31 @@
+name: Check fishing map scripts
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'fishing-structures.js'
+      - 'depth-structures.js'
+      - 'gtk-substrate.js'
+      - 'gtk-habitats.js'
+      - 'sw.js'
+      - '.github/workflows/check-map-scripts.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check fishing-structures.js
+          node --check depth-structures.js
+          node --check gtk-substrate.js
+          node --check gtk-habitats.js
+          node --check sw.js
