@@ -12,7 +12,22 @@ const coordinate = element => ({
   lon: element.lon ?? element.center?.lon
 });
 
+function isObviouslyNonFishingFeature(tags = {}) {
+  const leisure = String(tags.leisure || '').toLowerCase();
+  const amenity = String(tags.amenity || '').toLowerCase();
+  const water = String(tags.water || '').toLowerCase();
+  const manMade = String(tags.man_made || '').toLowerCase();
+
+  if (['swimming_pool', 'wading_pool', 'water_park', 'splash_pad'].includes(leisure)) return true;
+  if (amenity === 'fountain' || water === 'fountain') return true;
+  if (['swimming_pool', 'wading_pool', 'splash_pool', 'wastewater', 'sewage'].includes(water)) return true;
+  if (['wastewater_plant', 'sewage_treatment'].includes(manMade)) return true;
+  return false;
+}
+
 function category(tags) {
+  // Explicit fishing tags must never override a feature that is clearly not fishable water.
+  if (isObviouslyNonFishingFeature(tags)) return null;
   if (tags.fishing === 'no' || tags.access === 'private' || tags.access === 'no') return null;
   if (tags.natural === 'bay' || tags.natural === 'cape' || tags.waterway === 'dam' || tags.waterway === 'weir') return null;
   if (tags.leisure === 'fishing' || tags.sport === 'fishing' || allowedFishing.has(tags.fishing)) return 'known';
@@ -25,7 +40,7 @@ function category(tags) {
 
 const keepTagKeys = [
   'name', 'name:fi', 'leisure', 'sport', 'fishing', 'waterway', 'water', 'natural',
-  'access', 'fee', 'permit', 'website', 'operator'
+  'amenity', 'man_made', 'access', 'fee', 'permit', 'website', 'operator'
 ];
 
 const priority = { known: 5, shoal: 4, rapids: 3, pool: 2, strait: 1 };
@@ -54,10 +69,10 @@ const counts = {};
 for (const item of byId.values()) counts[item._kind] = (counts[item._kind] || 0) + 1;
 
 const output = {
-  version: 1,
+  version: 2,
   generatedAt: raw.osm3s?.timestamp_osm_base || new Date().toISOString(),
   source: 'OpenStreetMap contributors (ODbL)',
-  criteria: 'Explicit fishing places plus named rapids, stream pools, shoals and straits. Private/no-access and fishing=no objects excluded.',
+  criteria: 'Explicit fishing places plus named rapids, stream pools, shoals and straits. Private/no-access, fishing=no and clearly non-fishable pools/fountains/utility water features excluded.',
   counts,
   spots
 };
