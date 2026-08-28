@@ -607,17 +607,57 @@ html[data-theme="dark"] .sea-chart-close-btn { background: rgba(20, 37, 34, .95)
   box-shadow: var(--shadow-small);
 }
 html[data-theme="dark"] .sea-chart-toolbar { background: rgba(20, 37, 34, .96); }
+.sea-chart-maximized .sea-chart-toolbar { max-height: calc(100svh - 96px); overflow-y: auto; overscroll-behavior: contain; }
 .sea-route-panel-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
 .sea-toolbar-row2 { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
 .sea-chart-toolbar .btn { min-height: 36px; padding: 0 12px; font-size: .78rem; white-space: nowrap; }
 .sea-chart-toolbar .btn.armed { outline: 2px solid var(--orange); outline-offset: 1px; }
 .sea-chart-toggle { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: .78rem; color: var(--ink); cursor: pointer; white-space: nowrap; }
 .sea-route-status { margin-top: 8px; color: var(--ink-soft); font-size: .78rem; }
-.sea-spot-panel { display: grid; grid-template-columns: minmax(118px, .72fr) minmax(0, 1.28fr); gap: 8px; align-items: end; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.sea-spot-panel { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
 .sea-spot-panel[hidden] { display: none; }
+.sea-spot-filters { display: grid; grid-template-columns: 1fr 1fr auto; gap: 7px; align-items: end; }
 .sea-spot-filter { margin: 0; color: var(--ink-soft); font-size: .68rem; font-weight: 700; }
 .sea-spot-filter select { min-height: 34px; margin-top: 4px; padding: 4px 28px 4px 9px; border-radius: 9px; font-size: .78rem; }
-.sea-spot-status { min-height: 34px; display: flex; align-items: center; color: var(--ink-soft); font-size: .72rem; line-height: 1.25; }
+.sea-spot-panel .potential-list-toggle { min-height: 34px; padding-inline: 10px; }
+.sea-spot-status { min-height: 26px; display: flex; align-items: center; color: var(--ink-soft); font-size: .72rem; line-height: 1.3; }
+.potential-mini-legend { display: flex; flex-wrap: wrap; gap: 7px 10px; color: var(--ink-soft); font-size: .67rem; }
+.potential-mini-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.potential-legend-dot { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(23,52,47,.18); }
+.potential-results-panel {
+  position: absolute;
+  top: 52px;
+  right: 12px;
+  z-index: 890;
+  width: min(330px, calc(100% - 24px));
+  max-height: calc(100% - 116px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,253,247,.97);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+}
+.potential-results-panel[hidden] { display: none; }
+html[data-theme="dark"] .potential-results-panel { background: rgba(20,37,34,.97); }
+.potential-results-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 12px 9px; border-bottom: 1px solid var(--line); }
+.potential-results-title { margin: 0; font: 400 1.05rem/1 'Fjalla One', sans-serif; letter-spacing: .02em; }
+.potential-results-sub { margin-top: 4px; color: var(--ink-soft); font-size: .69rem; }
+.potential-results-close { width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; }
+.potential-results-list { padding: 7px; overflow-y: auto; overscroll-behavior: contain; }
+.potential-result-row { display: grid; grid-template-columns: minmax(0,1fr) 34px; gap: 4px; align-items: stretch; }
+.potential-result-main { width: 100%; display: grid; grid-template-columns: 30px minmax(0,1fr) auto; gap: 8px; align-items: center; padding: 8px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+.potential-result-main:hover { background: var(--mist); border-radius: 10px; }
+.potential-result-rank { color: var(--ink-soft); font: 700 .68rem/1 'JetBrains Mono', monospace; }
+.potential-result-copy { min-width: 0; }
+.potential-result-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; font-weight: 800; }
+.potential-result-kind { display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-soft); font-size: .67rem; }
+.potential-result-score { min-width: 38px; padding: 6px 5px; border-radius: 9px; color: #fff; font: 700 .72rem/1 'JetBrains Mono', monospace; text-align: center; }
+.potential-result-fav { border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--orange-dark); font-size: 1.05rem; cursor: pointer; }
+.potential-result-fav:hover { background: var(--tan); border-radius: 10px; }
+.potential-results-empty { margin: 0; padding: 16px 12px; color: var(--ink-soft); font-size: .78rem; }
 .sea-chart-attribution { margin-top: 10px; color: var(--ink-soft); font-size: .76rem; }
 .sea-chart-attribution a { color: inherit; text-decoration: underline; }
 .sea-chart-bottom-left { position: absolute; bottom: 12px; left: 12px; z-index: 900; display: flex; flex-direction: column; gap: 6px; max-width: calc(100% - 24px); }
@@ -641,8 +681,12 @@ html[data-theme="dark"] .sea-chart-toolbar { background: rgba(20, 37, 34, .96); 
   box-shadow: 0 4px 12px rgba(23,52,47,.35);
 }
 .potential-spot-marker span { transform: rotate(45deg); }
+.potential-spot-marker.has-weather { box-shadow: 0 0 0 3px rgba(255,255,255,.82), 0 4px 14px rgba(23,52,47,.42); }
 .potential-popup .potential-kind { display: inline-flex; margin-bottom: 6px; padding: 4px 7px; border-radius: 999px; background: var(--mist); color: var(--lake-deep); font: 700 .62rem/1 'JetBrains Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
 .potential-popup .potential-score { margin-bottom: 7px; font-weight: 800; color: var(--orange-dark); }
+.potential-popup .potential-breakdown { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 8px; }
+.potential-popup .potential-breakdown span { padding: 4px 7px; border-radius: 8px; background: var(--mist); color: var(--ink); font-size: .72rem; font-weight: 700; }
+.potential-popup .potential-live { padding: 7px 8px; border-radius: 9px; background: rgba(47,111,115,.09); font-size: .76rem; }
 .potential-popup .potential-reason { margin-bottom: 7px; }
 .potential-popup .potential-warning { padding-top: 7px; border-top: 1px dashed var(--line); font-size: .76rem; }
 .potential-popup .potential-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
@@ -740,6 +784,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
   .brand { padding-inline: 5px; }
   .tabs { min-height: 50px; margin-inline: -12px; padding-inline: 12px; }
   .tab-btn { min-height: 50px; padding-inline: 12px; }
+  .sea-spot-filters { grid-template-columns: 1fr 1fr; }
+  .sea-spot-panel .potential-list-toggle { grid-column: 1 / -1; width: 100%; }
+  .potential-results-panel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 42%; border-radius: 16px; }
   .hero { gap: 54px; padding-block: 48px 52px; }
   h1 { font-size: clamp(4rem, 24vw, 6.2rem); }
   .hero-copy::after { bottom: -28px; }
@@ -1781,21 +1828,49 @@ body.device-phone .columns {
           <button class="btn" id="seaChartLocateBtn" type="button">📍 Paikanna</button>
         </div>
         <div class="sea-spot-panel" id="potentialSpotPanel" hidden>
-          <label class="sea-spot-filter" for="potentialSpotSpecies">
-            <span id="potentialSpotSpeciesLabel">Kalalaji</span>
-            <select id="potentialSpotSpecies">
-              <option value="all">Kaikki</option>
-              <option value="ahven">Ahven</option>
-              <option value="hauki">Hauki</option>
-              <option value="kuha">Kuha</option>
-              <option value="taimen">Taimen / lohi</option>
-              <option value="siika">Siika</option>
-            </select>
-          </label>
+          <div class="sea-spot-filters">
+            <label class="sea-spot-filter" for="potentialSpotSpecies">
+              <span id="potentialSpotSpeciesLabel">Kalalaji</span>
+              <select id="potentialSpotSpecies">
+                <option value="all">Kaikki</option>
+                <option value="ahven">Ahven</option>
+                <option value="hauki">Hauki</option>
+                <option value="kuha">Kuha</option>
+                <option value="taimen">Taimen / lohi</option>
+                <option value="siika">Siika</option>
+              </select>
+            </label>
+            <label class="sea-spot-filter" for="potentialSpotQuality">
+              <span id="potentialSpotQualityLabel">Näytä</span>
+              <select id="potentialSpotQuality">
+                <option value="65">Suositellut 65+</option>
+                <option value="75">Parhaat 75+</option>
+                <option value="0">Kaikki havainnot</option>
+              </select>
+            </label>
+            <button class="btn potential-list-toggle" id="potentialResultsToggle" type="button">Top-lista</button>
+          </div>
           <div class="sea-spot-status" id="potentialSpotStatus" role="status" aria-live="polite">Lähennä karttaa nähdäksesi paikat.</div>
+          <div class="potential-mini-legend" id="potentialMiniLegend" aria-label="Pisteiden selite">
+            <span><i class="potential-legend-dot" style="background:#2f6f73"></i> 85+ erittäin lupaava</span>
+            <span><i class="potential-legend-dot" style="background:#d5752c"></i> 70–84 hyvä</span>
+            <span><i class="potential-legend-dot" style="background:#6e7772"></i> tutkittava</span>
+            <span><i class="potential-legend-dot" style="background:#fff;border:2px solid #2f6f73"></i> valkoinen kehä = keli mukana</span>
+          </div>
         </div>
         <div class="sea-route-status" id="seaRouteStatus">Valitse "Lähtöpaikka", sitten klikkaa kartalta.</div>
       </div>
+
+      <aside class="potential-results-panel" id="potentialResultsPanel" aria-label="Parhaat potentiaaliset kalapaikat" hidden>
+        <div class="potential-results-head">
+          <div>
+            <h3 class="potential-results-title" id="potentialResultsTitle">Parhaat paikat</h3>
+            <div class="potential-results-sub" id="potentialResultsSub">Rakenne + tämänhetkinen keli</div>
+          </div>
+          <button class="potential-results-close" id="potentialResultsClose" type="button" aria-label="Sulje lista">✕</button>
+        </div>
+        <div class="potential-results-list" id="potentialResultsList"></div>
+      </aside>
 
       <div class="sea-chart-bottom-left" id="seaChartBottomLeft">
         <div class="sea-chart-hud" id="seaChartHud">
@@ -1807,7 +1882,7 @@ body.device-phone .columns {
         <p class="sea-chart-zoom-hint" id="seaChartZoomHint" hidden>Zoomaa lähemmäs nähdäksesi viralliset väylätiedot.</p>
       </div>
     </div>
-    <p class="sea-chart-attribution">Väylätiedot: <a href="https://vayla.fi" target="_blank" rel="noopener">Väylävirasto</a>, CC BY 4.0. Merikartta-aineisto: <a href="https://traficom.fi" target="_blank" rel="noopener">Traficom</a>, CC BY 4.0. Potentiaalisten paikkojen rakennetiedot ja karttapohja: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-tekijät. Potentiaalipisteet ovat rakenteisiin perustuvia arvioita, eivät saalistakuita.</p>
+    <p class="sea-chart-attribution">Väylätiedot: <a href="https://vayla.fi" target="_blank" rel="noopener">Väylävirasto</a>, CC BY 4.0. Merikartta-aineisto: <a href="https://traficom.fi" target="_blank" rel="noopener">Traficom</a>, CC BY 4.0. Potentiaalisten paikkojen rakennetiedot ja karttapohja: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-tekijät. Reaaliaikainen keli: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Potentiaalipisteet ovat arvioita, eivät saalistakuita.</p>
     <div class="sea-route-info" id="seaRouteInfo" hidden></div>
   </section>
 
@@ -4303,6 +4378,14 @@ let potentialSpotFetchToken=0;
 let potentialSpotUpdateTimer=null;
 let potentialSpotActiveController=null;
 const potentialSpotCache=new Map();
+const potentialWeatherCache=new Map();
+const potentialSpotMarkersById=new Map();
+let potentialSpotLastElements=[];
+let potentialSpotLastSpots=[];
+let potentialWeatherFetchSignature='';
+let potentialResultsUserClosed=false;
+let potentialResultsAutoOpened=false;
+let potentialFavoriteSetCache=null;
 
 function potentialSpotStatus(fi, en){
   const el=document.getElementById('potentialSpotStatus');
@@ -4433,12 +4516,14 @@ function classifyPotentialSpot(el, selectedSpecies){
   return {
     id:`${el.type}-${el.id}`,
     lat:ll.lat, lon:ll.lon, score,
+    structureScore:score,
     kind:fi?meta.kindFi:meta.kindEn,
     name:t['name:fi']||t.name||(fi?meta.nameFi:meta.nameEn),
     reason:fi?meta.reasonFi:meta.reasonEn,
     warning:fi?meta.warningFi:meta.warningEn,
     species:meta.species,
-    typeKey:meta.key
+    typeKey:meta.key,
+    sourceUrl:`https://www.openstreetmap.org/${encodeURIComponent(el.type)}/${encodeURIComponent(el.id)}`
   };
 }
 
@@ -4460,6 +4545,150 @@ function potentialSpotColor(score){
   return '#6e7772';
 }
 
+function potentialRankScore(spot){
+  return typeof spot.combinedScore==='number' ? spot.combinedScore : spot.structureScore;
+}
+
+function potentialQualityThreshold(){
+  const el=document.getElementById('potentialSpotQuality');
+  return el ? Number(el.value)||0 : 65;
+}
+
+function potentialFavoriteIds(){
+  if (potentialFavoriteSetCache) return potentialFavoriteSetCache;
+  try {
+    const parsed=JSON.parse(storage.getItem('potential_spot_favorites')||'[]');
+    potentialFavoriteSetCache=new Set(Array.isArray(parsed)?parsed:[]);
+  } catch(e) { potentialFavoriteSetCache=new Set(); }
+  return potentialFavoriteSetCache;
+}
+
+function isPotentialFavorite(id){ return potentialFavoriteIds().has(id); }
+
+function togglePotentialFavorite(spot){
+  const ids=potentialFavoriteIds();
+  if (ids.has(spot.id)) ids.delete(spot.id); else ids.add(spot.id);
+  storage.setItem('potential_spot_favorites',JSON.stringify([...ids]));
+  if (potentialSpotLastSpots.length) drawPotentialSpotMarkers(potentialSpotLastSpots,potentialSpotLastElements.length);
+}
+
+function potentialWeatherSpecies(selectedSpecies){
+  return selectedSpecies==='all' ? ['ahven','hauki','kuha'] : [selectedSpecies];
+}
+
+function potentialWeatherCacheKey(spot, selectedSpecies){
+  return `${spot.id}:${selectedSpecies}:${Math.floor(Date.now()/600000)}`;
+}
+
+function applyPotentialWeatherFromCache(spots, selectedSpecies){
+  spots.forEach(spot=>{
+    const cached=potentialWeatherCache.get(potentialWeatherCacheKey(spot,selectedSpecies));
+    if (cached) Object.assign(spot,cached);
+  });
+}
+
+async function enrichPotentialSpotsWithWeather(spots, selectedSpecies, token){
+  const candidates=spots.slice(0,18);
+  const missing=candidates.filter(spot=>!potentialWeatherCache.has(potentialWeatherCacheKey(spot,selectedSpecies)));
+  if (!missing.length) {
+    applyPotentialWeatherFromCache(spots,selectedSpecies);
+    if (token===potentialSpotFetchToken) drawPotentialSpotMarkers(spots,potentialSpotLastElements.length);
+    return;
+  }
+  const signature=`${token}:${selectedSpecies}:`+missing.map(s=>s.id).join(',');
+  if (potentialWeatherFetchSignature===signature) return;
+  potentialWeatherFetchSignature=signature;
+  try {
+    const dataArr=await fetchWeatherBatch(missing);
+    if (token!==potentialSpotFetchToken || !potentialSpotsWanted) return;
+    const scoreSpecies=potentialWeatherSpecies(selectedSpecies);
+    missing.forEach((spot,i)=>{
+      const data=dataArr[i];
+      if (!data || !data.hourly) return;
+      const idx=nearestHourIndex(data.hourly.time);
+      const infos=scoreSpecies.map(species=>computeScore(data,idx,species,spot));
+      const weatherScore=Math.round(infos.reduce((sum,info)=>sum+info.score,0)/infos.length);
+      const info=infos[0];
+      const live={
+        weatherScore,
+        combinedScore:Math.round(spot.structureScore*.68+weatherScore*.32),
+        liveWeather:{wind:info.wind,temp:info.temp,cloud:info.cloud,delta:info.delta,isPrimeTime:info.isPrimeTime}
+      };
+      potentialWeatherCache.set(potentialWeatherCacheKey(spot,selectedSpecies),live);
+      Object.assign(spot,live);
+    });
+    applyPotentialWeatherFromCache(spots,selectedSpecies);
+    drawPotentialSpotMarkers(spots,potentialSpotLastElements.length);
+  } catch(e) {
+    // Sääkerros on lisäarvo: rakennetiedot jäävät näkyviin, vaikka Open-Meteo olisi hetkellisesti poissa.
+  } finally {
+    if (potentialWeatherFetchSignature===signature) potentialWeatherFetchSignature='';
+  }
+}
+
+function togglePotentialResultsPanel(show, userAction=false){
+  const panel=document.getElementById('potentialResultsPanel');
+  const toggle=document.getElementById('potentialResultsToggle');
+  if (panel) panel.hidden=!show;
+  if (userAction) potentialResultsUserClosed=!show;
+  if (toggle) toggle.textContent=currentLang==='fi'?(show?'Piilota lista':'Top-lista'):(show?'Hide list':'Top list');
+}
+
+function focusPotentialSpot(id){
+  const marker=potentialSpotMarkersById.get(id);
+  if (!marker || !seaChartMap) return;
+  seaChartMap.panTo(marker.getLatLng(),{animate:true});
+  marker.openPopup();
+}
+
+function renderPotentialResults(spots){
+  const list=document.getElementById('potentialResultsList');
+  const sub=document.getElementById('potentialResultsSub');
+  const panel=document.getElementById('potentialResultsPanel');
+  if (!list || !panel) return;
+  const fi=currentLang==='fi';
+  const ranked=spots.slice().sort((a,b)=>potentialRankScore(b)-potentialRankScore(a)).slice(0,10);
+  if (sub) sub.textContent=fi
+    ? `${spots.length} näkyvissä · rakenne${ranked.some(s=>s.liveWeather)?' + tämänhetkinen keli':''}`
+    : `${spots.length} visible · structure${ranked.some(s=>s.liveWeather)?' + current conditions':''}`;
+  if (!ranked.length) {
+    list.innerHTML=`<p class="potential-results-empty">${fi?'Nykyisellä suodattimella ei ole paikkoja.':'No spots match the current filter.'}</p>`;
+    panel.hidden=true;
+    return;
+  }
+  const center=seaChartMap.getCenter();
+  list.innerHTML=ranked.map((spot,index)=>{
+    const score=potentialRankScore(spot);
+    const distance=haversineKm(center.lat,center.lng,spot.lat,spot.lon);
+    return `<div class="potential-result-row">
+      <button class="potential-result-main" type="button" data-potential-jump="${escapeMapHtml(spot.id)}">
+        <span class="potential-result-rank">#${index+1}</span>
+        <span class="potential-result-copy"><span class="potential-result-name">${escapeMapHtml(spot.name)}</span><span class="potential-result-kind">${escapeMapHtml(spot.kind)} · ${fmtKm(distance)}</span></span>
+        <span class="potential-result-score" style="background:${potentialSpotColor(score)}">${score}</span>
+      </button>
+      <button class="potential-result-fav" type="button" data-potential-fav="${escapeMapHtml(spot.id)}" aria-label="${fi?'Tallenna suosikiksi':'Save favorite'}">${isPotentialFavorite(spot.id)?'★':'☆'}</button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('[data-potential-jump]').forEach(btn=>btn.addEventListener('click',()=>focusPotentialSpot(btn.dataset.potentialJump)));
+  list.querySelectorAll('[data-potential-fav]').forEach(btn=>btn.addEventListener('click',()=>{
+    const spot=potentialSpotLastSpots.find(s=>s.id===btn.dataset.potentialFav);
+    if (spot) togglePotentialFavorite(spot);
+  }));
+  if (!potentialResultsUserClosed && window.innerWidth>=760) {
+    potentialResultsAutoOpened=true;
+    togglePotentialResultsPanel(true);
+  }
+}
+
+function potentialWeatherSummary(spot){
+  if (!spot.liveWeather) return '';
+  const w=spot.liveWeather, fi=currentLang==='fi';
+  const trend=w.delta<=-1?'↘':w.delta>=1?'↗':'→';
+  return fi
+    ? `${w.temp.toFixed(0)} °C · tuuli ${w.wind.toFixed(1)} m/s · pilvisyys ${Math.round(w.cloud)} % · paine ${trend}${w.isPrimeTime?' · hämärän syönti-ikkuna':''}`
+    : `${w.temp.toFixed(0)} °C · wind ${w.wind.toFixed(1)} m/s · cloud ${Math.round(w.cloud)}% · pressure ${trend}${w.isPrimeTime?' · twilight feeding window':''}`;
+}
+
 function usePotentialSpot(spot){
   const key=addDynamicLocation({name:spot.name,lat:spot.lat,lon:spot.lon});
   locSel.value=key;
@@ -4471,18 +4700,21 @@ function usePotentialSpot(spot){
   showPage('kelimittari');
 }
 
-function renderPotentialSpotMarkers(elements){
+function drawPotentialSpotMarkers(spots,totalElementCount){
   if (!potentialSpotLayerGroup || !potentialSpotsWanted) return;
   potentialSpotLayerGroup.clearLayers();
-  const select=document.getElementById('potentialSpotSpecies');
-  const selectedSpecies=select ? select.value : 'all';
-  const spots=dedupePotentialSpots((elements||[]).map(el=>classifyPotentialSpot(el,selectedSpecies)).filter(Boolean));
+  potentialSpotMarkersById.clear();
   const fi=currentLang==='fi';
+  const threshold=potentialQualityThreshold();
+  const visible=spots
+    .filter(spot=>potentialRankScore(spot)>=threshold || isPotentialFavorite(spot.id))
+    .sort((a,b)=>potentialRankScore(b)-potentialRankScore(a));
 
-  spots.forEach((spot,index)=>{
+  visible.forEach((spot,index)=>{
+    const rankScore=potentialRankScore(spot);
     const icon=L.divIcon({
       className:'',
-      html:`<div class="potential-spot-marker" style="background:${potentialSpotColor(spot.score)}"><span>${spot.score}</span></div>`,
+      html:`<div class="potential-spot-marker${spot.liveWeather?' has-weather':''}" style="background:${potentialSpotColor(rankScore)}"><span>${rankScore}</span></div>`,
       iconSize:[38,38],iconAnchor:[19,34],popupAnchor:[0,-31]
     });
     const marker=L.marker([spot.lat,spot.lon],{icon,zIndexOffset:650});
@@ -4490,44 +4722,75 @@ function renderPotentialSpotMarkers(elements){
       ? spot.species.map(potentialSpeciesName).join(', ')
       : (fi?'useita lajeja':'multiple species');
     const useId=`potentialUse-${spot.id}-${index}`;
+    const favId=`potentialFav-${spot.id}-${index}`;
+    const center=seaChartMap.getCenter();
+    const distance=haversineKm(center.lat,center.lng,spot.lat,spot.lon);
+    const weatherHtml=spot.liveWeather ? `<div class="potential-breakdown"><span>${fi?'Rakenne':'Structure'} ${spot.structureScore}</span><span>${fi?'Keli nyt':'Conditions'} ${spot.weatherScore}</span></div><p class="potential-live">${escapeMapHtml(potentialWeatherSummary(spot))}</p>` : '';
     marker.bindPopup(`<div class="nearby-popup potential-popup">
       <span class="potential-kind">${escapeMapHtml(spot.kind)}</span>
       <h4>${escapeMapHtml(spot.name)}</h4>
-      <p class="potential-score">${fi?'Rakenteen potentiaali':'Structure potential'}: ${spot.score}/100</p>
+      <p class="potential-score">${spot.liveWeather?(fi?'Kokonaispotentiaali':'Overall potential'):(fi?'Rakenteen potentiaali':'Structure potential')}: ${rankScore}/100 · ${fmtKm(distance)} ${fi?'kartan keskeltä':'from map center'}</p>
+      ${weatherHtml}
       <p class="potential-reason"><strong>${fi?'Miksi tämä näkyy':'Why it is shown'}:</strong> ${escapeMapHtml(spot.reason)}</p>
       <p><strong>${fi?'Mahdolliset lajit':'Potential species'}:</strong> ${escapeMapHtml(speciesText)}</p>
       <p class="potential-warning">⚠️ ${escapeMapHtml(spot.warning)} ${fi?'Tarkista aina ajantasaiset luvat ja rajoitukset.':'Always check current permits and restrictions.'}</p>
       <div class="potential-actions">
         <button class="btn primary" type="button" id="${useId}">${fi?'Laske paikan keli':'Check conditions'}</button>
+        <button class="btn" type="button" id="${favId}">${isPotentialFavorite(spot.id)?'★ '+(fi?'Suosikki':'Favorite'):'☆ '+(fi?'Tallenna':'Save')}</button>
         <a class="btn" href="https://kalastusrajoitus.fi/" target="_blank" rel="noopener">${fi?'Tarkista rajoitukset ↗':'Check restrictions ↗'}</a>
+        <a class="btn" href="${escapeMapHtml(spot.sourceUrl)}" target="_blank" rel="noopener">${fi?'Avaa lähdetieto ↗':'Open source data ↗'}</a>
       </div>
-    </div>`);
+    </div>`,{maxWidth:360});
     marker.on('popupopen',()=>{
       const btn=document.getElementById(useId);
       if (btn) btn.addEventListener('click',()=>usePotentialSpot(spot),{once:true});
+      const fav=document.getElementById(favId);
+      if (fav) fav.addEventListener('click',()=>togglePotentialFavorite(spot),{once:true});
     });
     marker.addTo(potentialSpotLayerGroup);
+    potentialSpotMarkersById.set(spot.id,marker);
   });
 
-  if (spots.length) {
-    const suffix=(elements||[]).length>=300
+  renderPotentialResults(visible);
+
+  if (visible.length) {
+    const weatherCount=visible.filter(s=>s.liveWeather).length;
+    const suffix=totalElementCount>=300
       ? (fi?' Näytetään parhaat osumat.':' Showing the strongest matches.') : '';
     const detailHint=seaChartMap && seaChartMap.getZoom()<11
       ? (fi?' Lähennä vielä, niin näet myös lahdet, niemenkärjet ja laiturit.':' Zoom in once more to add bays, points and piers.') : '';
+    const weatherHint=weatherCount
+      ? (fi?` Reaaliaikainen keli huomioitu ${weatherCount} kärkipisteessä.`:` Live conditions added to ${weatherCount} top spots.`) : '';
     potentialSpotStatus(
-      `${spots.length} potentiaalista paikkaa näkyvällä alueella.${suffix}${detailHint}`,
-      `${spots.length} potential spots in the visible area.${suffix}${detailHint}`
+      `${visible.length}/${spots.length} paikkaa näkyy suodattimella.${suffix}${weatherHint}${detailHint}`,
+      `${visible.length}/${spots.length} spots match the filter.${suffix}${weatherHint}${detailHint}`
     );
   } else {
     const canZoom=seaChartMap && seaChartMap.getZoom()<11;
-    potentialSpotStatus(canZoom
+    potentialSpotStatus(spots.length
+      ? 'Yksikään paikka ei ylitä nykyistä pisterajaa. Vaihda Näytä-valikosta kaikki havainnot.'
+      : canZoom
       ? 'Lähennä vielä, niin kartta etsii myös lahdet, niemenkärjet ja laiturit.'
       : 'Tältä alueelta ei löytynyt riittävästi kartoitettuja rakenteita. Siirrä karttaa tai lähennä.',
-      canZoom
+      spots.length
+      ? 'No spots meet the current score threshold. Choose all observations from the Show menu.'
+      : canZoom
       ? 'Zoom in once more to search bays, points and piers too.'
       : 'No sufficiently mapped structures were found here. Move or zoom the map.'
     );
   }
+}
+
+function renderPotentialSpotMarkers(elements){
+  if (!potentialSpotLayerGroup || !potentialSpotsWanted) return;
+  potentialSpotLastElements=elements||[];
+  const select=document.getElementById('potentialSpotSpecies');
+  const selectedSpecies=select ? select.value : 'all';
+  const spots=dedupePotentialSpots(potentialSpotLastElements.map(el=>classifyPotentialSpot(el,selectedSpecies)).filter(Boolean));
+  applyPotentialWeatherFromCache(spots,selectedSpecies);
+  potentialSpotLastSpots=spots;
+  drawPotentialSpotMarkers(spots,potentialSpotLastElements.length);
+  enrichPotentialSpotsWithWeather(spots,selectedSpecies,potentialSpotFetchToken);
 }
 
 async function fetchPotentialSpotElements(query, token){
@@ -4560,6 +4823,9 @@ async function updatePotentialSpots(){
   const token=++potentialSpotFetchToken;
   if (potentialSpotActiveController) potentialSpotActiveController.abort();
   potentialSpotLayerGroup.clearLayers();
+  potentialSpotMarkersById.clear();
+  potentialSpotLastSpots=[];
+  togglePotentialResultsPanel(false);
 
   if (seaChartMap.getZoom()<POTENTIAL_SPOT_MIN_ZOOM) {
     potentialSpotStatus(
@@ -4635,6 +4901,9 @@ function togglePotentialSpots(show){
   clearTimeout(potentialSpotUpdateTimer);
   if (!show) {
     if (potentialSpotLayerGroup) potentialSpotLayerGroup.clearLayers();
+    potentialSpotMarkersById.clear();
+    potentialSpotLastSpots=[];
+    togglePotentialResultsPanel(false);
     return;
   }
   const select=document.getElementById('potentialSpotSpecies');
@@ -4657,6 +4926,27 @@ function updatePotentialSpotLanguage(){
     select.innerHTML=options.map(([id,label])=>`<option value="${id}">${label}</option>`).join('');
     select.value=options.some(([id])=>id===value)?value:'all';
   }
+  const qualityLabel=document.getElementById('potentialSpotQualityLabel');
+  const quality=document.getElementById('potentialSpotQuality');
+  if (qualityLabel) qualityLabel.textContent=fi?'Näytä':'Show';
+  if (quality) {
+    const value=quality.value||'65';
+    quality.innerHTML=(fi
+      ? [['65','Suositellut 65+'],['75','Parhaat 75+'],['0','Kaikki havainnot']]
+      : [['65','Recommended 65+'],['75','Best 75+'],['0','All observations']])
+      .map(([id,label])=>`<option value="${id}">${label}</option>`).join('');
+    quality.value=value;
+  }
+  const legend=document.getElementById('potentialMiniLegend');
+  if (legend) legend.innerHTML=fi
+    ? '<span><i class="potential-legend-dot" style="background:#2f6f73"></i> 85+ erittäin lupaava</span><span><i class="potential-legend-dot" style="background:#d5752c"></i> 70–84 hyvä</span><span><i class="potential-legend-dot" style="background:#6e7772"></i> tutkittava</span><span><i class="potential-legend-dot" style="background:#fff;border:2px solid #2f6f73"></i> valkoinen kehä = keli mukana</span>'
+    : '<span><i class="potential-legend-dot" style="background:#2f6f73"></i> 85+ very promising</span><span><i class="potential-legend-dot" style="background:#d5752c"></i> 70–84 good</span><span><i class="potential-legend-dot" style="background:#6e7772"></i> investigate</span><span><i class="potential-legend-dot" style="background:#fff;border:2px solid #2f6f73"></i> white ring = live conditions</span>';
+  const resultsTitle=document.getElementById('potentialResultsTitle');
+  const resultsClose=document.getElementById('potentialResultsClose');
+  if (resultsTitle) resultsTitle.textContent=fi?'Parhaat paikat':'Top spots';
+  if (resultsClose) resultsClose.setAttribute('aria-label',fi?'Sulje lista':'Close list');
+  const resultsPanel=document.getElementById('potentialResultsPanel');
+  togglePotentialResultsPanel(resultsPanel ? !resultsPanel.hidden : false);
   if (potentialSpotsWanted) schedulePotentialSpotUpdate();
   else potentialSpotStatus('Lähennä karttaa nähdäksesi paikat.','Zoom in to see potential spots.');
 }
@@ -5014,6 +5304,17 @@ function onSeaChartMapClick(latlng){
   if (potentialSpecies) potentialSpecies.addEventListener("change",()=>{
     if (potentialSpotsWanted) updatePotentialSpots();
   });
+  const potentialQuality=document.getElementById("potentialSpotQuality");
+  if (potentialQuality) potentialQuality.addEventListener("change",()=>{
+    if (potentialSpotsWanted && potentialSpotLastElements.length) renderPotentialSpotMarkers(potentialSpotLastElements);
+  });
+  const potentialResultsToggle=document.getElementById("potentialResultsToggle");
+  if (potentialResultsToggle) potentialResultsToggle.addEventListener("click",()=>{
+    const panel=document.getElementById("potentialResultsPanel");
+    togglePotentialResultsPanel(panel ? panel.hidden : true,true);
+  });
+  const potentialResultsClose=document.getElementById("potentialResultsClose");
+  if (potentialResultsClose) potentialResultsClose.addEventListener("click",()=>togglePotentialResultsPanel(false,true));
   const locateBtn=document.getElementById("seaChartLocateBtn");
   if (locateBtn) locateBtn.addEventListener("click",locateSeaChart);
   const clearRouteBtn=document.getElementById("seaRouteClearBtn");
