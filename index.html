@@ -1823,7 +1823,7 @@ body.device-phone .columns {
           </label>
           <label class="sea-chart-toggle sea-chart-toggle-compact">
             <input type="checkbox" id="potentialSpotsToggle">
-            <span id="potentialSpotsToggleLabel">🎣 Potentiaaliset paikat</span>
+            <span id="potentialSpotsToggleLabel">🎣 Vahvat kalapaikat</span>
           </label>
           <button class="btn" id="seaChartLocateBtn" type="button">📍 Paikanna</button>
         </div>
@@ -1843,14 +1843,14 @@ body.device-phone .columns {
             <label class="sea-spot-filter" for="potentialSpotQuality">
               <span id="potentialSpotQualityLabel">Näytä</span>
               <select id="potentialSpotQuality">
-                <option value="65">Suositellut 65+</option>
-                <option value="75">Parhaat 75+</option>
+                <option value="80">Vahvat 80+</option>
+                <option value="75">Myös salmet 75+</option>
                 <option value="0">Kaikki havainnot</option>
               </select>
             </label>
             <button class="btn potential-list-toggle" id="potentialResultsToggle" type="button">Top-lista</button>
           </div>
-          <div class="sea-spot-status" id="potentialSpotStatus" role="status" aria-live="polite">Lähennä karttaa nähdäksesi paikat.</div>
+          <div class="sea-spot-status" id="potentialSpotStatus" role="status" aria-live="polite">Valmis aineisto avautuu ilman verkkohakua.</div>
           <div class="potential-mini-legend" id="potentialMiniLegend" aria-label="Pisteiden selite">
             <span><i class="potential-legend-dot" style="background:#2f6f73"></i> 85+ erittäin lupaava</span>
             <span><i class="potential-legend-dot" style="background:#d5752c"></i> 70–84 hyvä</span>
@@ -4363,12 +4363,11 @@ const OVERPASS_ENDPOINTS = [
 ];
 
 // --- Koko Suomen potentiaaliset kalapaikat -----------------------------------------------
-// Taso yhdistää OpenStreetMapiin nimenomaisesti kalastuspaikaksi merkityt kohteet ja
-// kalastuksen kannalta kiinnostavat vesistörakenteet. Piste EI ole saalisennuste eikä lupa:
-// pisteytys kertoo vain, kuinka vahva rakenteellinen syy paikkaa on tutkia tarkemmin.
-// Haku tehdään vain näkyvältä kartta-alueelta ja riittävän läheltä, jotta julkista Overpass-
-// palvelua ei kuormiteta koko Suomen kertahaulla. Näin ominaisuus toimii silti koko maassa.
-const POTENTIAL_SPOT_MIN_ZOOM = 10;
+// Koko Suomen vahvat kohteet toimitetaan sivun mukana kompaktina tiedostona. Selain ei enää
+// odota ruuhkaista Overpass-hakua karttaa siirrettäessä. Aineistossa ovat vain nimenomaisesti
+// kalastukseen merkityt paikat sekä nimetyt kosket, virtasuvannot, matalikot ja salmet.
+const POTENTIAL_SPOT_DATA_URL = 'kalapaikat.json';
+const POTENTIAL_SPOT_MIN_ZOOM = 8;
 const POTENTIAL_SPOT_MAX_RESULTS = 120;
 const FINLAND_DATA_BOUNDS = { south:59.3, west:19.0, north:70.3, east:31.7 };
 
@@ -4376,8 +4375,8 @@ let potentialSpotLayerGroup=null;
 let potentialSpotsWanted=false;
 let potentialSpotFetchToken=0;
 let potentialSpotUpdateTimer=null;
-let potentialSpotActiveController=null;
-const potentialSpotCache=new Map();
+let potentialSpotDataPromise=null;
+let potentialSpotDatasetMeta=null;
 const potentialWeatherCache=new Map();
 const potentialSpotMarkersById=new Map();
 let potentialSpotLastElements=[];
@@ -4420,11 +4419,10 @@ function classifyPotentialSpot(el, selectedSpecies){
 
   const isTaggedFishing=t.leisure==='fishing' || t.sport==='fishing' || (t.fishing && t.fishing!=='no');
   const isRapids=t.waterway==='rapids' || t.water==='rapids';
-  const isFlowStructure=t.waterway==='weir' || t.waterway==='dam';
   let meta=null;
 
   if (isTaggedFishing) meta={
-    key:'known', score:92, species:[],
+    key:'known', score:94, species:[],
     kindFi:'Kartoitettu kalastuspaikka', kindEn:'Mapped fishing place',
     nameFi:'Merkitty kalastuspaikka', nameEn:'Mapped fishing place',
     reasonFi:'Kohde on merkitty avoimeen karttadataan kalastuspaikaksi. Tämä on vahvin käyttämämme paikkasignaali.',
@@ -4433,7 +4431,7 @@ function classifyPotentialSpot(el, selectedSpecies){
     warningEn:'A map tag does not guarantee public access or a valid fishing permit.'
   };
   else if (isRapids) meta={
-    key:'rapids', score:78, species:['taimen','lohi','harjus','ahven'],
+    key:'rapids', score:82, species:['taimen','lohi','harjus','ahven'],
     kindFi:'Koski tai voimakas virta', kindEn:'Rapids or strong current',
     nameFi:'Koskirakenne', nameEn:'Rapids structure',
     reasonFi:'Virran reunat, niska ja alapuolinen suvanto kokoavat ravintoa ja tarjoavat kaloille suojaisia virranvaihteluita.',
@@ -4442,7 +4440,7 @@ function classifyPotentialSpot(el, selectedSpecies){
     warningEn:'Rapids and migratory-fish waters often require a separate permit and may have restrictions.'
   };
   else if (t.natural==='shoal') meta={
-    key:'shoal', score:80, species:['ahven','hauki','kuha','siika'],
+    key:'shoal', score:84, species:['ahven','hauki','kuha','siika'],
     kindFi:'Matalikko', kindEn:'Shoal',
     nameFi:'Matalikko', nameEn:'Shoal',
     reasonFi:'Matalikon reunalla syvyys muuttuu nopeasti. Reuna voi kerätä pikkukalaa ja tarjoaa petokaloille väijyntälinjan.',
@@ -4451,7 +4449,7 @@ function classifyPotentialSpot(el, selectedSpecies){
     warningEn:'A shoal can be hazardous to boats. Verify depth on an official chart.'
   };
   else if (t.natural==='strait') meta={
-    key:'strait', score:75, species:['ahven','hauki','kuha','siika'],
+    key:'strait', score:76, species:['ahven','hauki','kuha','siika'],
     kindFi:'Salmi tai kapeikko', kindEn:'Strait or narrows',
     nameFi:'Virtaava kapeikko', nameEn:'Flowing narrows',
     reasonFi:'Kapeikko voimistaa veden liikettä ja ohjaa pikkukalan sekä petokalojen kulkua samaan kohtaan.',
@@ -4460,49 +4458,13 @@ function classifyPotentialSpot(el, selectedSpecies){
     warningEn:'Check fairways and shoreline access separately.'
   };
   else if (t.water==='stream_pool') meta={
-    key:'pool', score:74, species:['taimen','harjus','ahven'],
+    key:'pool', score:80, species:['taimen','harjus','ahven'],
     kindFi:'Virtasuvanto', kindEn:'Stream pool',
     nameFi:'Virtasuvanto', nameEn:'Stream pool',
     reasonFi:'Syvempi, hitaampi tasku virtavedessä tarjoaa kaloille lepopaikan aivan ravintoa kuljettavan virran vieressä.',
     reasonEn:'A deeper slow pocket beside current gives fish a holding area close to drifting food.',
     warningFi:'Virtavesien luvat ja rauhoitukset on tarkistettava ennen kalastusta.',
     warningEn:'Check permits and closures for flowing waters before fishing.'
-  };
-  else if (isFlowStructure) meta={
-    key:'flow', score:69, species:['taimen','lohi','harjus','ahven'],
-    kindFi:'Pato tai pohjapato', kindEn:'Dam or weir',
-    nameFi:'Virtausrakenne', nameEn:'Flow structure',
-    reasonFi:'Rakenteen ylä- ja alapuolelle syntyy virranvaihteluita ja syvempiä taskuja, joita kalat voivat käyttää.',
-    reasonEn:'Flow changes and deeper pockets above or below the structure can create fish-holding water.',
-    warningFi:'Patoalueella kalastus tai liikkuminen voi olla kiellettyä. Älä mene rakenteelle ilman lupaa.',
-    warningEn:'Fishing or access may be prohibited near dams. Do not enter the structure without permission.'
-  };
-  else if (t.natural==='bay') meta={
-    key:'bay', score:68, species:['hauki','ahven','kuha'],
-    kindFi:'Lahti', kindEn:'Bay',
-    nameFi:'Suojainen lahti', nameEn:'Sheltered bay',
-    reasonFi:'Suojainen ja usein ympäristöään lämpimämpi lahti voi kerätä kasvillisuutta, pikkukalaa ja väijyviä petokaloja.',
-    reasonEn:'A sheltered, often warmer bay can hold vegetation, baitfish and ambushing predators.',
-    warningFi:'Piste kertoo lahden rakenteesta, ei tarkkaa ottipaikkaa tai pääsyä rannalle.',
-    warningEn:'The marker describes bay structure, not a precise bite location or shoreline access.'
-  };
-  else if (t.natural==='cape') meta={
-    key:'cape', score:66, species:['ahven','hauki','kuha','siika'],
-    kindFi:'Niemenkärki', kindEn:'Point or cape',
-    nameFi:'Niemenkärki', nameEn:'Point or cape',
-    reasonFi:'Niemenkärki kohtaa sekä suojan että avoimen veden. Tuuli ja virtaus voivat kuljettaa ravintoa kärjen ohi.',
-    reasonEn:'A point meets sheltered and open water. Wind and current can move food past its edge.',
-    warningFi:'Ranta voi olla yksityinen; tarkista sallittu kulku ja kalastusoikeus.',
-    warningEn:'The shoreline may be private; verify access and fishing rights.'
-  };
-  else if (t.man_made==='pier' || t.man_made==='breakwater') meta={
-    key:'pier', score:58, species:['ahven','hauki','kuha','siika'],
-    kindFi:'Laituri tai aallonmurtaja', kindEn:'Pier or jetty',
-    nameFi:'Rantarakenne', nameEn:'Shore structure',
-    reasonFi:'Veteen ulottuva rakenne voi tarjota rannalta heittopaikan ja sen varjo tai reunat voivat kerätä pikkukalaa.',
-    reasonEn:'A structure extending over water can offer casting access, while shade and edges may attract baitfish.',
-    warningFi:'Laituri voi olla yksityinen tai kalastus voi olla satamassa kiellettyä. Tarkista pääsy paikan päällä.',
-    warningEn:'The pier may be private or fishing may be prohibited in a harbour. Verify access on site.'
   };
   if (!meta) return null;
 
@@ -4551,7 +4513,7 @@ function potentialRankScore(spot){
 
 function potentialQualityThreshold(){
   const el=document.getElementById('potentialSpotQuality');
-  return el ? Number(el.value)||0 : 65;
+  return el ? Number(el.value)||0 : 80;
 }
 
 function potentialFavoriteIds(){
@@ -4755,28 +4717,19 @@ function drawPotentialSpotMarkers(spots,totalElementCount){
 
   if (visible.length) {
     const weatherCount=visible.filter(s=>s.liveWeather).length;
-    const suffix=totalElementCount>=300
-      ? (fi?' Näytetään parhaat osumat.':' Showing the strongest matches.') : '';
-    const detailHint=seaChartMap && seaChartMap.getZoom()<11
-      ? (fi?' Lähennä vielä, niin näet myös lahdet, niemenkärjet ja laiturit.':' Zoom in once more to add bays, points and piers.') : '';
     const weatherHint=weatherCount
       ? (fi?` Reaaliaikainen keli huomioitu ${weatherCount} kärkipisteessä.`:` Live conditions added to ${weatherCount} top spots.`) : '';
     potentialSpotStatus(
-      `${visible.length}/${spots.length} paikkaa näkyy suodattimella.${suffix}${weatherHint}${detailHint}`,
-      `${visible.length}/${spots.length} spots match the filter.${suffix}${weatherHint}${detailHint}`
+      `${visible.length}/${spots.length} vahvaa paikkaa näkyy. Paikat avattiin valmiista aineistosta ilman verkkohakua.${weatherHint}`,
+      `${visible.length}/${spots.length} strong spots visible. Locations opened from bundled data without a live search.${weatherHint}`
     );
   } else {
-    const canZoom=seaChartMap && seaChartMap.getZoom()<11;
     potentialSpotStatus(spots.length
-      ? 'Yksikään paikka ei ylitä nykyistä pisterajaa. Vaihda Näytä-valikosta kaikki havainnot.'
-      : canZoom
-      ? 'Lähennä vielä, niin kartta etsii myös lahdet, niemenkärjet ja laiturit.'
-      : 'Tältä alueelta ei löytynyt riittävästi kartoitettuja rakenteita. Siirrä karttaa tai lähennä.',
+      ? 'Yksikään paikka ei ylitä nykyistä pisterajaa. Valitse Näytä-valikosta “Myös salmet”.'
+      : 'Tältä alueelta ei löytynyt vahvasti kartoitettua kalastuspaikkaa tai vesistörakennetta. Siirrä karttaa tai lähennä.',
       spots.length
-      ? 'No spots meet the current score threshold. Choose all observations from the Show menu.'
-      : canZoom
-      ? 'Zoom in once more to search bays, points and piers too.'
-      : 'No sufficiently mapped structures were found here. Move or zoom the map.'
+      ? 'No spots meet the current threshold. Choose “Include straits” from the Show menu.'
+      : 'No strongly mapped fishing place or water structure was found here. Move or zoom the map.'
     );
   }
 }
@@ -4793,41 +4746,35 @@ function renderPotentialSpotMarkers(elements){
   enrichPotentialSpotsWithWeather(spots,selectedSpecies,potentialSpotFetchToken);
 }
 
-async function fetchPotentialSpotElements(query, token){
-  let lastErr=null;
-  for (const endpoint of OVERPASS_ENDPOINTS) {
-    if (token!==potentialSpotFetchToken) throw new Error('stale potential spot request');
-    const controller=new AbortController();
-    potentialSpotActiveController=controller;
-    const timeoutId=setTimeout(()=>controller.abort(),18000);
-    try {
-      const body=new URLSearchParams({data:query});
-      const res=await fetch(endpoint,{method:'POST',body,signal:controller.signal});
-      clearTimeout(timeoutId);
-      if (!res.ok) { lastErr=new Error('overpass fetch failed: '+res.status); continue; }
-      const data=await res.json();
-      if (potentialSpotActiveController===controller) potentialSpotActiveController=null;
-      return data.elements||[];
-    } catch(e) {
-      clearTimeout(timeoutId);
-      lastErr=e;
-      if (token!==potentialSpotFetchToken) throw e;
-    }
+async function loadPotentialSpotDataset(){
+  if (!potentialSpotDataPromise) {
+    potentialSpotDataPromise=fetch(POTENTIAL_SPOT_DATA_URL,{cache:'force-cache'})
+      .then(res=>{
+        if (!res.ok) throw new Error(`spot dataset failed: ${res.status}`);
+        return res.json();
+      })
+      .then(data=>{
+        if (!data || !Array.isArray(data.spots)) throw new Error('invalid spot dataset');
+        potentialSpotDatasetMeta=data;
+        return data.spots;
+      })
+      .catch(err=>{
+        potentialSpotDataPromise=null;
+        throw err;
+      });
   }
-  if (potentialSpotActiveController) potentialSpotActiveController=null;
-  throw lastErr||new Error('overpass fetch failed');
+  return potentialSpotDataPromise;
 }
 
 async function updatePotentialSpots(){
   if (!seaChartMap || !potentialSpotLayerGroup || !potentialSpotsWanted) return;
   const token=++potentialSpotFetchToken;
-  if (potentialSpotActiveController) potentialSpotActiveController.abort();
-  potentialSpotLayerGroup.clearLayers();
-  potentialSpotMarkersById.clear();
-  potentialSpotLastSpots=[];
-  togglePotentialResultsPanel(false);
 
   if (seaChartMap.getZoom()<POTENTIAL_SPOT_MIN_ZOOM) {
+    potentialSpotLayerGroup.clearLayers();
+    potentialSpotMarkersById.clear();
+    potentialSpotLastSpots=[];
+    togglePotentialResultsPanel(false);
     potentialSpotStatus(
       `Lähennä karttaa tasolle ${POTENTIAL_SPOT_MIN_ZOOM} nähdäksesi paikat koko Suomesta.`,
       `Zoom to level ${POTENTIAL_SPOT_MIN_ZOOM} to see spots across Finland.`
@@ -4841,47 +4788,30 @@ async function updatePotentialSpots(){
   const east=Math.min(b.getEast(),FINLAND_DATA_BOUNDS.east);
   const north=Math.min(b.getNorth(),FINLAND_DATA_BOUNDS.north);
   if (west>=east || south>=north) {
+    potentialSpotLayerGroup.clearLayers();
+    potentialSpotMarkersById.clear();
+    potentialSpotLastSpots=[];
+    togglePotentialResultsPanel(false);
     potentialSpotStatus('Tämä tietotaso kattaa Suomen. Siirrä kartta Suomen alueelle.','This data layer covers Finland. Move the map to Finland.');
     return;
   }
 
-  const bbox=[south,west,north,east].map(v=>v.toFixed(5));
-  const includeLocalStructures=seaChartMap.getZoom()>=11;
-  const cacheKey=`${includeLocalStructures?'detail':'core'}:`+bbox.map(v=>Number(v).toFixed(2)).join(',');
-  if (potentialSpotCache.has(cacheKey)) {
-    renderPotentialSpotMarkers(potentialSpotCache.get(cacheKey));
-    return;
+  if (!potentialSpotDataPromise) {
+    potentialSpotStatus('Avataan Suomen valmista kalapaikka-aineistoa…','Opening the bundled Finland fishing-spot data…');
   }
-
-  potentialSpotStatus('Haetaan kartoitettuja kalapaikkoja ja vesistörakenteita…','Loading mapped fishing places and water structures…');
-  const box=bbox.join(',');
-  const localStructureQuery=includeLocalStructures ? `
-    nwr["natural"~"^(bay|cape|shoal|strait)$"](${box});
-    nwr["man_made"="pier"]["access"~"^(yes|permissive|public)$"](${box});
-    nwr["man_made"="pier"]["fishing"~"^(yes|designated|permissive)$"](${box});
-    nwr["man_made"="breakwater"](${box});` : '';
-  const query=`[out:json][timeout:20];(
-    nwr["leisure"="fishing"](${box});
-    nwr["sport"="fishing"](${box});
-    nwr["fishing"~"^(yes|designated|permissive)$"](${box});
-    nwr["waterway"="rapids"](${box});
-    nwr["water"="rapids"](${box});
-    nwr["water"="stream_pool"](${box});
-    nwr["waterway"~"^(weir|dam)$"](${box});
-    ${localStructureQuery}
-  );out center 300;`;
-
   try {
-    const elements=await fetchPotentialSpotElements(query,token);
+    const allElements=await loadPotentialSpotDataset();
     if (token!==potentialSpotFetchToken || !potentialSpotsWanted) return;
-    potentialSpotCache.set(cacheKey,elements);
-    if (potentialSpotCache.size>24) potentialSpotCache.delete(potentialSpotCache.keys().next().value);
+    const elements=allElements.filter(el=>{
+      const ll=potentialElementLatLng(el);
+      return ll && ll.lon>=west && ll.lon<=east && ll.lat>=south && ll.lat<=north;
+    });
     renderPotentialSpotMarkers(elements);
   } catch(e) {
     if (token!==potentialSpotFetchToken || !potentialSpotsWanted) return;
     potentialSpotStatus(
-      'Paikkatiedon haku ei onnistunut juuri nyt. Siirrä karttaa hieman tai yritä hetken päästä uudelleen.',
-      'Spot data could not be loaded right now. Move the map slightly or try again shortly.'
+      'Paikkatiedoston avaaminen epäonnistui. Päivitä sivu ja yritä uudelleen.',
+      'The spot data file could not be opened. Refresh the page and try again.'
     );
   }
 }
@@ -4889,7 +4819,7 @@ async function updatePotentialSpots(){
 function schedulePotentialSpotUpdate(){
   if (!potentialSpotsWanted) return;
   clearTimeout(potentialSpotUpdateTimer);
-  potentialSpotUpdateTimer=setTimeout(updatePotentialSpots,450);
+  potentialSpotUpdateTimer=setTimeout(updatePotentialSpots,120);
 }
 
 function togglePotentialSpots(show){
@@ -4897,7 +4827,6 @@ function togglePotentialSpots(show){
   const panel=document.getElementById('potentialSpotPanel');
   if (panel) panel.hidden=!show;
   ++potentialSpotFetchToken;
-  if (potentialSpotActiveController) potentialSpotActiveController.abort();
   clearTimeout(potentialSpotUpdateTimer);
   if (!show) {
     if (potentialSpotLayerGroup) potentialSpotLayerGroup.clearLayers();
@@ -4915,7 +4844,7 @@ function updatePotentialSpotLanguage(){
   const fi=currentLang==='fi';
   const toggleLabel=document.getElementById('potentialSpotsToggleLabel');
   const speciesLabel=document.getElementById('potentialSpotSpeciesLabel');
-  if (toggleLabel) toggleLabel.textContent=fi?'🎣 Potentiaaliset paikat':'🎣 Potential spots';
+  if (toggleLabel) toggleLabel.textContent=fi?'🎣 Vahvat kalapaikat':'🎣 Strong fishing spots';
   if (speciesLabel) speciesLabel.textContent=fi?'Kalalaji':'Species';
   const select=document.getElementById('potentialSpotSpecies');
   if (select) {
@@ -4930,10 +4859,10 @@ function updatePotentialSpotLanguage(){
   const quality=document.getElementById('potentialSpotQuality');
   if (qualityLabel) qualityLabel.textContent=fi?'Näytä':'Show';
   if (quality) {
-    const value=quality.value||'65';
+    const value=quality.value||'80';
     quality.innerHTML=(fi
-      ? [['65','Suositellut 65+'],['75','Parhaat 75+'],['0','Kaikki havainnot']]
-      : [['65','Recommended 65+'],['75','Best 75+'],['0','All observations']])
+      ? [['80','Vahvat 80+'],['75','Myös salmet 75+'],['0','Kaikki varmennetut']]
+      : [['80','Strong 80+'],['75','Include straits 75+'],['0','All verified']])
       .map(([id,label])=>`<option value="${id}">${label}</option>`).join('');
     quality.value=value;
   }
@@ -4948,7 +4877,7 @@ function updatePotentialSpotLanguage(){
   const resultsPanel=document.getElementById('potentialResultsPanel');
   togglePotentialResultsPanel(resultsPanel ? !resultsPanel.hidden : false);
   if (potentialSpotsWanted) schedulePotentialSpotUpdate();
-  else potentialSpotStatus('Lähennä karttaa nähdäksesi paikat.','Zoom in to see potential spots.');
+  else potentialSpotStatus('Valmis aineisto avautuu ilman verkkohakua.','Bundled data opens without a live search.');
 }
 
 async function fetchWaterPolygons(bbox){
