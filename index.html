@@ -1765,7 +1765,7 @@ body.device-phone .columns {
         <p class="sea-chart-zoom-hint" id="seaChartZoomHint" hidden>Zoomaa lähemmäs nähdäksesi viralliset väylätiedot.</p>
       </div>
     </div>
-    <p class="sea-chart-attribution">Väylätiedot: <a href="https://vayla.fi" target="_blank" rel="noopener">Väylävirasto</a>, CC BY 4.0. Merikartta-aineisto: <a href="https://traficom.fi" target="_blank" rel="noopener">Traficom</a>, CC BY 4.0. Karttapohja: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-tekijät, &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>.</p>
+    <p class="sea-chart-attribution">Väylätiedot: <a href="https://vayla.fi" target="_blank" rel="noopener">Väylävirasto</a>, CC BY 4.0. Merikartta-aineisto: <a href="https://traficom.fi" target="_blank" rel="noopener">Traficom</a>, CC BY 4.0. Karttapohja: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-tekijät.</p>
     <div class="sea-route-info" id="seaRouteInfo" hidden></div>
   </section>
 
@@ -3832,15 +3832,11 @@ function renderSeaChart(){
     scrollWheelZoom:false, zoomControl:false, dragging:false,
     touchZoom:false, doubleClickZoom:false, boxZoom:false, keyboard:false
   }).setView([63.0,26.0],5);
-  // Merikarttamainen ulkoasu (sininen vesi, vaimennettu maa) CSS-suotimella CARTOn
-  // "nolabels"-laattojen päällä. Tavalliset OSM-laatat piirtävät paikannimet, POI-ikonit ja
-  // tienumerokilvet suoraan rasterikuvaan tekstinä - niitä EI voi poistaa CSS-suotimella
-  // (filter säätää vain värejä, ei voi valikoivasti piilottaa jo piirrettyä tekstiä). CARTOn
-  // "nolabels"-tyyli sen sijaan on renderöity ilman niitä alusta asti: tiet ja rantaviiva
-  // näkyvät edelleen linjoina, mutta ilman nimiä, tienumeroita tai POI-tekstiä.
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',{
+  // Avaimeton OpenStreetMap-karttapohja. CARTO-rasterilaatat vaativat nykyisin API-avaimen
+  // ja näyttävät ilman sitä kartan päällä "API key required" -vesileiman.
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
     maxZoom:18,
-    attribution:'&copy; OpenStreetMap-tekijät, &copy; CARTO',
+    attribution:'&copy; OpenStreetMap-tekijät',
     className:'sea-chart-basemap'
   }).addTo(seaChartMap);
 
