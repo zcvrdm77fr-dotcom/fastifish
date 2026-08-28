@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/manifest.json',
@@ -8,7 +8,8 @@ const STATIC_ASSETS = [
   '/apple-touch-icon.png',
   '/kalapaikat.json',
   '/fishing-structures.js',
-  '/depth-structures.js'
+  '/depth-structures.js',
+  '/inland-depth/manifest.json'
 ];
 
 function isObviouslyNonFishingFeature(tags = {}) {
@@ -61,12 +62,13 @@ async function injectFishingStructures(response) {
 
   try {
     let html = await response.clone().text();
-    const scripts = [];
-    if (!html.includes('/fishing-structures.js')) scripts.push('<script src="/fishing-structures.js?v=5"></script>');
-    if (!html.includes('/depth-structures.js')) scripts.push('<script src="/depth-structures.js?v=5"></script>');
-    if (!scripts.length) return response;
+    // Poistetaan mahdollinen vanhan service workerin injektoima versio ja lisätään aina
+    // tämän cache-version skriptit. Näin vanha ?v=4/?v=5 ei voi jäädä puhelimeen kummittelemaan.
+    html = html
+      .replace(/\s*<script\s+src=["']\/fishing-structures\.js(?:\?[^"']*)?["']><\/script>/gi, '')
+      .replace(/\s*<script\s+src=["']\/depth-structures\.js(?:\?[^"']*)?["']><\/script>/gi, '');
 
-    const injection = scripts.join('\n');
+    const injection = '<script src="/fishing-structures.js?v=6"></script>\n<script src="/depth-structures.js?v=6"></script>';
     html = html.includes('</body>') ? html.replace('</body>', `${injection}\n</body>`) : `${html}\n${injection}`;
 
     const headers = new Headers(response.headers);
@@ -125,6 +127,19 @@ self.addEventListener('fetch', (event) => {
       caches.match(request).then((cached) => cached || fetch(request).then((response) => {
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        return response;
+      }))
+    );
+    return;
+  }
+
+  if (url.pathname.startsWith('/inland-depth/tiles/')) {
+    event.respondWith(
+      caches.match(request).then((cached) => cached || fetch(request).then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        }
         return response;
       }))
     );
