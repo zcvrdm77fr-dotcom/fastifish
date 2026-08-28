@@ -1,0 +1,61 @@
+name: Refresh inland depth spots
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 4 1 */2 *'
+  push:
+    paths:
+      - 'scripts/build-inland-depth.py'
+      - '.github/workflows/refresh-inland-depth.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-depth-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install geospatial tooling
+        run: python -m pip install --disable-pip-version-check geopandas pyogrio shapely pyproj
+
+      - name: Download SYKE depth areas
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/syke-depth/areas
+          URL1='https://wwwd3.ymparisto.fi/d3/gis_data/spesific/syvyysalue.zip'
+          URL2='https://wwwd3.ymparisto.fi/d3/gis_data/specific/syvyysalue.zip'
+          curl -fL --retry 3 "$URL1" -o /tmp/syke-depth/syvyysalue.zip || curl -fL --retry 3 "$URL2" -o /tmp/syke-depth/syvyysalue.zip
+          unzip -q /tmp/syke-depth/syvyysalue.zip -d /tmp/syke-depth/areas
+          find /tmp/syke-depth/areas -maxdepth 3 -type f | head -40
+
+      - name: Build compact fishing-depth tiles
+        run: python scripts/build-inland-depth.py --area-dir /tmp/syke-depth/areas --output-dir inland-depth
+
+      - name: Show output size
+        run: |
+          cat inland-depth/manifest.json
+          du -sh inland-depth
+          find inland-depth/tiles -type f | wc -l
+
+      - name: Commit refreshed depth data
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add inland-depth
+          if git diff --cached --quiet; then
+            echo 'Depth data unchanged.'
+            exit 0
+          fi
+          git commit -m 'Refresh SYKE inland depth fishing spots'
+          git push
