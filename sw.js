@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/manifest.json',
@@ -8,6 +8,49 @@ const STATIC_ASSETS = [
   '/apple-touch-icon.png',
   '/kalapaikat.json'
 ];
+
+function isObviouslyNonFishingFeature(tags = {}) {
+  const leisure = String(tags.leisure || '').toLowerCase();
+  const amenity = String(tags.amenity || '').toLowerCase();
+  const water = String(tags.water || '').toLowerCase();
+  const manMade = String(tags.man_made || '').toLowerCase();
+
+  if (['swimming_pool', 'wading_pool', 'water_park', 'splash_pad'].includes(leisure)) return true;
+  if (amenity === 'fountain' || water === 'fountain') return true;
+  if (['swimming_pool', 'wading_pool', 'splash_pool', 'wastewater', 'sewage'].includes(water)) return true;
+  if (['wastewater_plant', 'sewage_treatment'].includes(manMade)) return true;
+  return false;
+}
+
+async function filterFishingPlacesResponse(response) {
+  if (!response || !response.ok) return response;
+
+  try {
+    const data = await response.clone().json();
+    if (!data || !Array.isArray(data.spots)) return response;
+
+    const before = data.spots.length;
+    data.spots = data.spots.filter((spot) => !isObviouslyNonFishingFeature(spot?.tags || {}));
+    const removed = before - data.spots.length;
+
+    if (removed > 0 && data.counts && Number.isFinite(data.counts.known)) {
+      data.counts.known = Math.max(0, data.counts.known - removed);
+    }
+
+    const headers = new Headers(response.headers);
+    headers.set('content-type', 'application/json; charset=utf-8');
+    headers.delete('content-length');
+    headers.delete('content-encoding');
+
+    return new Response(`${JSON.stringify(data)}\n`, {
+      status: response.status,
+      statusText: response.statusText,
+      headers
+    });
+  } catch (error) {
+    return response;
+  }
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -31,6 +74,19 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  if (url.pathname === '/kalapaikat.json') {
+    event.respondWith(
+      caches.match(request)
+        .then((cached) => cached || fetch(request).then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          return response;
+        }))
+        .then(filterFishingPlacesResponse)
+    );
+    return;
+  }
 
   if (STATIC_ASSETS.includes(url.pathname)) {
     event.respondWith(
