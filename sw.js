@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/manifest.json',
@@ -10,6 +10,7 @@ const STATIC_ASSETS = [
   '/fishing-structures.js',
   '/depth-structures.js',
   '/gtk-substrate.js',
+  '/gtk-habitats.js',
   '/inland-depth/manifest.json'
 ];
 
@@ -64,16 +65,18 @@ async function injectFishingStructures(response) {
   try {
     let html = await response.clone().text();
     // Aina yksi tuore versio jokaisesta lisäanalyysistä. Vanhojen service workereiden
-    // ?v=4/?v=5/?v=6 -tagit poistetaan, jotta puhelin ei jatka vanhalla salmipainotteisella logiikalla.
+    // injektoimat tagit poistetaan, jotta puhelin ei jatka vanhalla salmipainotteisella logiikalla.
     html = html
       .replace(/\s*<script\s+src=["']\/fishing-structures\.js(?:\?[^"']*)?["']><\/script>/gi, '')
       .replace(/\s*<script\s+src=["']\/depth-structures\.js(?:\?[^"']*)?["']><\/script>/gi, '')
-      .replace(/\s*<script\s+src=["']\/gtk-substrate\.js(?:\?[^"']*)?["']><\/script>/gi, '');
+      .replace(/\s*<script\s+src=["']\/gtk-substrate\.js(?:\?[^"']*)?["']><\/script>/gi, '')
+      .replace(/\s*<script\s+src=["']\/gtk-habitats\.js(?:\?[^"']*)?["']><\/script>/gi, '');
 
     const injection = [
-      '<script src="/fishing-structures.js?v=7"></script>',
-      '<script src="/depth-structures.js?v=7"></script>',
-      '<script src="/gtk-substrate.js?v=7"></script>'
+      '<script src="/fishing-structures.js?v=8"></script>',
+      '<script src="/depth-structures.js?v=8"></script>',
+      '<script src="/gtk-substrate.js?v=8"></script>',
+      '<script src="/gtk-habitats.js?v=8"></script>'
     ].join('\n');
     html = html.includes('</body>') ? html.replace('</body>', `${injection}\n</body>`) : `${html}\n${injection}`;
 
