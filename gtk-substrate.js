@@ -1,0 +1,50 @@
+(function(){
+'use strict';
+if(window.__fastFishingGtkSubstrateLoaded)return;
+window.__fastFishingGtkSubstrateLoaded=true;
+
+const BASE='https://gtkdata.gtk.fi/arcgis/rest/services/Rajapinnat/GTK_Kaavoitus_WMS/MapServer';
+const LAYERS=[
+  {id:134,scale:'1:100 000',source:'https://hakku.gtk.fi/fi/locations?id=193'},
+  {id:135,scale:'1:250 000',source:'https://hakku.gtk.fi/fi/locations?id=137'}
+];
+const MIN_ZOOM=10;
+const DEBOUNCE=620;
+const PAD=.24;
+const MAX_FEATURES=1000;
+let map=null,timer=null,token=0,cacheBounds=null,cache=[],previousClassifier=null,lastDiag=null;
+
+const META={
+  rocky_bottom:{score:95,species:['ahven','kuha','siika','taimen','hauki'],fi:'Kallio- / kivikkopohja',en:'Rock & boulder bottom',reasonFi:'GTK:n merenpohjan maalajiaineisto tunnistaa alueen kallio- ja kivikkopohjaksi. Kova pohja tarjoaa rakoja, reunaa ja ravintoa, ja on erityisen vahva rakenne penkan tai matalan reunan yhteydessä.',reasonEn:'GTK seabed data classifies this as rock and boulders. Hard bottom creates edges, gaps and feeding habitat, especially beside a depth break.'},
+  coarse_bottom:{score:92,species:['ahven','kuha','siika','taimen'],fi:'Karkea pohja',en:'Coarse bottom',reasonFi:'Karkearakeinen pohja on selvä pohjanlaadun muutos ja usein parempi rakenne kuin tasainen muta- tai hiekkapohja.',reasonEn:'Coarse substrate creates a distinct bottom transition and often more structure than uniform mud or sand.'},
+  mixed_bottom:{score:88,species:['ahven','kuha','hauki','siika'],fi:'Sekapohja',en:'Mixed bottom',reasonFi:'Sekapohja kertoo vaihtelevasta pohjasta. Kun samaan kohtaan osuu syvyysreuna, rakenne vahvistuu selvästi.',reasonEn:'Mixed sediment indicates variable bottom. The signal becomes much stronger where a depth transition overlaps it.'}
+};
+
+const rad=d=>d*Math.PI/180;
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+function distance(a,b){const R=6371000,dla=rad(b.lat-a.lat),dlo=rad(b.lon-a.lon),s=Math.sin(dla/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dlo/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+function expanded(b){const la=(b.getNorth()-b.getSouth())*PAD,lo=(b.getEast()-b.getWest())*PAD;return{south:Math.max(59.2,b.getSouth()-la),west:Math.max(18.5,b.getWest()-lo),north:Math.min(70.6,b.getNorth()+la),east:Math.min(32,b.getEast()+lo)};}
+function contains(o,b){return !!o&&b.getSouth()>=o.south&&b.getWest()>=o.west&&b.getNorth()<=o.north&&b.getEast()<=o.east;}
+
+async function fetchJson(url,ms=12000){const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal,headers:{Accept:'application/geo+json,application/json'}});if(!r.ok)throw new Error(`GTK ${r.status}`);const d=await r.json();if(d&&d.error)throw new Error(d.error.message||'GTK query error');return d;}finally{clearTimeout(t)}}
+function queryUrl(layer,b){const p=new URLSearchParams();p.set('where',"FOLK_5_SUBSTRATE_CLASS LIKE '3.%' OR FOLK_5_SUBSTRATE_CLASS LIKE '4.%' OR FOLK_5_SUBSTRATE_CLASS LIKE '5.%'");p.set('geometry',`${b.west},${b.south},${b.east},${b.north}`);p.set('geometryType','esriGeometryEnvelope');p.set('inSR','4326');p.set('outSR','4326');p.set('spatialRel','esriSpatialRelIntersects');p.set('outFields','OBJECTID,FOLK_5_SUBSTRATE_CLASS,CONFIDENCE_TOTAL,NAME_OF_THE_MAP');p.set('returnGeometry','true');p.set('resultRecordCount',String(MAX_FEATURES));p.set('f','geojson');return `${BASE}/${layer.id}/query?${p.toString()}`;}
+async function fetchGtk(b){let err=null;for(const layer of LAYERS){try{const d=await fetchJson(queryUrl(layer,b));if(Array.isArray(d.features))return{features:d.features,layer};}catch(e){err=e;}}throw err||new Error('GTK substrate unavailable');}
+
+function flattenCoords(g){const out=[];function walk(v){if(!Array.isArray(v))return;if(v.length>=2&&typeof v[0]==='number'&&typeof v[1]==='number'){const lon=+v[0],lat=+v[1];if(Number.isFinite(lat)&&Number.isFinite(lon))out.push({lat,lon});return;}for(const x of v)walk(x);}walk(g&&g.coordinates);return out;}
+function featurePoints(f){const ps=flattenCoords(f.geometry);if(!ps.length)return[];let minLat=Infinity,maxLat=-Infinity,minLon=Infinity,maxLon=-Infinity;for(const p of ps){minLat=Math.min(minLat,p.lat);maxLat=Math.max(maxLat,p.lat);minLon=Math.min(minLon,p.lon);maxLon=Math.max(maxLon,p.lon);}const center={lat:(minLat+maxLat)/2,lon:(minLon+maxLon)/2};let nearest=ps[0],best=Infinity;for(const p of ps){const d=(p.lat-center.lat)**2+((p.lon-center.lon)*Math.cos(rad(center.lat)))**2;if(d<best){best=d;nearest=p;}}const spanM=Math.max(distance({lat:minLat,lon:minLon},{lat:maxLat,lon:maxLon}),0);const points=[nearest];if(spanM>900&&ps.length>8){points.push(ps[Math.floor(ps.length*.25)],ps[Math.floor(ps.length*.72)]);}return points.slice(0,3);}
+function typeFromClass(v){const s=String(v||'');if(s.startsWith('5.'))return'rocky_bottom';if(s.startsWith('3.'))return'coarse_bottom';if(s.startsWith('4.'))return'mixed_bottom';return null;}
+function normalizeConfidence(v){const n=Number(v);return Number.isFinite(n)?n:null;}
+function normalize(data){const out=[],seen=new Set();for(const f of data.features){const p=f.properties||{},kind=typeFromClass(p.FOLK_5_SUBSTRATE_CLASS);if(!kind)continue;const cls=String(p.FOLK_5_SUBSTRATE_CLASS||'');if(cls.startsWith('9.'))continue;const conf=normalizeConfidence(p.CONFIDENCE_TOTAL),oid=p.OBJECTID??f.id??Math.random().toString(36).slice(2);const pts=featurePoints(f);pts.forEach((pt,i)=>{if(!pt)return;const key=`${kind}:${Math.round(pt.lat*2400)}:${Math.round(pt.lon*1200)}`;if(seen.has(key))return;seen.add(key);out.push({type:'gtk-substrate',id:`gtk-${data.layer.id}-${oid}-${i}`,lat:pt.lat,lon:pt.lon,tags:{name:META[kind].fi},_fastGtkSubstrate:true,_substrateType:kind,_confidence:conf,_sourceUrl:data.layer.source,_gtkScale:data.layer.scale});});}return out.slice(0,260);}
+
+function nearestDepth(el){if(typeof potentialSpotLastElements==='undefined'||!Array.isArray(potentialSpotLastElements))return null;let best=null,bestD=Infinity;for(const x of potentialSpotLastElements){if(!x||!x._fastDepthStructure||!Number.isFinite(x.lat)||!Number.isFinite(x.lon))continue;const d=distance({lat:el.lat,lon:el.lon},{lat:x.lat,lon:x.lon});if(d<bestD){bestD=d;best=x;}}return best&&bestD<=320?{el:best,d:bestD}:null;}
+function depthLabel(x){if(!x)return'';const a=Number(x._depth),b=Number(x._otherDepth);if(Number.isFinite(a)&&Number.isFinite(b))return`${Math.min(a,b).toFixed(1)}–${Math.max(a,b).toFixed(1)} m`;return Number.isFinite(a)?`${a.toFixed(1)} m`:'';}
+function classify(el,species){const m=META[el._substrateType];if(!m)return null;const near=nearestDepth(el);let score=m.score;if(near){score+=el._substrateType==='rocky_bottom'?4:3;if(['depth_break','steep_break','shallow_edge'].includes(near.el._depthType))score+=2;}if(Number.isFinite(el._confidence)){if(el._confidence>=8)score+=1;else if(el._confidence<=3)score-=2;}if(species&&species!=='all')score+=m.species.includes(species)?4:-10;score=clamp(Math.round(score),42,99);const fi=typeof currentLang==='undefined'||currentLang==='fi',combo=near?(fi?' + syvyysreuna':' + depth edge'):'',dl=near?depthLabel(near.el):'';return{id:String(el.id),lat:el.lat,lon:el.lon,score,structureScore:score,kind:(fi?m.fi:m.en)+combo,name:(fi?m.fi:m.en)+(dl?` · ${dl}`:''),reason:(fi?m.reasonFi:m.reasonEn)+(near?(fi?` Lähellä on myös laskettu syvyysrakenne (${dl||Math.round(near.d)+' m päässä'}).`:` A calculated depth structure is also nearby (${dl||Math.round(near.d)+' m away'}).`):''),warning:fi?`GTK avoin lisenssi CC BY 4.0; aineistoa on muokattu kalastusrakenteen arviointiin (${el._gtkScale}). Ei navigointiohje.`:`GTK Open Licence CC BY 4.0; data edited for fishing-structure analysis (${el._gtkScale}). Not for navigation.`,species:m.species,typeKey:el._substrateType,sourceUrl:el._sourceUrl};}
+function patch(){if(previousClassifier||typeof classifyPotentialSpot!=='function')return;previousClassifier=classifyPotentialSpot;classifyPotentialSpot=function(el,s){if(el?._fastGtkSubstrate)return classify(el,s);return previousClassifier(el,s);};}
+function base(){return typeof potentialSpotLastElements!=='undefined'&&Array.isArray(potentialSpotLastElements)?potentialSpotLastElements.filter(e=>!e?._fastGtkSubstrate):[];}
+function render(items){if(typeof renderPotentialSpotMarkers==='function')renderPotentialSpotMarkers(base().concat(items||[]));}
+function status(){if(!lastDiag||typeof potentialSpotStatus!=='function')return;const fi=typeof currentLang==='undefined'||currentLang==='fi';const existing=document.getElementById('potentialSpotStatus')?.textContent||'';const suffix=fi?` · GTK pohjarakenteita ${lastDiag.count} (${lastDiag.scale})`:` · GTK bottom structures ${lastDiag.count} (${lastDiag.scale})`;if(existing&&!existing.includes('GTK '))potentialSpotStatus(existing+suffix,existing+suffix);}
+async function refresh(force){if(!map||typeof potentialSpotsWanted==='undefined'||!potentialSpotsWanted)return;if(map.getZoom()<MIN_ZOOM){cache=[];cacheBounds=null;return;}const vis=map.getBounds();if(!force&&contains(cacheBounds,vis)){render(cache);setTimeout(status,160);return;}const my=++token,b=expanded(vis);try{const data=await fetchGtk(b);if(my!==token||!potentialSpotsWanted)return;cacheBounds=b;cache=normalize(data);lastDiag={count:cache.length,scale:data.layer.scale};render(cache);setTimeout(status,220);}catch(e){if(my!==token)return;lastDiag={count:0,scale:'-'};render([]);}}
+function schedule(force){clearTimeout(timer);timer=setTimeout(()=>refresh(!!force),DEBOUNCE);}
+function attach(){patch();if(typeof seaChartMap==='undefined'||!seaChartMap||typeof renderPotentialSpotMarkers!=='function')return false;if(map===seaChartMap)return true;map=seaChartMap;map.on('moveend zoomend',()=>schedule(false));document.getElementById('potentialSpotsToggle')?.addEventListener('change',e=>{if(e.target.checked)schedule(true);});document.getElementById('potentialSpotSpecies')?.addEventListener('change',()=>schedule(false));if(typeof potentialSpotsWanted!=='undefined'&&potentialSpotsWanted)schedule(true);return true;}
+let tries=0;const boot=setInterval(()=>{tries++;if(attach()||tries>180)clearInterval(boot);},400);
+})();
