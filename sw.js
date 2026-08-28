@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/manifest.json',
@@ -7,7 +7,8 @@ const STATIC_ASSETS = [
   '/icon-512.png',
   '/apple-touch-icon.png',
   '/kalapaikat.json',
-  '/fishing-structures.js'
+  '/fishing-structures.js',
+  '/depth-structures.js'
 ];
 
 function isObviouslyNonFishingFeature(tags = {}) {
@@ -60,10 +61,13 @@ async function injectFishingStructures(response) {
 
   try {
     let html = await response.clone().text();
-    if (html.includes('/fishing-structures.js')) return response;
+    const scripts = [];
+    if (!html.includes('/fishing-structures.js')) scripts.push('<script src="/fishing-structures.js?v=5"></script>');
+    if (!html.includes('/depth-structures.js')) scripts.push('<script src="/depth-structures.js?v=5"></script>');
+    if (!scripts.length) return response;
 
-    const script = '<script src="/fishing-structures.js?v=4"></script>';
-    html = html.includes('</body>') ? html.replace('</body>', `${script}\n</body>`) : `${html}\n${script}`;
+    const injection = scripts.join('\n');
+    html = html.includes('</body>') ? html.replace('</body>', `${injection}\n</body>`) : `${html}\n${injection}`;
 
     const headers = new Headers(response.headers);
     headers.set('content-type', 'text/html; charset=utf-8');
