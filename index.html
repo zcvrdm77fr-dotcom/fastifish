@@ -472,11 +472,13 @@ main { padding-bottom: 70px; }
 .feed-delete-btn { margin-left: auto; color: var(--danger); }
 .feed-comments { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
 .feed-comments[hidden] { display: none; }
-.feed-comment-item { font-size: .85rem; line-height: 1.4; }
+.feed-comment-item { font-size: .85rem; line-height: 1.4; position: relative; padding-right: 22px; }
 .feed-comment-item .feed-comment-user { font-weight: 700; color: var(--lake-deep); }
 .feed-comment-item .feed-comment-time { color: var(--ink-soft); font-size: .7rem; margin-left: 4px; }
-.feed-comment-delete-btn { float: right; background: none; border: none; color: var(--danger); font-size: .72rem; cursor: pointer; padding: 0; }
 .feed-comment-item p { margin: 2px 0 0; color: var(--ink); word-break: break-word; }
+.feed-comment-delete-btn { position: absolute; top: 0; right: 0; border: 0; background: transparent; color: var(--danger); cursor: pointer; padding: 2px; line-height: 0; opacity: .6; }
+.feed-comment-delete-btn:hover { opacity: 1; }
+.feed-comment-delete-btn svg { width: 14px; height: 14px; }
 .feed-comment-form { display: flex; gap: 8px; margin-top: 4px; }
 .feed-comment-input { flex: 1; min-width: 0; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; font-size: .85rem; }
 .feed-comment-status { font-size: .78rem; color: var(--ink-soft); }
@@ -616,7 +618,7 @@ html[data-theme="dark"] .sea-chart-toolbar { background: rgba(20, 37, 34, .96); 
 .sea-chart-bottom-left { position: absolute; bottom: 12px; left: 12px; z-index: 900; display: flex; flex-direction: column; gap: 6px; max-width: calc(100% - 24px); }
 .sea-chart-zoom-hint { position: static; margin: 0; padding: 6px 10px; border-radius: 10px; background: rgba(20,37,34,.85); color: #fff; font-size: .72rem; max-width: 240px; }
 .sea-chart-basemap { filter: saturate(1.5) hue-rotate(-8deg) brightness(0.97) contrast(1.05); }
-.sea-mark-dot { width: 7px; height: 7px; border-radius: 50%; background: #d5752c; border: 1px solid #fffdf7; box-shadow: 0 0 0 1px rgba(23,52,47,.35); opacity: .8; }
+.sea-mark-dot { width: 10px; height: 10px; border-radius: 50%; background: #d5752c; border: 1.5px solid #fffdf7; box-shadow: 0 0 0 1px rgba(23,52,47,.5); }
 .sea-hazard-mark { width: 16px; height: 16px; position: relative; }
 .sea-hazard-mark::before, .sea-hazard-mark::after { content:""; position:absolute; top:50%; left:50%; width:18px; height:3px; background:#111; border-radius:2px; box-shadow: 0 0 0 1px #fffdf7; }
 .sea-hazard-mark::before { transform: translate(-50%,-50%) rotate(45deg); }
@@ -663,6 +665,18 @@ html[data-theme="dark"] .sea-chart-toolbar { background: rgba(20, 37, 34, .96); 
 .spot-water { padding: 10px 12px; border: 1px dashed var(--line); border-radius: 12px; background: rgba(255,253,247,.5); font-size: .82rem; color: var(--ink-soft); }
 .spot-water strong { color: var(--ink); }
 .spot-water .wtype-tag { display: inline-flex; margin-bottom: 5px; }
+.spot-known { padding: 10px 12px; border-radius: 12px; background: var(--mist); font-size: .82rem; color: var(--ink); }
+.spot-known strong { color: var(--lake-deep); }
+.spot-known ul { margin: 6px 0 0; padding-left: 18px; }
+.spot-known li { margin-bottom: 4px; }
+.spot-known li strong { color: var(--ink); }
+.spot-known-empty { background: transparent; border: 1px dashed var(--line); color: var(--ink-soft); }
+.spot-known-empty strong { color: var(--ink-soft); }
+.spot-known-empty p { margin: 6px 0 0; }
+.spot-structure { padding: 10px 12px; border-left: 3px solid var(--orange); border-radius: 8px; background: rgba(255,253,247,.5); font-size: .82rem; color: var(--ink-soft); }
+.spot-structure strong { color: var(--orange-dark); }
+.spot-structure ul { margin: 6px 0 0; padding-left: 18px; }
+.spot-structure li { margin-bottom: 4px; }
 .nearby-loading, .nearby-error { color: var(--ink-soft); }
 .nearby-error .btn { margin-top: 10px; }
 .link-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
@@ -1344,12 +1358,12 @@ body.device-phone .columns {
 
 <section id="nearbySection" class="shell nearby-section" hidden>
   <div class="section-head">
-    <h2>Lähelläsi</h2>
+    <h2>Suositellut kalapaikat lähelläsi</h2>
     <p id="nearbyStatus">Haetaan sijaintiasi selaimelta...</p>
   </div>
   <div class="nearby-map-wrap is-empty" id="nearbyMapWrap"><div id="nearbyMap"></div></div>
   <div class="grid" id="nearbyGrid"></div>
-  <p class="place-count" id="nearbyWaterNote" style="margin-top:14px">Kalalajit ja vesityyppi ovat yleistä arviota paikan nimen perusteella, ei paikkakohtaisesti vahvistettua tietoa.</p>
+  <p class="place-count" id="nearbyWaterNote" style="margin-top:14px">Kalalajit ja vesityyppi ovat yleistä arviota paikan nimen perusteella. Nimetyt kalapaikat suurimmilla kaupunkiseuduilla ovat oikeasti tunnettuja, julkisilta kalastussivustoilta koottuja paikkoja - ei taattu tulos, mutta oikea lähtökohta.</p>
 </section>
 
 <main class="shell">
@@ -1751,7 +1765,7 @@ body.device-phone .columns {
         <p class="sea-chart-zoom-hint" id="seaChartZoomHint" hidden>Zoomaa lähemmäs nähdäksesi viralliset väylätiedot.</p>
       </div>
     </div>
-    <p class="sea-chart-attribution">Väylätiedot: <a href="https://vayla.fi" target="_blank" rel="noopener">Väylävirasto</a>, CC BY 4.0. Merikartta-aineisto: <a href="https://traficom.fi" target="_blank" rel="noopener">Traficom</a>, CC BY 4.0.</p>
+    <p class="sea-chart-attribution">Väylätiedot: <a href="https://vayla.fi" target="_blank" rel="noopener">Väylävirasto</a>, CC BY 4.0. Merikartta-aineisto: <a href="https://traficom.fi" target="_blank" rel="noopener">Traficom</a>, CC BY 4.0. Karttapohja: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-tekijät, &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>.</p>
     <div class="sea-route-info" id="seaRouteInfo" hidden></div>
   </section>
 
@@ -2140,7 +2154,7 @@ const UI_TRANS = {
     label_selected: "Valittu paikka",
     label_species: "Kohdekala",
     btn_refresh: "Päivitä keli",
-    nearby_title: "Lähelläsi",
+    nearby_title: "Suositellut kalapaikat lähelläsi",
     nearby_status_loading: "Haetaan sijaintiasi selaimelta...",
     nearby_status_no_gps: "Sijaintia ei voitu hakea tai lupa evättiin. Käytetään valikoitua paikkaa.",
     nearby_status_not_finland: "GPS-sijaintisi on Suomen ulkopuolella. Vaihdettu kieleksi englanti.",
@@ -2231,7 +2245,7 @@ const UI_TRANS = {
     label_selected: "Selected Spot",
     label_species: "Target Fish",
     btn_refresh: "Fetch Weather",
-    nearby_title: "Near You",
+    nearby_title: "Recommended fishing spots near you",
     nearby_status_loading: "Locating your browser position...",
     nearby_status_no_gps: "Location search failed or permission denied. Using selected spot.",
     nearby_status_not_finland: "GPS location is outside Finland. Set language to English.",
@@ -3170,8 +3184,8 @@ function setLanguage(lang, saveToLocalStorage = true) {
   const nearbyWaterNote = document.getElementById("nearbyWaterNote");
   if (nearbyWaterNote) {
     nearbyWaterNote.textContent = lang === 'fi'
-      ? "Kalalajit ja vesityyppi ovat yleistä arviota paikan nimen perusteella, ei paikkakohtaisesti vahvistettua tietoa."
-      : "Fish species and water type are a general estimate based on the place name, not verified site-specific data.";
+      ? "Kalalajit ja vesityyppi ovat yleistä arviota paikan nimen perusteella. Nimetyt kalapaikat suurimmilla kaupunkiseuduilla ovat oikeasti tunnettuja, julkisilta kalastussivustoilta koottuja paikkoja - ei taattu tulos, mutta oikea lähtökohta."
+      : "Fish species and water type are a general estimate based on the place name. Named fishing spots for major cities are real, known locations gathered from public fishing sites - not a guaranteed catch, but a genuine starting point.";
   }
   // Päivitetään jo renderöityjen korttien vesistötiedot uudelle kielelle
   renderNearbySpots.lastSpots && renderNearbySpots(renderNearbySpots.lastSpots, renderNearbySpots.lastLat, renderNearbySpots.lastLon);
@@ -3459,6 +3473,202 @@ const WATER_TYPE_INFO = {
     en: {label:"Lake", species:"perch, pike, zander, burbot, whitefish, vendace", tip:"Try drop-offs, weed edges and around islands."}
   }
 };
+// Nimettyjä, oikeasti tunnettuja kalapaikkoja suurimmille kaupunkiseuduille - koottu julkisilta
+// kalastussivustoilta (mm. kalastajankanava.fi, vapaa-ajankalastajalehti.fi, kaupunkien omat
+// kalastussivut, kalastus.com-keskustelut). Näitä EI ole GPS-mitattu paikan päällä, joten niillä
+// ei ole omaa lat/lon-koordinaattia tässä - ne näytetään nimettyinä paikkoina sen kaupungin/järven
+// kortilla johon ne kuuluvat, ei tarkkana pisteenä kartalla. Tarkoituksella suppea lista täsmällisiä,
+// löydettävissä olevia paikkoja - ei arvattuja "mahdollisia" kivikkoja joita ei voi vahvistaa.
+const CITY_FISHING_SPOTS = {
+  "Helsinki - Suomenlahti": [
+    {name:"Vanhankaupunginkoski ja -suvanto", note:"Pääkaupunkiseudun tunnetuin kalapaikka - taimenta, lohta ja jopa kuusikiloisia toutaimia, rannat rakennettu myös lasten ja liikkumisesteisten kalastukseen."},
+    {name:"Vanhankaupunginlahti", note:"Suojaisa lintuvesilahti, hauki liikkeellä jo jäiden lähdön jälkeen keväällä."},
+    {name:"Lauttasaaren silta", note:"Tunnettu silakka- ja särkipaikka, myös ahventa."},
+    {name:"Vantaanjoen suu", note:"Hauki nousee suulle heti keväällä jäiden lähdettyä."},
+    {name:"Laajalahti", note:"Kaislikkoinen, suojainen lahti - hauki ja ahven."}
+  ],
+  "Turku - Aurajoki / Saaristomeri": [
+    {name:"Aurajoki, keskusta", note:"Kuhaa ja ahventa aivan kaupungin ytimessä, parhaiten kesäiltaisin ja -öisin jigaamalla."},
+    {name:"Hahdenniemi", note:"Ahventa ja kuhaa erityisesti syksyllä, kalastus onnistuu aallonmurtajalta ja uimarannan laiturilta."},
+    {name:"Ruissalo", note:"Meritaimenta ja siikaa rannalta keväällä ja syksyllä."},
+    {name:"Halistenkoski", note:"Alaosa ja loppuliuku suosittuja virtapaikkoja."}
+  ],
+  "Tampere - Näsijärvi / Pyhäjärvi": [
+    {name:"Rajasalmi (Pyhäjärvi)", note:"Tunnettu haukipaikka, salmi virtaa kahden selän välillä."},
+    {name:"Pyynikin saaret (Pyhäjärvi)", note:"Isoja haukia, myös istutettuja taimenia rannan tuntumassa."},
+    {name:"Kierimonsalmi ja Aniansalmi (Pyhäjärvi)", note:"Kapeikkoja, joissa hauki väijyy virtausta."},
+    {name:"Iidesjärvi ja Tohloppijärvi", note:"Pienempiä kaupunkijärviä rantakalastukseen, hyviä aloittelijalle."}
+  ],
+  "Jyväskylä - Päijänne": [
+    {name:"Jyväsjärvi, Lutakon satama", note:"Kaupungin tunnetuin lähikalastuspaikka - ahventa, haukea, kuhaa ja särkeä laiturilta ilman erillistä lupaa."},
+    {name:"Ristikivi ja Nenäinniemi (Päijänne)", note:"Heittopaikkoja Päijänteen rannassa."},
+    {name:"Iso-Haapasaari (Päijänne)", note:"Kuhaa rannalta jigaamalla."},
+    {name:"Köhniönjärvi", note:"Vain rantakalastus sallittu, paljon kiiskeä ja haukea."}
+  ],
+  "Kuopio - Kallavesi": [
+    {name:"Etelä-Kallaveden saaristo", note:"Matalikkoja, kapeikkoja ja penkkoja - kuhaa ja haukea."},
+    {name:"Valkeisenlampi ja Väinölänniemi", note:"Aivan keskustan tuntumassa, hyviä lähikalastuspaikkoja."}
+  ],
+  "Vaasa - Merenkurkku": [
+    {name:"Räätälinsaari", note:"Tunnettu kalapaikka, kulku Vaskiluodon Vankilanrannasta."},
+    {name:"Hovioikeudenallas", note:"Satama-alue ja rautatiesillan alla virtaava veneväylä - ahventa ja haukea."},
+    {name:"Kalaranta", note:"Pitkä kiinteä kalastuslaituri Eteläisen kaupunginselän eteläpäässä."},
+    {name:"Onkilahti", note:"Esteetön kalastuslaituri."}
+  ],
+  "Oulu - Perämeri / Oulujoki": [
+    {name:"Oulujoen suu, Merikosken alakanava", note:"Kuuluisa lohipaikka, myös harjusta ja siikaa."},
+    {name:"Hartaanselkä", note:"Alueen suositelluin heittokalastuspaikka."},
+    {name:"Toppilansalmi", note:"Hyvä onkimispaikka."},
+    {name:"Kuivasjärvi", note:"Suosittu ahvenen pilkintäjärvi talvella."}
+  ],
+  "Rovaniemi - Kemijoki": [
+    {name:"Tikkasenkari (Kemijoki)", note:"Suositeltu, luotettava kalastuspaikka."},
+    {name:"Vanttauskoski ja Hirvas-Muurola (Kemijoki)", note:"Toimivia koskialueita."},
+    {name:"Ounasjoki", note:"Harjus on joen tunnuskala, myös taimenta ja isoja haukia rauhallisemmissa osissa."}
+  ],
+  "Lahti - Vesijärvi": [
+    {name:"Joutjoen suisto", note:"Hyvät mahdollisuudet rantaongintaan."},
+    {name:"Enonsaaren ja Karjusaaren välinen syvänne", note:"Matalampi syvänne saarten välissä, kuhaa ja haukea."}
+  ],
+  "Kotka - Kymijoki / meri": [
+    {name:"Mansikkalahti", note:"Hyvä paikka rannalta kohti Varissaarta."},
+    {name:"Kantasatama ja Keisarinsatama", note:"Haukipaikkoja aivan kaupungin tuntumassa."},
+    {name:"Kymijoen Siikakoski ja Korkeakoski", note:"Tunnettuja lohi- ja taimenkoskia."}
+  ],
+  "Hamina - Itäinen Suomenlahti": [
+    {name:"Nakatappi", note:"Paikallisten mielestä alueen paras kalapaikka."},
+    {name:"Mullinkoski ja Salmenvirta", note:"Virtapaikkoja, joissa hauki liikkuu lähes koko rantaviivalla."}
+  ],
+  "Joensuu - Pyhäselkä": [
+    {name:"Pyhäselän rannat", note:"Toimii sekä heittäen että kohoa käyttäen."},
+    {name:"Pielisjoki, kaupungin läpi virtaava osuus", note:"Suojainen paikka, kalastettavissa lähes säällä kuin säällä."}
+  ],
+  "Pori - Kokemäenjoki": [
+    {name:"Keskustan siltojen väli", note:"Pitkä hyvä ranta, josta nousee myös meritaimenta."},
+    {name:"Pälpälänlahti", note:"Ahventa ja haukea, ajoittain myös taimenta."}
+  ],
+  "Lappeenranta - Saimaa": [
+    {name:"Suur-Saimaan lahdet kaupungin edustalla", note:"Hyviä heitto- ja jigipaikkoja hauelle, ahvenelle ja kuhalle."},
+    {name:"Kuivaketvele", note:"Kapea, virtaava salmi - vahva ahven- ja kuhakanta."}
+  ],
+  "Mikkeli - Saimaa": [
+    {name:"Mikkelin edustan Saimaan lahdet", note:"Monipuolista järvikalastusta hauelle, ahvenelle, kuhalle ja saimaannieriälle."}
+  ],
+  "Espoo - Laajalahti": [
+    {name:"Pitkäjärvi, Bodominjärvi ja Lippajärvi", note:"Suosittuja rantakalastusjärviä ahvenelle ja hauelle."},
+    {name:"Mankinjoen suu", note:"Isoja haukia joen suulla."},
+    {name:"Ruoholahden kanava", note:"Kaupunkiympäristö tuottaa yllättävän isoja ahvenia ja kuhia."},
+    {name:"Suvisaariston Suinonsalmi ja Otaniemi", note:"Merenrannan heittopaikkoja."}
+  ],
+  "Hämeenlinna - Vanajavesi": [
+    {name:"Niittykadun kalastuslaituri", note:"Esteetön kaupungin kalastuslaituri Vanajaveden rannalla."},
+    {name:"Vanajanselkä", note:"Laaja lupa-alue, toimii hyvin myös pilkkivetenä."},
+    {name:"Kernaala", note:"Kuhaa on saatu vuosittain hyvin."}
+  ],
+  "Kokkola - Perämeri": [
+    {name:"Laajalahti", note:"Haukea rannasta, riutta alkaa jo muutaman metrin päästä rannasta."},
+    {name:"Öjan saaristo", note:"Hyvä alue, painottuu veneestä kalastukseen."},
+    {name:"Sunti", note:"Rantakalastukseen sopiva haukipaikka."}
+  ],
+  "Savonlinna - Pihlajavesi": [
+    {name:"Haapasalmi", note:"Aivan torin kupeessa, virvelöintiin ja soutu-uisteluun oma lupa-alue."},
+    {name:"Kyrönsalmi (Olavinlinnan ympäristö)", note:"Virtaa Olavinlinnan ohi, hyvä heittopaikka."},
+    {name:"Laitaatsalmi", note:"Kaupungin länsipuolella."}
+  ],
+  "Imatra - Vuoksi": [
+    {name:"Vuoksi", note:"Syvä, voimakkaasti virtaava jokialue - taimenta, harjusta, siikaa, lohta, kuhaa ja haukea ympäri vuoden."},
+    {name:"Immalanjärvi", note:"Järvikalastusvaihtoehto Vuoksen rinnalla."}
+  ],
+  "Sotkamo - Nuasjärvi": [
+    {name:"Jormasjoki", note:"Alueen tunnetuin koskikalastuspaikka, helposti saavutettavissa Kajaani-Sotkamo-tieltä."},
+    {name:"Nuasjärven Konnanlahti-Rantakylä", note:"Sekä ranta-alue että lahti ovat tuottavia."},
+    {name:"Laakajärvi", note:"Hyvä taimenpaikka uistellen ja verkolla."}
+  ],
+  "Paltamo - Oulujärvi": [
+    {name:"Hirsiselkä (Ristijärven ja Paltamon raja)", note:"Suositeltu alue Oulujärven pohjoisosassa."}
+  ],
+  "Rauma - Selkämeri": [
+    {name:"Kaupungin keskustan läpi virtaava joki", note:"Isoja ahvenia ja haukia jigaten, ajoittain meritaimenta."},
+    {name:"Säikänsuntti", note:"Kapea salmi - ahventa, haukea ja keväällä siikaa."},
+    {name:"Mustalahti", note:"Haukea ja ahventa."}
+  ],
+  "Porvoo - Porvoonjoki": [
+    {name:"Porvoonjoki", note:"Kalastettavissa läpi kaupungin."},
+    {name:"Hamarin satama", note:"Lähtöpaikka Porvoon saaristoon suuntautuville kalareissuille."},
+    {name:"Sipoon ja Porvoon merialue", note:"Yksi Suomenlahden vilkkaimmista vapaa-ajankalastusalueista - hyvä hauki- ja ahvenkanta."}
+  ],
+  "Kouvola - Kymijoki": [
+    {name:"Langinkoski ja Pernoonkoski (Kymijoki)", note:"Kymijoen tunnetuimpia koskia, suosittuja lohi- ja taimenpaikkoja."},
+    {name:"Puolakankoski (Verla)", note:"Lupa-alue perhokalastukseen, heittoon ja vetouisteluun - istutettua taimenta ja luontaista haukea."}
+  ],
+  "Inari - Inarijärvi": [
+    {name:"Inarijärvi", note:"Lapin tunnetuimpia kalavesiä - haukea, ahventa ja muikkua veneestä tai oppaan kanssa, syvyys- ja matalikkoreunat parhaita."},
+    {name:"Iijärvi (Kaldoaivin erämaan reunalla)", note:"Tunnettu erityisesti harjuksesta."}
+  ],
+  "Nokia - Pyhäjärvi": [
+    {name:"Pyhäjärvi", note:"Yksi Suomen parhaista kuhavesistä."}
+  ],
+  "Valkeakoski - Vanajavesi": [
+    {name:"Vanaja- ja Mallasvesi", note:"Onnistuu jopa kävelysiltojen ympärillä keskustassa."},
+    {name:"Lotilanjärvi", note:"Toinen suosittu paikallinen kalastuskohde."}
+  ],
+  "Varkaus - Haukivesi / Unnukka": [
+    {name:"Kinkamonselkä (Puurtila)", note:"Hyvä alue, samoin koko Unnukka."},
+    {name:"Haukivesi", note:"Laaja selkä Varkauden alapuolella - lähes kaikkia sisävesikaloja."}
+  ],
+  "Hanko - Hangon merialue": [
+    {name:"Hankoniemen pohjoispuolinen saaristo", note:"Suojaisa saaristo, paras alue hauelle."}
+  ],
+  "Kirkkonummi - Porkkala": [
+    {name:"Porkkalanniemen kärki", note:"Oikeaan aikaan kohtuullisen hyvä meritaimenpaikka."}
+  ],
+  "Salo - Halikonlahti": [
+    {name:"Latokartanonkoski", note:"Kunnostettu lohikalojen kutupaikka."}
+  ],
+  "Kemi - Perämeri": [
+    {name:"Kemin sisäsatama", note:"Rauhallinen heittopaikka aivan kaupungissa."},
+    {name:"Kemin edustan vapaa virkistyskalastusalue", note:"Suomen ensimmäinen laatuaan - kalastus onnistuu pelkällä kalastonhoitomaksulla."}
+  ],
+  "Raahe - Perämeri": [
+    {name:"Kuljunlahti", note:"Pysyy sulana talvellakin - isoa ahventa, haukea ja lahnaa."},
+    {name:"Raahen saaristo", note:"Hyvä ahvenenpilkkipaikka talvella."}
+  ],
+  "Mustasaari - Merenkurkku": [
+    {name:"Raippaluodon silta", note:"Suomen pisimmän sillan ympäristö - erinomainen pilkkipaikka, myös hauen ja ahvenen heittokalastusta sekä silakan litkaamista."}
+  ],
+  "Jämsä - Päijänne": [
+    {name:"Tiirinselkä ja Pohjois-Päijänne", note:"Jämsän edustan suosituimmat kalapaikat - haukea, ahventa, kuhaa ja istutettua järvitaimenta."},
+    {name:"Jämsänjoki", note:"Kaupungin läpi virtaava joki, monipuolista kalastusta."}
+  ],
+  "Naantali - Saaristomeri": [
+    {name:"Naantalinaukko", note:"Laaja selkävesi - hyvä hauki- ja ahvenkanta."},
+    {name:"Kolkannokka (Ruissalo)", note:"Yksi Saaristomeren vilkkaimmista kuhapaikoista keväisin."},
+    {name:"Ukkopekan silta", note:"Haukea ja kuoretta."},
+    {name:"Merimaskun salmet", note:"Kapeat, virtaavat salmet - hyviä jigauspaikkoja."}
+  ],
+  "Parikkala - Simpelejärvi": [
+    {name:"Simpelejärvi", note:"Vahva hauki-, ahven- ja kuhakanta, paljon hyviä kalapaikkoja ympäri järveä."}
+  ],
+  "Kitee - Puruvesi": [
+    {name:"Puruvesi", note:"Tunnettu pilkkijärvi, hyvä ahvenkanta ja muikkukannan myötä myös isoa ajoahventa."}
+  ],
+  "Pudasjärvi - Iijoki": [
+    {name:"Iijoen koskikalastusalue (yläosa)", note:"20 kilometrin pituinen koskijakso - harjusta ja taimenta läpi vuoden, parhaimmillaan elo-lokakuussa."},
+    {name:"Tuulijärvi, Kivarinjärvi ja Keskijärvi", note:"Järvivaihtoehtoja koskikalastuksen rinnalle."}
+  ]
+};
+function renderCitySpots(name){
+  const spots = CITY_FISHING_SPOTS[name];
+  const heading = currentLang === 'fi' ? '🎣 Tunnettuja kalapaikkoja' : '🎣 Known fishing spots';
+  if (!spots || !spots.length) {
+    const empty = currentLang === 'fi'
+      ? 'Valitettavasti tältä alueelta ei ole vielä koottu nimettyjä kalapaikkoja - lisäämme niitä sitä mukaa kun löydämme luotettavia lähteitä.'
+      : "We haven't gathered any named fishing spots for this area yet - we'll add them as we find reliable sources.";
+    return `<div class="spot-known spot-known-empty"><strong>${heading}</strong><p>${empty}</p></div>`;
+  }
+  const items = spots.map(s => `<li><strong>${s.name}</strong> — ${s.note}</li>`).join('');
+  return `<div class="spot-known"><strong>${heading}</strong><ul>${items}</ul></div>`;
+}
 function renderWaterInfo(name){
   const type = classifyWaterType(name);
   const info = WATER_TYPE_INFO[type][currentLang === 'fi' ? 'fi' : 'en'];
@@ -3468,6 +3678,43 @@ function renderWaterInfo(name){
     <div><strong>${speciesLabel}:</strong> ${info.species}</div>
     <div>${info.tip}</div>
   </div>`;
+}
+
+// Suomalaiset vesistönimet kertovat kirjaimellisesti muodon: "-selkä" on avoin allas,
+// "-lahti" suojainen poukama, "-salmi" kahden altaan välinen kapeikko, "koski" virtaava
+// koskiosuus. Tämä EI ole arvaus yksittäisestä kalapaikasta jollekin tietylle järvelle - se on
+// nimen itsensä jo kertoma tosiasia vesistön muodosta, johon sovelletaan yleistä, vakiintunutta
+// tietoa siitä millainen rakenne houkuttelee haukea, ahventa ja kuhaa. Siksi tämä toimii kaikille
+// 279 paikalle riippumatta siitä onko CITY_FISHING_SPOTS-listalla erikseen tutkittuja nimettyjä
+// paikkoja vai ei - ja siksi se näytetään omana, selvästi erillisenä osionaan.
+function classifyStructureHints(name){
+  const water = (name.split(' - ')[1] || name).toLowerCase();
+  const tokens = water.split(/[\/,()]| ja /).map(t => t.trim()).filter(Boolean);
+  const rules = [
+    { test: /selkä|selka/, hint: 'Nimen "-selkä" tarkoittaa avointa allasta. Etsi pohjan muodonvaihteluita eli penkkoja ja syvänteen reunoja - kuha ja hauki liikkuvat usein juuri niiden tuntumassa.' },
+    { test: /lahti/, hint: 'Nimen "-lahti" tarkoittaa suojaista poukamaa. Kaislikko- ja kasvillisuusreunat lämpenevät keväällä nopeasti ja houkuttelevat sekä haukea että ahventa.' },
+    { test: /salmi/, hint: 'Nimen "-salmi" tarkoittaa kahden altaan välistä kapeikkoa, jossa vesi virtaa. Klassinen väijyntäpaikka sekä hauelle että kuhalle.' },
+    { test: /koski/, hint: 'Nimen "koski" tarkoittaa virtaavaa koskiosuutta. Niska ja hännän suvanto ovat tyypillisesti parhaita ahvenelle ja hauelle.' },
+    { test: /vesi$|järvi$/, hint: 'Järviallas - saarten ja niemenkärkien liepeet sekä kivikkoiset rannat ovat tyypillisesti hyviä kuhan ja ahvenen kokoontumispaikkoja, kaislikkoiset lahdenpohjukat taas haukea suosivia väijyntäpaikkoja.' }
+  ];
+  const seen = new Set();
+  const hints = [];
+  for (const token of tokens) {
+    for (const rule of rules) {
+      if (rule.test.test(token) && !seen.has(rule.hint)) {
+        seen.add(rule.hint);
+        hints.push(rule.hint);
+      }
+    }
+  }
+  return hints;
+}
+function renderStructureHints(name){
+  const hints = classifyStructureHints(name);
+  if (!hints.length) return '';
+  const heading = currentLang === 'fi' ? '🔍 Havaintoja vesistön rakenteesta' : '🔍 Structural observations';
+  const items = hints.map(h => `<li>${h}</li>`).join('');
+  return `<div class="spot-structure"><strong>${heading}</strong><ul>${items}</ul></div>`;
 }
 
 function renderNearbyError(msg){
@@ -3585,11 +3832,15 @@ function renderSeaChart(){
     scrollWheelZoom:false, zoomControl:false, dragging:false,
     touchZoom:false, doubleClickZoom:false, boxZoom:false, keyboard:false
   }).setView([63.0,26.0],5);
-  // Merikarttamainen ulkoasu (sininen vesi, vaimennettu maa) CSS-suotimella tavallisten
-  // OSM-laattojen päällä - ei uutta ulkoista karttapalvelua/lisenssiä.
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  // Merikarttamainen ulkoasu (sininen vesi, vaimennettu maa) CSS-suotimella CARTOn
+  // "nolabels"-laattojen päällä. Tavalliset OSM-laatat piirtävät paikannimet, POI-ikonit ja
+  // tienumerokilvet suoraan rasterikuvaan tekstinä - niitä EI voi poistaa CSS-suotimella
+  // (filter säätää vain värejä, ei voi valikoivasti piilottaa jo piirrettyä tekstiä). CARTOn
+  // "nolabels"-tyyli sen sijaan on renderöity ilman niitä alusta asti: tiet ja rantaviiva
+  // näkyvät edelleen linjoina, mutta ilman nimiä, tienumeroita tai POI-tekstiä.
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',{
     maxZoom:18,
-    attribution:'&copy; OpenStreetMap-tekijät',
+    attribution:'&copy; OpenStreetMap-tekijät, &copy; CARTO',
     className:'sea-chart-basemap'
   }).addTo(seaChartMap);
 
@@ -3772,11 +4023,17 @@ async function fetchVaylapilviCollection(collectionId, bbox, limit){
 function styleFairwayArea(){
   return { color:'#2f6f73', weight:1, fillColor:'#2f6f73', fillOpacity:.05 };
 }
+// Väylän keskilinja (vaylat_uusi) on eri kokoelma kuin väyläalue (vaylaalueet_uusi) -
+// tämä on itse merkitty kulkulinja, ei koko väylän leveä alue. Piirretään selkeänä mustana
+// viivana samaan tapaan kuin painetuissa merikartoissa, jotta se erottuu heti karttapohjasta.
+function styleFairwayLine(){
+  return { color:'#111', weight:3, opacity:.85, lineCap:'round' };
+}
 function styleSpeedZone(){
   return { color:'#a94635', weight:1, fillColor:'#a94635', fillOpacity:.12 };
 }
 function safetyEquipmentIcon(){
-  return L.divIcon({ className:'', html:'<div class="sea-mark-dot"></div>', iconSize:[10,10], iconAnchor:[5,5] });
+  return L.divIcon({ className:'', html:'<div class="sea-mark-dot"></div>', iconSize:[14,14], iconAnchor:[7,7] });
 }
 function hazardMarkIcon(){
   return L.divIcon({ className:'', html:'<div class="sea-hazard-mark"></div>', iconSize:[16,16], iconAnchor:[8,8] });
@@ -3809,15 +4066,22 @@ async function updateOfficialLayers(){
   const token = ++officialLayersFetchToken;
 
   try {
-    const [areas, equipment, speedZones] = await Promise.all([
+    const [areas, fairwayLines, equipment, speedZones] = await Promise.all([
       fetchVaylapilviCollection('vesivaylatiedot:vaylaalueet_uusi', bbox, 300).catch(()=>null),
-      fetchVaylapilviCollection('vesivaylatiedot:turvalaitteet_uusi', bbox, 500).catch(()=>null),
+      fetchVaylapilviCollection('vesivaylatiedot:vaylat_uusi', bbox, 300).catch(()=>null),
+      // 500 -> 1000: käyttäjäpalaute oli, että turvalaitteita puuttui kartalta tiheillä
+      // saaristoalueilla - rajapinta itse rajoittaa vastauksen kokoa tarvittaessa, joten
+      // suurempi pyyntö ei riskeeraa mitään, se vain sallii useamman merkin näkyä kerralla.
+      fetchVaylapilviCollection('vesivaylatiedot:turvalaitteet_uusi', bbox, 1000).catch(()=>null),
       fetchVaylapilviCollection('vesivaylatiedot:vesivaylien_nopeusrajoitusalueet', bbox, 100).catch(()=>null)
     ]);
     if (token !== officialLayersFetchToken || !officialLayersWanted) return; // vanhentunut haku (kartta liikkui jo) tai kerros piilotettu haun aikana
 
     if (areas) {
       L.geoJSON(areas, { style: styleFairwayArea }).addTo(officialLayerGroup);
+    }
+    if (fairwayLines) {
+      L.geoJSON(fairwayLines, { style: styleFairwayLine }).addTo(officialLayerGroup);
     }
     if (speedZones) {
       L.geoJSON(speedZones, {
@@ -4398,6 +4662,8 @@ function renderNearbySpots(spots, userLat, userLon){
         </div>
         <p>${lbl.text} ${biteLabel}${s.isPrimeTime?" · "+primeLabel:""}.</p>
         ${renderWaterInfo(s.name)}
+        ${renderStructureHints(s.name)}
+        ${renderCitySpots(s.name)}
         <button class="btn primary" data-spot="${i}">${useBtn}</button>
       </article>`;
     }).join("");
@@ -4957,54 +5223,41 @@ async function toggleLike(postId, btn){
   }
 }
 
-function renderFeedComment(c, postId){
+async function deleteComment(postId, commentId, item, countEl){
+  if (!confirm('Poistetaanko tämä kommentti?')) return;
+  try {
+    await feedApi('/api/posts/' + postId + '/comments/' + commentId + '/delete', { method: 'POST' });
+    item.remove();
+    if (countEl) countEl.textContent = String(Math.max(0, (parseInt(countEl.textContent, 10) || 1) - 1));
+  } catch(e) {
+    alert(e.message || 'Poisto epäonnistui.');
+  }
+}
+
+function renderFeedComment(c, postId, countEl){
   const item = document.createElement('div');
   item.className = 'feed-comment-item';
   const head = document.createElement('span');
   head.innerHTML = '<span class="feed-comment-user"></span><span class="feed-comment-time"></span>';
   head.querySelector('.feed-comment-user').textContent = c.username;
   head.querySelector('.feed-comment-time').textContent = formatFeedTime(c.createdAt);
+  item.appendChild(head);
+  const body = document.createElement('p');
+  body.textContent = c.body;
+  item.appendChild(body);
   if (c.canDelete) {
     const delBtn = document.createElement('button');
     delBtn.type = 'button';
     delBtn.className = 'feed-comment-delete-btn';
     delBtn.setAttribute('aria-label', 'Poista kommentti');
-    delBtn.textContent = 'Poista';
-    delBtn.addEventListener('click', () => deleteComment(postId, c.id, item));
-    head.appendChild(delBtn);
+    delBtn.innerHTML = feedTrashIcon();
+    delBtn.addEventListener('click', () => deleteComment(postId, c.id, item, countEl));
+    item.appendChild(delBtn);
   }
-  item.appendChild(head);
-  const body = document.createElement('p');
-  body.textContent = c.body;
-  item.appendChild(body);
   return item;
 }
 
-async function deleteComment(postId, commentId, item){
-  if (!confirm('Poistetaanko tämä kommentti?')) return;
-  try {
-    await feedApi('/api/posts/' + postId + '/comments/' + commentId, {
-      method: 'DELETE'
-    });
-    const listEl = item.parentElement;
-    item.remove();
-    const wrap = listEl && listEl.closest('.feed-comments');
-    if (wrap) {
-      const countEl = wrap.parentElement && wrap.parentElement.querySelector('.feed-comment-count');
-      if (countEl) countEl.textContent = String(Math.max(0, (parseInt(countEl.textContent, 10) || 1) - 1));
-      if (!listEl.querySelector('.feed-comment-item')) {
-        const p = document.createElement('p');
-        p.className = 'feed-comment-status';
-        p.textContent = 'Ei vielä kommentteja.';
-        listEl.appendChild(p);
-      }
-    }
-  } catch(e) {
-    alert(e.message || 'Poisto epäonnistui.');
-  }
-}
-
-async function loadComments(postId, wrap){
+async function loadComments(postId, wrap, countEl){
   const listEl = wrap.querySelector('.feed-comment-list');
   listEl.textContent = 'Ladataan kommentteja...';
   try {
@@ -5016,7 +5269,7 @@ async function loadComments(postId, wrap){
       p.textContent = 'Ei vielä kommentteja.';
       listEl.appendChild(p);
     } else {
-      data.comments.forEach(c => listEl.appendChild(renderFeedComment(c, postId)));
+      data.comments.forEach(c => listEl.appendChild(renderFeedComment(c, postId, countEl)));
     }
   } catch(e) {
     listEl.textContent = 'Kommenttien lataus epäonnistui.';
@@ -5028,7 +5281,7 @@ function toggleCommentsPanel(postId, wrap, countEl){
   wrap.hidden = !wasHidden;
   if (wasHidden && !wrap.dataset.loaded) {
     wrap.dataset.loaded = '1';
-    loadComments(postId, wrap);
+    loadComments(postId, wrap, countEl);
   }
 }
 
@@ -5048,7 +5301,7 @@ async function submitComment(postId, wrap, countEl){
     const listEl = wrap.querySelector('.feed-comment-list');
     const emptyMsg = listEl.querySelector('.feed-comment-status');
     if (emptyMsg) emptyMsg.remove();
-    listEl.appendChild(renderFeedComment(comment, postId));
+    listEl.appendChild(renderFeedComment(comment, postId, countEl));
     input.value = '';
     if (statusEl) statusEl.textContent = '';
     if (countEl) countEl.textContent = String((parseInt(countEl.textContent, 10) || 0) + 1);
@@ -5062,8 +5315,8 @@ async function submitComment(postId, wrap, countEl){
 async function deletePost(postId, card){
   if (!confirm('Poistetaanko tämä saaliskuva pysyvästi?')) return;
   try {
-    await feedApi('/api/posts/' + postId, {
-      method: 'DELETE'
+    await feedApi('/api/posts/' + postId + '/delete', {
+      method: 'POST'
     });
     card.remove();
   } catch(e) {
@@ -5130,7 +5383,7 @@ function renderPostCard(post){
   const commentCountEl = commentBtn.querySelector('.feed-comment-count');
 
   likeBtn.addEventListener('click', () => toggleLike(post.id, likeBtn));
-  commentBtn.addEventListener('click', () => toggleCommentsPanel(post.id, commentsWrap));
+  commentBtn.addEventListener('click', () => toggleCommentsPanel(post.id, commentsWrap, commentCountEl));
   commentsWrap.querySelector('.feed-comment-submit').addEventListener('click', () => submitComment(post.id, commentsWrap, commentCountEl));
   commentsWrap.querySelector('.feed-comment-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); submitComment(post.id, commentsWrap, commentCountEl); }

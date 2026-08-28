@@ -24,3 +24,8 @@ services:
       # 1 = sivusto ja API ovat eri osoitteissa (GitHub Pages + erillinen palvelin).
       - key: CROSS_SITE_COOKIES
         value: "1"
+      # Pilkulla erotetut käyttäjänimet, joilla on oikeus poistaa KENEN TAHANSA saalisjulkaisu
+      # ja -kommentti. sync: false = ei tallenneta arvoa tähän tiedostoon (julkinen repo) - aseta
+      # oma käyttäjänimesi Renderin Environment-välilehdellä blueprintin luonnin jälkeen.
+      - key: ADMIN_USERNAMES
+        sync: false

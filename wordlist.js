@@ -10,7 +10,10 @@ export const BLOCKED_TERMS = [
   // englanti - seksuaalinen/eksplisiittinen
   'porn', 'pornhub', 'xvideos', 'xxx', 'anal sex', 'blowjob', 'cumshot', 'rape',
   // suomi - vihamieliset/rasistiset
-  'neekeri', 'natsi', 'hitler', 'ryssä', 'homolutka', 'homottelu',
+  'neekeri', 'nekru', 'natsi', 'hitler', 'ryssä', 'homolutka', 'homottelu',
+  // yhdyshalventelut: kohdistettu loukkaus, ei sama asia kuin neutraali itseidentifiointi
+  // (esim. "olen homo" ei osu tähän, koska sana on tässä yhdistettynä halventavaan liitteeseen)
+  'homo pelle', 'homovittu', 'homopaska',
   // suomi - seksuaalinen/eksplisiittinen
   'panopelle', 'raiskaus', 'lapsiporno', 'pedofiili',
   // yleiset uhkaus-/väkivaltatermit

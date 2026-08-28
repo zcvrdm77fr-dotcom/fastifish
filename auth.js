@@ -63,12 +63,9 @@ function readSessionToken(req){
 // "kalastaja123,toinenkinylläpitäjä" - ei tietokantasarakkeeksi asti, koska omistajia on
 // käytännössä yksi tai muutama ja tämä on paljon yksinkertaisempi ylläpitää kuin oma
 // käyttöliittymä roolien hallintaan.
-//
-// "fasaani123", "Fastincokonailija" ja "Fasanaattori123" ovat sivuston ylläpitäjiä ja aina
-// admineja, riippumatta siitä onko ADMIN_USERNAMES-ympäristömuuttuja asetettu palvelimella vai
-// ei. Muut adminit lisätään ympäristömuuttujalla, ja molemmat listat yhdistyvät.
 const ADMIN_USERNAMES = new Set(
-  ['fasaani123', 'Fastincokonailija', 'Fasanaattori123', ...((process.env.ADMIN_USERNAMES || '').split(','))]
+  (process.env.ADMIN_USERNAMES || '')
+    .split(',')
     .map(u => u.trim().toLowerCase())
     .filter(Boolean)
 );

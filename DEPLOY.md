@@ -47,9 +47,24 @@ ympäristömuuttujat kuin alla.
 | `CROSS_SITE_COOKIES` | `1` | Aseta kun sivusto ja API ovat eri osoitteissa. |
 | `NODE_ENV` | `production` | |
 | `PORT` | (alusta asettaa) | Älä aseta itse pilvipalvelussa. |
+| `ADMIN_USERNAMES` | esim. `oma-kayttajanimi` | Valinnainen. Pilkulla erotetut käyttäjänimet, joilla on oikeus poistaa KENEN TAHANSA saalisjulkaisu ja -kommentti (ei vain omiaan). Ilman tätä kukaan ei voi siivota muiden julkaisemaa asiatonta sisältöä paitsi julkaisijat itse. |
 
 Tarkista lopuksi selaimella, että `https://<palvelimesi-osoite>/api/health` vastaa
 `{"ok":true,"feed":true}`.
+
+### Ylläpitäjän oikeudet (ADMIN_USERNAMES)
+
+`ADMIN_USERNAMES` ei ole tietokantaan tallennettu rooli, vaan pelkkä ympäristömuuttuja, joka
+luetaan palvelimen käynnistyessä. Näin otat sen käyttöön Renderissä (muilla alustoilla vastaava
+"Environment"-välilehti):
+
+1. Luo itsellesi tavallinen käyttäjätili saalisfeediin (jos ei jo ole).
+2. Render → palvelusi → **Environment** → **Add Environment Variable**.
+3. Key: `ADMIN_USERNAMES`, Value: käyttäjänimesi (esim. `jake82`). Useampi ylläpitäjä pilkulla
+   erotettuna: `jake82,toinennimi`.
+4. Tallenna — Render käynnistää palvelun uudelleen automaattisesti.
+5. Kirjaudu sisään samalla käyttäjänimellä. Näet nyt "Poista"-napin kaikkien käyttäjien
+   julkaisuissa ja kommenteissa, et vain omissasi.
 
 ---
 

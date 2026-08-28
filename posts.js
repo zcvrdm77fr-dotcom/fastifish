@@ -207,14 +207,18 @@ router.post('/:id/comments', requireAuth, async (req, res) => {
   });
 });
 
-// Kommentin saa poistaa sen kirjoittaja tai sivuston ylläpitäjä (ADMIN_USERNAMES) - sama
-// periaate kuin julkaisujen poistossa.
-router.delete('/:id/comments/:commentId', requireAuth, (req, res) => {
+// Yksittäisen kommentin poisto - kommentin kirjoittaja tai ylläpitäjä. Tätä ei ollut ennen: ainoa
+// tapa poistaa yksi asiaton kommentti oli poistaa koko julkaisu, mikä ei ole käyttökelpoista jos
+// kuva itsessään on asiallinen mutta joku kommentoi sen alle vihapuhetta.
+// POST .../delete eikä HTTP DELETE -verbiä, samasta syystä kuin julkaisunkin poistoreitti: kun
+// sivusto ja API ovat eri osoitteissa, selain esilähettää DELETE-pyynnön OPTIONS-tarkistuksella,
+// eikä CORS-välikerros (server.js) salli DELETE-verbiä Access-Control-Allow-Methods-otsakkeessa.
+router.post('/:id/comments/:commentId/delete', requireAuth, (req, res) => {
   const post = findPostOr404(req, res);
   if (!post) return;
   const commentId = parseInt(req.params.commentId, 10);
   const comment = Number.isInteger(commentId)
-    ? db.prepare('SELECT * FROM comments WHERE id = ? AND post_id = ?').get(commentId, post.id)
+    ? db.prepare('SELECT id, user_id FROM comments WHERE id = ? AND post_id = ?').get(commentId, post.id)
     : null;
   if (!comment) {
     return res.status(404).json({ error: 'Kommenttia ei löytynyt.' });
@@ -244,6 +248,58 @@ router.delete('/:id', requireAuth, async (req, res) => {
     // Tiedosto oli jo poistettu tms. - tietokantarivi on silti poistettu, ei kaadeta pyyntöä.
   }
   res.json({ ok: true });
+});
+
+// Uusi, CORS-yhteensopiva reitti julkaisun poistoon (POST .../delete eikä HTTP DELETE -verbiä -
+// sama syy kuin kommentin poistossa yllä). Sallittu julkaisun omistajalle TAI ylläpitäjälle
+// (ADMIN_USERNAMES) - sama periaate kuin vanhassa DELETE /:id -reitissä yllä, joka jätetään
+// paikalleen taaksepäinyhteensopivuuden vuoksi mutta jota frontti ei enää kutsu.
+router.post('/:id/delete', requireAuth, async (req, res) => {
+  const postId = Number(req.params.id);
+
+  if (!Number.isInteger(postId) || postId < 1) {
+    return res.status(400).json({ error: 'Virheellinen postaus.' });
+  }
+
+  const post = db.prepare(`
+    SELECT id, user_id, image_path
+    FROM posts
+    WHERE id = ?
+  `).get(postId);
+
+  if (!post) {
+    return res.status(404).json({ error: 'Postausta ei löytynyt.' });
+  }
+
+  if (post.user_id !== req.user.id && !req.user.isAdmin) {
+    return res.status(403).json({
+      error: 'Voit poistaa vain omat julkaisusi.'
+    });
+  }
+
+  // Poista tietokannasta.
+  // likes/comments poistuvat automaattisesti foreign key -sääntöjen ansiosta.
+  db.prepare(`
+    DELETE FROM posts
+    WHERE id = ?
+  `).run(postId);
+
+  // Poista kuvatiedosto.
+  try {
+    await fs.promises.unlink(
+      path.join(UPLOADS_DIR, post.image_path)
+    );
+  } catch (err) {
+    // Tiedoston puuttuminen ei estä tietokantapoistoa.
+    if (err.code !== 'ENOENT') {
+      console.error('Kuvan poistaminen epäonnistui:', err);
+    }
+  }
+
+  res.json({
+    ok: true,
+    id: postId
+  });
 });
 
 export default router;
