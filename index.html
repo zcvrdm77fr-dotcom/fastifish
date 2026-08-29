@@ -672,6 +672,9 @@ html[data-theme="dark"] .sea-chart-toolbar { background: rgba(20, 37, 34, .96); 
 .sea-layer-summary::after { content: '▾'; font-size: .7em; opacity: .7; }
 details[open] > .sea-layer-summary::after { content: '▴'; }
 .sea-layer-options { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.sea-layer-suboptions { display: flex; flex-direction: column; gap: 6px; margin: 2px 0 0 10px; padding-left: 10px; border-left: 2px solid var(--line); }
+.sea-chart-toggle.sub { font-weight: 400; font-size: .74rem; }
+.sea-layer-subheading { margin-top: 4px; font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); }
 .potential-results-panel {
   position: absolute;
   top: 52px;
@@ -1877,7 +1880,7 @@ body.device-phone .columns {
           </label>
           <button class="btn" id="seaChartLocateBtn" type="button">📍 Paikanna</button>
           <details class="sea-layer-details">
-            <summary class="sea-layer-summary">🗺️ Kerrokset</summary>
+            <summary class="sea-layer-summary">⚙️ Asetukset</summary>
             <div class="sea-layer-options">
               <label class="sea-chart-toggle sea-chart-toggle-compact">
                 <input type="checkbox" id="seamarkToggle">
@@ -1887,6 +1890,43 @@ body.device-phone .columns {
                 <input type="checkbox" id="officialLayerToggle" checked>
                 Väylät ja karikot
               </label>
+              <div class="sea-layer-suboptions">
+                <label class="sea-chart-toggle sea-chart-toggle-compact sub">
+                  <input type="checkbox" id="layerFairwayLines" checked>
+                  Väylälinjat (musta viiva)
+                </label>
+                <label class="sea-chart-toggle sea-chart-toggle-compact sub">
+                  <input type="checkbox" id="layerFairwayAreaOutline" checked>
+                  Väyläalueen raja
+                </label>
+                <label class="sea-chart-toggle sea-chart-toggle-compact sub">
+                  <input type="checkbox" id="layerSpeedZones" checked>
+                  Nopeusrajoitukset
+                </label>
+                <label class="sea-chart-toggle sea-chart-toggle-compact sub">
+                  <input type="checkbox" id="layerEquipment" checked>
+                  Turvalaitteet ja vaaramerkit
+                </label>
+              </div>
+              <span class="sea-layer-subheading">Näytä mittarit</span>
+              <div class="sea-layer-suboptions">
+                <label class="sea-chart-toggle sea-chart-toggle-compact sub">
+                  <input type="checkbox" id="hudShowSpeed" checked>
+                  Nopeus
+                </label>
+                <label class="sea-chart-toggle sea-chart-toggle-compact sub">
+                  <input type="checkbox" id="hudShowWind" checked>
+                  Tuuli
+                </label>
+                <label class="sea-chart-toggle sea-chart-toggle-compact sub">
+                  <input type="checkbox" id="hudShowTemp" checked>
+                  Lämpötila
+                </label>
+                <label class="sea-chart-toggle sea-chart-toggle-compact sub">
+                  <input type="checkbox" id="hudShowWave" checked>
+                  Aallokko
+                </label>
+              </div>
             </div>
           </details>
         </div>
@@ -1944,10 +1984,10 @@ body.device-phone .columns {
       <div class="sea-chart-bottom-left" id="seaChartBottomLeft">
         <button type="button" class="sea-panel-close sea-hud-close" id="seaHudCloseBtn" aria-label="Piilota mittarit" title="Piilota mittarit">✕</button>
         <div class="sea-chart-hud" id="seaChartHud">
-          <div class="condition-chip"><span class="cc-label">Nopeus</span><span id="seaSpeedValue">–</span></div>
-          <div class="condition-chip"><span class="cc-label">Tuuli</span><span id="seaWindValue">–</span></div>
-          <div class="condition-chip"><span class="cc-label">Lämpötila</span><span id="seaTempValue">–</span></div>
-          <div class="condition-chip"><span class="cc-label">Aallokko</span><span id="seaWaveValue">–</span></div>
+          <div class="condition-chip" data-hud="speed"><span class="cc-label">Nopeus</span><span id="seaSpeedValue">–</span></div>
+          <div class="condition-chip" data-hud="wind"><span class="cc-label">Tuuli</span><span id="seaWindValue">–</span></div>
+          <div class="condition-chip" data-hud="temp"><span class="cc-label">Lämpötila</span><span id="seaTempValue">–</span></div>
+          <div class="condition-chip" data-hud="wave"><span class="cc-label">Aallokko</span><span id="seaWaveValue">–</span></div>
         </div>
         <p class="sea-chart-zoom-hint" id="seaChartZoomHint" hidden>Zoomaa lähemmäs nähdäksesi viralliset väylätiedot.</p>
       </div>
@@ -4219,6 +4259,10 @@ const VAYLAPILVI_BASE = 'https://avoinapi.vaylapilvi.fi/vaylatiedot/ogc/features
 const SEA_CHART_MIN_ZOOM = 10; // Turvalaitteita on n. 35 000 koko maassa - ei koskaan haeta ilman bbox-rajausta.
 
 let officialLayerGroup=null, officialLayersWanted=true, officialLayersFetchToken=0;
+// Aiemmin yksi "Väylät ja karikot" -kytkin näytti kaiken samalla kertaa - käyttäjä halusi
+// päättää erikseen mitkä tasoista näkyvät. Haku tapahtuu silti yhtenä pyyntönä (yksinkertaisempi
+// ja verkon kannalta sama kuorma kuin ennenkin), mutta piirto suodattuu näiden mukaan.
+let officialSubLayers={ lines:true, areaOutline:true, speedZones:true, equipment:true };
 
 async function fetchVaylapilviCollection(collectionId, bbox, limit){
   const url = `${VAYLAPILVI_BASE}${encodeURIComponent(collectionId)}/items?f=json&bbox=${bbox.join(',')}&limit=${limit}`;
@@ -4227,21 +4271,20 @@ async function fetchVaylapilviCollection(collectionId, bbox, limit){
   return res.json();
 }
 
-// Aiemmin lähes näkymätön (.05 täyttö) - väyläalue on nyt selvästi väritetty "turvallisen
-// veden" kaista, samaan tapaan kuin oikeat merikarttaplotterit korostavat merkittyä väylää
-// muusta vedestä (ks. käyttäjän toive "plotterimaisemmasta" kartasta).
+// Käyttäjäpalaute: ei tummennuksia väyläalueelle, vain nopeusrajoitusalueille. Ei täyttöväriä -
+// ohut raja kertoo silti väyläalueen leveyden ilman että se peittää muuta karttaa.
 function styleFairwayArea(){
-  return { color:'#2f7fa8', weight:1, opacity:.55, fillColor:'#7fc2dc', fillOpacity:.28 };
+  return { fill:false, color:'#2f7fa8', weight:1, opacity:.4 };
 }
 // Väylän keskilinja (vaylat_uusi) on eri kokoelma kuin väyläalue (vaylaalueet_uusi) -
-// tämä on itse merkitty kulkulinja, ei koko väylän leveä alue. Piirretään katkoviivaisena
-// magentana, kuten viralliset merikartat merkitsevät suositellun kulkulinjan (recommended
-// track) - tunnistettavampi ja "plotterimaisempi" kuin tavallinen musta viiva.
+// tämä on itse merkitty kulkulinja, ei koko väylän leveä alue. Selkeä musta viiva, kuten
+// käyttäjä pyysi - ei tummennuksia tälle tasolle.
 function styleFairwayLine(){
-  return { color:'#c0208a', weight:2.5, opacity:.85, dashArray:'8,6', lineCap:'round' };
+  return { color:'#111', weight:2.5, opacity:.85, lineCap:'round' };
 }
+// Ainoa taso jota käyttäjän toiveesta tummennetaan/väritetään - nopeusrajoitusalue.
 function styleSpeedZone(){
-  return { color:'#a94635', weight:1, fillColor:'#a94635', fillOpacity:.12 };
+  return { color:'#a94635', weight:1, fillColor:'#a94635', fillOpacity:.18 };
 }
 function safetyEquipmentIcon(){
   return L.divIcon({ className:'', html:'<div class="sea-mark-dot"></div>', iconSize:[14,14], iconAnchor:[7,7] });
@@ -4250,11 +4293,10 @@ function hazardMarkIcon(){
   return L.divIcon({ className:'', html:'<div class="sea-hazard-mark"></div>', iconSize:[16,16], iconAnchor:[8,8] });
 }
 // Väylävirasto-datan navigointilajikoodi 3-6 = kardinaalimerkit (pohjois/etelä/länsi/itä),
-// jotka osoittavat kummalta puolelta vaarallinen kohde (kivi, kari, matalikko) ohitetaan
-// turvallisesti, ja koodi 7 = erillisvaara-/reunamerkki joka on pystytetty suoraan vaaran
-// päälle tai välittömään läheisyyteen. Nämä ovat siis nimenomaan karikko-/kivimerkintöjä,
-// eivät tavallisia väylän suuntamerkkejä (koodit 1-2, 99) - siksi erotellaan omaksi,
-// selvästi varoittavaksi tasoksi käyttäjän pyytämän "merkkaa kaikki kivet, karikot" mukaisesti.
+// jotka osoittavat kummalta puolelta jokin vaarallinen kohde ohitetaan turvallisesti, ja koodi
+// 7 = erillisvaara-/reunamerkki. HUOM (käyttäjäpalaute): rajapinnan attribuutit eivät kerro
+// TARKKAA syytä - kohde voi olla kivi, kari, matalikko, hylky tai muu este. Ei siis väitetä
+// tekstissä että kyseessä olisi aina nimenomaan kivi, vain että alueella on jokin este.
 const HAZARD_NAV_CODES = new Set([3,4,5,6,7]);
 function isHazardMark(props){
   return HAZARD_NAV_CODES.has(props && props.navigointilajikoodi);
@@ -4317,17 +4359,19 @@ async function updateOfficialLayers(){
       // saaristoalueilla - rajapinta itse rajoittaa vastauksen kokoa tarvittaessa, joten
       // suurempi pyyntö ei riskeeraa mitään, se vain sallii useamman merkin näkyä kerralla.
       fetchVaylapilviCollection('vesivaylatiedot:turvalaitteet_uusi', bbox, 1000).catch(()=>null),
-      fetchVaylapilviCollection('vesivaylatiedot:vesivaylien_nopeusrajoitusalueet', bbox, 100).catch(()=>null)
+      // 100 -> 300: käyttäjäpalaute oli, ettei kaikkia nopeusrajoituksia näkynyt tiheillä
+      // alueilla - sama korjaus kuin turvalaitteille aiemmin.
+      fetchVaylapilviCollection('vesivaylatiedot:vesivaylien_nopeusrajoitusalueet', bbox, 300).catch(()=>null)
     ]);
     if (token !== officialLayersFetchToken || !officialLayersWanted) return; // vanhentunut haku (kartta liikkui jo) tai kerros piilotettu haun aikana
 
-    if (areas) {
+    if (areas && officialSubLayers.areaOutline) {
       L.geoJSON(areas, { style: styleFairwayArea }).addTo(officialLayerGroup);
     }
-    if (fairwayLines) {
+    if (fairwayLines && officialSubLayers.lines) {
       L.geoJSON(fairwayLines, { style: styleFairwayLine }).addTo(officialLayerGroup);
     }
-    if (speedZones) {
+    if (speedZones && officialSubLayers.speedZones) {
       L.geoJSON(speedZones, {
         style: styleSpeedZone,
         onEachFeature: (feature, layer) => {
@@ -4339,7 +4383,7 @@ async function updateOfficialLayers(){
         }
       }).addTo(officialLayerGroup);
     }
-    if (equipment) {
+    if (equipment && officialSubLayers.equipment) {
       const thinnedEquipment = { ...equipment, features: thinEquipmentFeatures(equipment.features || []) };
       L.geoJSON(thinnedEquipment, {
         pointToLayer: (feature, latlng) => {
@@ -4351,7 +4395,7 @@ async function updateOfficialLayers(){
           const name = p.nimifi || p.turvalaitetyyppifi || 'Turvalaite';
           const hazard = isHazardMark(p);
           const hazardNote = hazard
-            ? `<p style="color:#a92f1f;font-weight:700;">⚠️ Merkitsee vaarallista kohdetta (kivi, kari tai matalikko) - pidä etäisyyttä. Ei koskaan navigointiohje, tarkista virallisesta merikartasta.</p>`
+            ? `<p style="color:#a92f1f;font-weight:700;">⚠️ Virallinen vaaramerkki - alueella on jokin vaarallinen kohde (esim. kivi, kari, matalikko tai hylky - tarkka syy vaihtelee eikä ole aina tiedossa). Pidä etäisyyttä. Ei koskaan navigointiohje, tarkista virallisesta merikartasta.</p>`
             : '';
           const mergedNote = feature._mergedCount > 1
             ? `<p class="potential-area">Tässä kohtaa on ${feature._mergedCount} lähekkäistä turvalaitetta. Zoomaa lähemmäs nähdäksesi ne erikseen.</p>`
@@ -5421,6 +5465,15 @@ function onSeaChartMapClick(latlng){
   if (toggle) toggle.addEventListener("change",()=>toggleSeaChartSeamarks(toggle.checked));
   const officialToggle=document.getElementById("officialLayerToggle");
   if (officialToggle) officialToggle.addEventListener("change",()=>toggleOfficialLayers(officialToggle.checked));
+  [["layerFairwayLines","lines"],["layerFairwayAreaOutline","areaOutline"],["layerSpeedZones","speedZones"],["layerEquipment","equipment"]].forEach(([id,key])=>{
+    const el=document.getElementById(id);
+    if (el) el.addEventListener("change",()=>{ officialSubLayers[key]=el.checked; updateOfficialLayers(); });
+  });
+  [["hudShowSpeed","speed"],["hudShowWind","wind"],["hudShowTemp","temp"],["hudShowWave","wave"]].forEach(([id,key])=>{
+    const el=document.getElementById(id);
+    const chip=document.querySelector(`.condition-chip[data-hud="${key}"]`);
+    if (el && chip) el.addEventListener("change",()=>{ chip.classList.toggle("sea-panel-hidden", !el.checked); });
+  });
   const potentialToggle=document.getElementById("potentialSpotsToggle");
   if (potentialToggle) potentialToggle.addEventListener("change",()=>togglePotentialSpots(potentialToggle.checked));
   const potentialSpecies=document.getElementById("potentialSpotSpecies");

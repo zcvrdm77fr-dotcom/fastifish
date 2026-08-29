@@ -81,16 +81,6 @@
       warningFi: 'Ranta voi olla yksityinen ja ympärillä voi olla näkymättömiä kiviä. Pidä veneellä turvaetäisyys.',
       warningEn: 'The shore may be private and hidden rocks may surround the islet. Keep a safe boating distance.'
     },
-    hazard: {
-      score: 90,
-      species: ['ahven', 'kuha', 'siika', 'taimen'],
-      kindFi: 'Kari / matalikko turvalaitteen lähellä', kindEn: 'Shoal / hazard near a navigation mark',
-      nameFi: 'Kari- tai matalikkorakenne', nameEn: 'Rock or shoal structure',
-      reasonFi: 'Viranomaisen kardinaali- tai vaaramerkki kertoo vaarallisesta vedenalaisesta rakenteesta lähistöllä. Kalastuksen kannalta se on vahva signaali kivestä, karista tai matalikosta.',
-      reasonEn: 'An official cardinal or danger mark signals hazardous underwater structure nearby, which is a strong fishing signal for rock or shoal habitat.',
-      warningFi: 'Turvalaite ei välttämättä ole täsmälleen vaaran päällä. Älä käytä ehdotusta navigointiin ja vältä väyläliikennettä.',
-      warningEn: 'The navigation mark may be offset from the actual hazard. Do not use this suggestion for navigation and keep clear of traffic.'
-    },
     fairway_edge: {
       score: 82,
       species: ['kuha', 'ahven', 'hauki'],
@@ -275,29 +265,16 @@
   async function fetchOfficialStructures(b, mapCenter) {
     if (typeof fetchVaylapilviCollection !== 'function') return [];
     const bbox = [b.west, b.south, b.east, b.north];
-    const [equipmentResult, areasResult] = await Promise.allSettled([
-      fetchVaylapilviCollection('vesivaylatiedot:turvalaitteet_uusi', bbox, 1000),
-      fetchVaylapilviCollection('vesivaylatiedot:vaylaalueet_uusi', bbox, 260)
-    ]);
+    // Aiemmin myös turvalaitteiden kardinaali-/vaaramerkit (navigointilajikoodi 3-7) tuottivat
+    // oman "kari/matalikko"-kalaspotin. Käyttäjäpalaute: näin ei aina ole - merkki kertoo VAIN
+    // että jokin vaarallinen kohde on lähistöllä, ei mitä se on tai onko se edes kalastuksen
+    // kannalta merkityksellinen (voi olla hylky, syvyysrajoitus tms). Väärän tarkka väite
+    // poistettu - jäljelle jää vain aidosti todennettava väyläalueen reunasignaali.
+    const areasResult = await fetchVaylapilviCollection('vesivaylatiedot:vaylaalueet_uusi', bbox, 260).catch(() => null);
     const out = [];
 
-    if (equipmentResult.status === 'fulfilled') {
-      for (const feature of equipmentResult.value.features || []) {
-        const p = feature.properties || {};
-        const hazard = typeof isHazardMark === 'function' ? isHazardMark(p) : [3, 4, 5, 6, 7].includes(p.navigointilajikoodi);
-        const c = feature.geometry && feature.geometry.coordinates;
-        if (!hazard || !Array.isArray(c) || !Number.isFinite(c[0]) || !Number.isFinite(c[1])) continue;
-        out.push({
-          type: 'node', id: `traficom-hazard-${p.turvalaitenro || p.id || out.length}`,
-          lat: c[1], lon: c[0],
-          tags: { name: p.nimifi || p.turvalaitetyyppifi || '' },
-          _fastStructure: true, _structureType: 'hazard', _sourceUrl: TRAFICOM_SOURCE
-        });
-      }
-    }
-
-    if (areasResult.status === 'fulfilled') {
-      for (const feature of areasResult.value.features || []) {
+    if (areasResult) {
+      for (const feature of areasResult.features || []) {
         const point = nearestGeoJsonBoundaryPoint(feature, mapCenter);
         if (!point) continue;
         const p = feature.properties || {};
