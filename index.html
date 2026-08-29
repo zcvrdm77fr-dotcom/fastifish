@@ -562,11 +562,8 @@ main { padding-bottom: 70px; }
 }
 .sea-chart-activate-overlay[hidden] { display: none; }
 .sea-chart-activate-btn { min-height: 52px; padding: 0 22px; font-size: 1rem; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.sea-chart-top-actions { position: absolute; top: 12px; right: 12px; z-index: 1000; display: flex; gap: 8px; }
 .sea-chart-close-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 1000;
   min-height: 38px;
   padding: 0 14px;
   border-radius: 999px;
@@ -577,8 +574,18 @@ main { padding-bottom: 70px; }
   font-size: .8rem;
   cursor: pointer;
   box-shadow: var(--shadow-small);
+  white-space: nowrap;
 }
 html[data-theme="dark"] .sea-chart-close-btn { background: rgba(20, 37, 34, .95); }
+/* "Piilota paneelit" - kertakäden siisti näkymä pelkästä kartasta, Luotsi-tyyliseen tapaan.
+   Palautuva ja täysin käyttäjän valittavissa - ei poista mitään pysyvästi, ks. exitSeaChartFullscreen. */
+.sea-chart-full-wrap.panels-hidden .sea-chart-toolbar,
+.sea-chart-full-wrap.panels-hidden .potential-results-panel,
+.sea-chart-full-wrap.panels-hidden .sea-chart-bottom-left,
+.sea-chart-full-wrap.panels-hidden .sea-chart-overlay-disclaimer,
+.sea-chart-full-wrap.panels-hidden .sea-disclaimer-badge {
+  display: none;
+}
 .sea-chart-full-wrap.sea-chart-maximized {
   position: fixed !important;
   inset: 0 !important;
@@ -1808,7 +1815,10 @@ body.device-phone .columns {
       <div class="sea-chart-activate-overlay" id="seaChartActivateOverlay">
         <button type="button" class="btn primary sea-chart-activate-btn" id="seaChartActivateBtn">🔍 Avaa kartta suureksi</button>
       </div>
-      <button type="button" class="sea-chart-close-btn" id="seaChartCloseBtn" hidden>✕ Sulje</button>
+      <div class="sea-chart-top-actions" id="seaChartTopActions">
+        <button type="button" class="sea-chart-close-btn sea-chart-panels-btn" id="seaChartPanelsToggleBtn" hidden>🧹 Piilota paneelit</button>
+        <button type="button" class="sea-chart-close-btn" id="seaChartCloseBtn" hidden>✕ Sulje</button>
+      </div>
 
       <div class="sea-chart-overlay-disclaimer" id="seaChartDisclaimer">
         <button type="button" class="sea-disclaimer-toggle" id="seaDisclaimerToggle">⚠️ Ei virallinen navigointikartta <span class="sea-disclaimer-chevron" id="seaDisclaimerChevron">▾</span></button>
@@ -4036,6 +4046,7 @@ function enterSeaChartFullscreen(){
   const wrap=document.getElementById("seaChartWrap");
   const overlay=document.getElementById("seaChartActivateOverlay");
   const closeBtn=document.getElementById("seaChartCloseBtn");
+  const panelsBtn=document.getElementById("seaChartPanelsToggleBtn");
   if (!wrap) return;
   // .page-elementeillä on sisääntuloanimaatio (transform), joka jää computed-tyyliin animaation
   // päätyttyäkin (matrix(1,0,0,1,0,0)) - CSS-spesifikaation mukaan mikä tahansa transform-arvo,
@@ -4048,6 +4059,7 @@ function enterSeaChartFullscreen(){
   wrap.classList.add("sea-chart-maximized");
   if (overlay) overlay.hidden = true;
   if (closeBtn) closeBtn.hidden = false;
+  if (panelsBtn) panelsBtn.hidden = false;
   setSeaChartInteractive(true);
   setTimeout(()=>{ if (seaChartMap) seaChartMap.invalidateSize(); },50);
 }
@@ -4055,15 +4067,32 @@ function exitSeaChartFullscreen(){
   const wrap=document.getElementById("seaChartWrap");
   const overlay=document.getElementById("seaChartActivateOverlay");
   const closeBtn=document.getElementById("seaChartCloseBtn");
+  const panelsBtn=document.getElementById("seaChartPanelsToggleBtn");
   if (!wrap) return;
   wrap.classList.remove("sea-chart-maximized");
   if (overlay) overlay.hidden = false;
   if (closeBtn) closeBtn.hidden = true;
+  if (panelsBtn) panelsBtn.hidden = true;
   setSeaChartInteractive(false);
+  // Paneelit palautetaan aina näkyviin seuraavaa avauskertaa varten - "piilota paneelit" on
+  // kertakäyttöinen siistimistila tälle istunnolle, ei pysyvä asetus.
+  setSeaChartPanelsHidden(false);
   if (seaChartWrapOriginalParent) {
     seaChartWrapOriginalParent.insertBefore(wrap, seaChartWrapOriginalNextSibling);
   }
   setTimeout(()=>{ if (seaChartMap) seaChartMap.invalidateSize(); },50);
+}
+function setSeaChartPanelsHidden(hidden){
+  const wrap=document.getElementById("seaChartWrap");
+  const btn=document.getElementById("seaChartPanelsToggleBtn");
+  if (!wrap) return;
+  wrap.classList.toggle("panels-hidden", hidden);
+  if (btn) btn.textContent = hidden ? "👁 Näytä paneelit" : "🧹 Piilota paneelit";
+}
+function toggleSeaChartPanelsHidden(){
+  const wrap=document.getElementById("seaChartWrap");
+  if (!wrap) return;
+  setSeaChartPanelsHidden(!wrap.classList.contains("panels-hidden"));
 }
 function toggleSeaChartSeamarks(show){
   if (!seaChartMap || !seaChartSeamarkLayer) return;
@@ -4165,14 +4194,18 @@ async function fetchVaylapilviCollection(collectionId, bbox, limit){
   return res.json();
 }
 
+// Aiemmin lähes näkymätön (.05 täyttö) - väyläalue on nyt selvästi väritetty "turvallisen
+// veden" kaista, samaan tapaan kuin oikeat merikarttaplotterit korostavat merkittyä väylää
+// muusta vedestä (ks. käyttäjän toive "plotterimaisemmasta" kartasta).
 function styleFairwayArea(){
-  return { color:'#2f6f73', weight:1, fillColor:'#2f6f73', fillOpacity:.05 };
+  return { color:'#2f7fa8', weight:1, opacity:.55, fillColor:'#7fc2dc', fillOpacity:.28 };
 }
 // Väylän keskilinja (vaylat_uusi) on eri kokoelma kuin väyläalue (vaylaalueet_uusi) -
-// tämä on itse merkitty kulkulinja, ei koko väylän leveä alue. Piirretään selkeänä mustana
-// viivana samaan tapaan kuin painetuissa merikartoissa, jotta se erottuu heti karttapohjasta.
+// tämä on itse merkitty kulkulinja, ei koko väylän leveä alue. Piirretään katkoviivaisena
+// magentana, kuten viralliset merikartat merkitsevät suositellun kulkulinjan (recommended
+// track) - tunnistettavampi ja "plotterimaisempi" kuin tavallinen musta viiva.
 function styleFairwayLine(){
-  return { color:'#111', weight:3, opacity:.85, lineCap:'round' };
+  return { color:'#c0208a', weight:2.5, opacity:.85, dashArray:'8,6', lineCap:'round' };
 }
 function styleSpeedZone(){
   return { color:'#a94635', weight:1, fillColor:'#a94635', fillOpacity:.12 };
@@ -5395,6 +5428,8 @@ function onSeaChartMapClick(latlng){
   if (activateBtn) activateBtn.addEventListener("click", enterSeaChartFullscreen);
   const closeBtn=document.getElementById("seaChartCloseBtn");
   if (closeBtn) closeBtn.addEventListener("click", exitSeaChartFullscreen);
+  const panelsToggleBtn=document.getElementById("seaChartPanelsToggleBtn");
+  if (panelsToggleBtn) panelsToggleBtn.addEventListener("click", toggleSeaChartPanelsHidden);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       const wrap=document.getElementById("seaChartWrap");

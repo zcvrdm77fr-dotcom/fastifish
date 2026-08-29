@@ -380,6 +380,11 @@
     ]);
     if (token !== fetchToken || !potentialSpotsWanted) return;
 
+    // Molemmat haut voivat epäonnistua hetkellisesti (Overpass-rajapinta on usein ruuhkainen).
+    // Jos NIIN käy, säilytetään edelliset merkit sen sijaan että ne katoaisivat kartalta -
+    // käyttäjä ei saa nähdä pisteen häviävän vain siksi että zoomasi ja haku sattui epäonnistumaan.
+    if (osmResult.status !== 'fulfilled' && officialResult.status !== 'fulfilled') return;
+
     let extras = [];
     if (osmResult.status === 'fulfilled') {
       const osm = osmResult.value.map(el => normalizeOsmElement(el, mapCenter)).filter(Boolean);
