@@ -1,0 +1,41 @@
+name: Inject map analysis scripts
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/inject-map-analysis-tags.mjs'
+      - '.github/workflows/inject-map-analysis.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inject analysis script tags
+        run: node scripts/inject-map-analysis-tags.mjs index.html
+      - name: Verify resulting HTML
+        run: |
+          grep -F '<script src="/fishing-structures.js?v=8"></script>' index.html
+          grep -F '<script src="/depth-structures.js?v=8"></script>' index.html
+          grep -F '<script src="/gtk-substrate.js?v=8"></script>' index.html
+          grep -F '<script src="/gtk-habitats.js?v=8"></script>' index.html
+      - name: Commit index update
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'index.html already contains current map-analysis tags.'
+            exit 0
+          fi
+          git commit -m 'Load fishing map analysis layers directly'
+          git push
