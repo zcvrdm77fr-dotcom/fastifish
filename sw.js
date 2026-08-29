@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/manifest.json',
@@ -11,6 +11,7 @@ const STATIC_ASSETS = [
   '/depth-structures.js',
   '/gtk-substrate.js',
   '/gtk-habitats.js',
+  '/velmu-fish.js',
   '/inland-depth/manifest.json'
 ];
 
@@ -70,13 +71,15 @@ async function injectFishingStructures(response) {
       .replace(/\s*<script\s+src=["']\/fishing-structures\.js(?:\?[^"']*)?["']><\/script>/gi, '')
       .replace(/\s*<script\s+src=["']\/depth-structures\.js(?:\?[^"']*)?["']><\/script>/gi, '')
       .replace(/\s*<script\s+src=["']\/gtk-substrate\.js(?:\?[^"']*)?["']><\/script>/gi, '')
-      .replace(/\s*<script\s+src=["']\/gtk-habitats\.js(?:\?[^"']*)?["']><\/script>/gi, '');
+      .replace(/\s*<script\s+src=["']\/gtk-habitats\.js(?:\?[^"']*)?["']><\/script>/gi, '')
+      .replace(/\s*<script\s+src=["']\/velmu-fish\.js(?:\?[^"']*)?["']><\/script>/gi, '');
 
     const injection = [
-      '<script src="/fishing-structures.js?v=8"></script>',
-      '<script src="/depth-structures.js?v=8"></script>',
-      '<script src="/gtk-substrate.js?v=8"></script>',
-      '<script src="/gtk-habitats.js?v=8"></script>'
+      '<script src="/fishing-structures.js?v=9"></script>',
+      '<script src="/depth-structures.js?v=9"></script>',
+      '<script src="/gtk-substrate.js?v=9"></script>',
+      '<script src="/gtk-habitats.js?v=9"></script>',
+      '<script src="/velmu-fish.js?v=9"></script>'
     ].join('\n');
     html = html.includes('</body>') ? html.replace('</body>', `${injection}\n</body>`) : `${html}\n${injection}`;
 
