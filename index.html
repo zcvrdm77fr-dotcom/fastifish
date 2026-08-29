@@ -688,6 +688,9 @@ html[data-theme="dark"] .potential-results-panel { background: rgba(20,37,34,.97
 .potential-popup .potential-breakdown span { padding: 4px 7px; border-radius: 8px; background: var(--mist); color: var(--ink); font-size: .72rem; font-weight: 700; }
 .potential-popup .potential-live { padding: 7px 8px; border-radius: 9px; background: rgba(47,111,115,.09); font-size: .76rem; }
 .potential-popup .potential-reason { margin-bottom: 7px; }
+/* Huomautus siitä, että merkki edustaa aluetta eikä yhtä tarkkaa pistettä. */
+.potential-popup .potential-area { margin: 0 0 7px; padding: 6px 8px; border-radius: 7px;
+  background: rgba(47,111,115,.10); border-left: 3px solid #2f6f73; font-size: .86em; line-height: 1.5; }
 .potential-popup .potential-warning { padding-top: 7px; border-top: 1px dashed var(--line); font-size: .76rem; }
 .potential-popup .potential-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
 .potential-popup .potential-actions .btn { min-height: 34px; padding: 6px 10px; font-size: .72rem; }
@@ -1823,7 +1826,7 @@ body.device-phone .columns {
           </label>
           <label class="sea-chart-toggle sea-chart-toggle-compact">
             <input type="checkbox" id="potentialSpotsToggle">
-            <span id="potentialSpotsToggleLabel">🎣 Vahvat kalapaikat</span>
+            <span id="potentialSpotsToggleLabel">🎣 Kalaspotit lähelläsi</span>
           </label>
           <button class="btn" id="seaChartLocateBtn" type="button">📍 Paikanna</button>
         </div>
@@ -4489,13 +4492,53 @@ function classifyPotentialSpot(el, selectedSpecies){
   };
 }
 
+// Kartan mittakaava: montako metriä yksi ruudun pikseli vastaa nykyisellä zoomilla.
+function potentialMetersPerPixel(){
+  if (!seaChartMap) return 1;
+  const lat=seaChartMap.getCenter().lat;
+  return 156543.03392*Math.cos(lat*Math.PI/180)/Math.pow(2,seaChartMap.getZoom());
+}
+
+// Mitä kauempaa katsotaan, sitä harvempi valikoima: yksi merkki edustaa laajempaa aluetta.
+function potentialMaxResults(){
+  const zoom=seaChartMap?seaChartMap.getZoom():12;
+  if (zoom>=13) return 120;
+  if (zoom>=11) return 70;
+  if (zoom>=10) return 40;
+  return 25;
+}
+
+// Yhdistää lähekkäiset kohteet yhdeksi merkiksi, joka edustaa koko aluetta.
+//
+// Vähimmäisväli oli aiemmin kiinteä 260 metriä. Lähelle zoomattuna se riitti, mutta
+// uloszoomattuna 260 metriä on ruudulla alle pikselin - silloin kymmenet saman matalikon tai
+// kivikon pisteet piirtyivät päällekkäin ja kartta näytti sadalta merkiltä vierekkäin. Väli
+// lasketaan siksi ruudun pikseleinä: vierekkäisten merkkien välissä on aina vähintään merkin
+// oma leveys, oli zoom mikä tahansa. Sulautetut kohteet lasketaan mukaan mergedCountiin, jotta
+// käyttäjälle voi kertoa merkin edustavan aluetta eikä yhtä pistettä.
 function dedupePotentialSpots(spots){
   const kept=[];
+  const maxResults=potentialMaxResults();
+  const minSeparation=Math.max(260, 56*potentialMetersPerPixel());
   spots.sort((a,b)=>b.score-a.score);
   for (const spot of spots) {
-    const tooClose=kept.some(k=>haversineMeters({lat:k.lat,lng:k.lon},{lat:spot.lat,lng:spot.lon})<260);
-    if (!tooClose) kept.push(spot);
-    if (kept.length>=POTENTIAL_SPOT_MAX_RESULTS) break;
+    let host=null, hostDistance=Infinity;
+    for (const k of kept) {
+      const d=haversineMeters({lat:k.lat,lng:k.lon},{lat:spot.lat,lng:spot.lon});
+      if (d<minSeparation && d<hostDistance) { host=k; hostDistance=d; }
+    }
+    if (host) {
+      // Paras piste jää edustamaan aluetta, heikommat sulautuvat siihen.
+      host.mergedCount=(host.mergedCount||1)+1;
+      host.areaRadiusM=Math.max(host.areaRadiusM||0, hostDistance);
+      continue;
+    }
+    // Rajan täytyttyä ei enää lisätä uusia, mutta sulautuminen jatkuu jotta alueiden
+    // kohdemäärät pysyvät oikeina.
+    if (kept.length>=maxResults) continue;
+    spot.mergedCount=1;
+    spot.areaRadiusM=0;
+    kept.push(spot);
   }
   return kept;
 }
@@ -4625,7 +4668,7 @@ function renderPotentialResults(spots){
     return `<div class="potential-result-row">
       <button class="potential-result-main" type="button" data-potential-jump="${escapeMapHtml(spot.id)}">
         <span class="potential-result-rank">#${index+1}</span>
-        <span class="potential-result-copy"><span class="potential-result-name">${escapeMapHtml(spot.name)}</span><span class="potential-result-kind">${escapeMapHtml(spot.kind)} · ${fmtKm(distance)}</span></span>
+        <span class="potential-result-copy"><span class="potential-result-name">${escapeMapHtml(spot.name)}</span><span class="potential-result-kind">${escapeMapHtml(spot.kind)}${spot.mergedCount>1?(fi?` · alue, ${spot.mergedCount} kohdetta`:` · area, ${spot.mergedCount} features`):''} · ${fmtKm(distance)}</span></span>
         <span class="potential-result-score" style="background:${potentialSpotColor(score)}">${score}</span>
       </button>
       <button class="potential-result-fav" type="button" data-potential-fav="${escapeMapHtml(spot.id)}" aria-label="${fi?'Tallenna suosikiksi':'Save favorite'}">${isPotentialFavorite(spot.id)?'★':'☆'}</button>
@@ -4640,6 +4683,16 @@ function renderPotentialResults(spots){
     potentialResultsAutoOpened=true;
     togglePotentialResultsPanel(true);
   }
+}
+
+// Kun merkki edustaa useaa lähekkäistä kohdetta, se sanotaan ääneen - muuten lukija luulee
+// näkevänsä yhden tarkan pisteen, vaikka kyse on laajemmasta matalikosta tai kivikosta.
+function potentialAreaNote(spot, fi){
+  if (!spot.mergedCount || spot.mergedCount<2) return '';
+  const radius=Math.max(50, Math.round((spot.areaRadiusM||0)/50)*50);
+  return `<p class="potential-area">${fi
+    ? `Tämä merkki edustaa koko aluetta: lähistöllä on ${spot.mergedCount} samankaltaista kohdetta noin ${radius} metrin säteellä. Zoomaa lähemmäs nähdäksesi ne erikseen.`
+    : `This marker represents a whole area: ${spot.mergedCount} similar features within about ${radius} m. Zoom in to see them separately.`}</p>`;
 }
 
 function potentialWeatherSummary(spot){
@@ -4692,6 +4745,7 @@ function drawPotentialSpotMarkers(spots,totalElementCount){
       <span class="potential-kind">${escapeMapHtml(spot.kind)}</span>
       <h4>${escapeMapHtml(spot.name)}</h4>
       <p class="potential-score">${spot.liveWeather?(fi?'Kokonaispotentiaali':'Overall potential'):(fi?'Rakenteen potentiaali':'Structure potential')}: ${rankScore}/100 · ${fmtKm(distance)} ${fi?'kartan keskeltä':'from map center'}</p>
+      ${potentialAreaNote(spot, fi)}
       ${weatherHtml}
       <p class="potential-reason"><strong>${fi?'Miksi tämä näkyy':'Why it is shown'}:</strong> ${escapeMapHtml(spot.reason)}</p>
       <p><strong>${fi?'Mahdolliset lajit':'Potential species'}:</strong> ${escapeMapHtml(speciesText)}</p>
@@ -4844,7 +4898,7 @@ function updatePotentialSpotLanguage(){
   const fi=currentLang==='fi';
   const toggleLabel=document.getElementById('potentialSpotsToggleLabel');
   const speciesLabel=document.getElementById('potentialSpotSpeciesLabel');
-  if (toggleLabel) toggleLabel.textContent=fi?'🎣 Vahvat kalapaikat':'🎣 Strong fishing spots';
+  if (toggleLabel) toggleLabel.textContent=fi?'🎣 Kalaspotit lähelläsi':'🎣 Fishing spots near you';
   if (speciesLabel) speciesLabel.textContent=fi?'Kalalaji':'Species';
   const select=document.getElementById('potentialSpotSpecies');
   if (select) {
