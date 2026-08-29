@@ -616,14 +616,24 @@ html[data-theme="dark"] .sea-chart-toolbar { background: rgba(20, 37, 34, .96); 
 .sea-route-status { margin-top: 8px; color: var(--ink-soft); font-size: .78rem; }
 .sea-spot-panel { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
 .sea-spot-panel[hidden] { display: none; }
-.sea-spot-filters { display: grid; grid-template-columns: 1fr 1fr auto; gap: 7px; align-items: end; }
+.sea-spot-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; align-items: end; margin-top: 8px; }
 .sea-spot-filter { margin: 0; color: var(--ink-soft); font-size: .68rem; font-weight: 700; }
 .sea-spot-filter select { min-height: 34px; margin-top: 4px; padding: 4px 28px 4px 9px; border-radius: 9px; font-size: .78rem; }
-.sea-spot-panel .potential-list-toggle { min-height: 34px; padding-inline: 10px; }
-.sea-spot-status { min-height: 26px; display: flex; align-items: center; color: var(--ink-soft); font-size: .72rem; line-height: 1.3; }
-.potential-mini-legend { display: flex; flex-wrap: wrap; gap: 7px 10px; color: var(--ink-soft); font-size: .67rem; }
+.sea-spot-panel .potential-list-toggle { min-height: 34px; padding-inline: 10px; flex: none; }
+.sea-spot-toprow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.sea-spot-status { min-height: 26px; flex: 1 1 auto; display: flex; align-items: center; color: var(--ink-soft); font-size: .72rem; line-height: 1.3; }
+.potential-mini-legend { display: flex; flex-wrap: wrap; gap: 7px 10px; margin-top: 8px; color: var(--ink-soft); font-size: .67rem; }
 .potential-mini-legend span { display: inline-flex; align-items: center; gap: 4px; }
 .potential-legend-dot { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(23,52,47,.18); }
+.sea-layer-details, .sea-spot-filters-details { width: 100%; margin-top: 4px; }
+.sea-layer-summary {
+  cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 5px;
+  font-weight: 700; font-size: .78rem; color: var(--ink); padding: 4px 2px; user-select: none;
+}
+.sea-layer-summary::-webkit-details-marker { display: none; }
+.sea-layer-summary::after { content: '▾'; font-size: .7em; opacity: .7; }
+details[open] > .sea-layer-summary::after { content: '▴'; }
+.sea-layer-options { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
 .potential-results-panel {
   position: absolute;
   top: 52px;
@@ -787,8 +797,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
   .brand { padding-inline: 5px; }
   .tabs { min-height: 50px; margin-inline: -12px; padding-inline: 12px; }
   .tab-btn { min-height: 50px; padding-inline: 12px; }
-  .sea-spot-filters { grid-template-columns: 1fr 1fr; }
-  .sea-spot-panel .potential-list-toggle { grid-column: 1 / -1; width: 100%; }
+  .sea-spot-toprow { flex-direction: column; align-items: stretch; }
+  .sea-spot-panel .potential-list-toggle { width: 100%; }
   .potential-results-panel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 42%; border-radius: 16px; }
   .hero { gap: 54px; padding-block: 48px 52px; }
   h1 { font-size: clamp(4rem, 24vw, 6.2rem); }
@@ -1817,49 +1827,59 @@ body.device-phone .columns {
         </div>
         <div class="sea-toolbar-row2">
           <label class="sea-chart-toggle sea-chart-toggle-compact">
-            <input type="checkbox" id="seamarkToggle">
-            OpenSeaMap-merimerkit
-          </label>
-          <label class="sea-chart-toggle sea-chart-toggle-compact">
-            <input type="checkbox" id="officialLayerToggle" checked>
-            Väylät ja karikot
-          </label>
-          <label class="sea-chart-toggle sea-chart-toggle-compact">
             <input type="checkbox" id="potentialSpotsToggle">
             <span id="potentialSpotsToggleLabel">🎣 Kalaspotit lähelläsi</span>
           </label>
           <button class="btn" id="seaChartLocateBtn" type="button">📍 Paikanna</button>
+          <details class="sea-layer-details">
+            <summary class="sea-layer-summary">🗺️ Kerrokset</summary>
+            <div class="sea-layer-options">
+              <label class="sea-chart-toggle sea-chart-toggle-compact">
+                <input type="checkbox" id="seamarkToggle">
+                OpenSeaMap-merimerkit
+              </label>
+              <label class="sea-chart-toggle sea-chart-toggle-compact">
+                <input type="checkbox" id="officialLayerToggle" checked>
+                Väylät ja karikot
+              </label>
+            </div>
+          </details>
         </div>
         <div class="sea-spot-panel" id="potentialSpotPanel" hidden>
-          <div class="sea-spot-filters">
-            <label class="sea-spot-filter" for="potentialSpotSpecies">
-              <span id="potentialSpotSpeciesLabel">Kalalaji</span>
-              <select id="potentialSpotSpecies">
-                <option value="all">Kaikki</option>
-                <option value="ahven">Ahven</option>
-                <option value="hauki">Hauki</option>
-                <option value="kuha">Kuha</option>
-                <option value="taimen">Taimen / lohi</option>
-                <option value="siika">Siika</option>
-              </select>
-            </label>
-            <label class="sea-spot-filter" for="potentialSpotQuality">
-              <span id="potentialSpotQualityLabel">Näytä</span>
-              <select id="potentialSpotQuality">
-                <option value="80">Vahvat 80+</option>
-                <option value="75">Myös salmet 75+</option>
-                <option value="0">Kaikki havainnot</option>
-              </select>
-            </label>
+          <div class="sea-spot-toprow">
+            <div class="sea-spot-status" id="potentialSpotStatus" role="status" aria-live="polite">Valmis aineisto avautuu ilman verkkohakua.</div>
             <button class="btn potential-list-toggle" id="potentialResultsToggle" type="button">Top-lista</button>
           </div>
-          <div class="sea-spot-status" id="potentialSpotStatus" role="status" aria-live="polite">Valmis aineisto avautuu ilman verkkohakua.</div>
-          <div class="potential-mini-legend" id="potentialMiniLegend" aria-label="Pisteiden selite">
-            <span><i class="potential-legend-dot" style="background:#2f6f73"></i> 85+ erittäin lupaava</span>
-            <span><i class="potential-legend-dot" style="background:#d5752c"></i> 70–84 hyvä</span>
-            <span><i class="potential-legend-dot" style="background:#6e7772"></i> tutkittava</span>
-            <span><i class="potential-legend-dot" style="background:#fff;border:2px solid #2f6f73"></i> valkoinen kehä = keli mukana</span>
-          </div>
+          <details class="sea-spot-filters-details">
+            <summary class="sea-layer-summary">⚙️ Suodattimet</summary>
+            <div class="sea-spot-filters">
+              <label class="sea-spot-filter" for="potentialSpotSpecies">
+                <span id="potentialSpotSpeciesLabel">Kalalaji</span>
+                <select id="potentialSpotSpecies">
+                  <option value="all">Kaikki</option>
+                  <option value="ahven">Ahven</option>
+                  <option value="hauki">Hauki</option>
+                  <option value="kuha">Kuha</option>
+                  <option value="taimen">Taimen / lohi</option>
+                  <option value="siika">Siika</option>
+                </select>
+              </label>
+              <label class="sea-spot-filter" for="potentialSpotQuality">
+                <span id="potentialSpotQualityLabel">Näytä</span>
+                <select id="potentialSpotQuality">
+                  <option value="80">Vahvat 80+</option>
+                  <option value="75">Myös salmet 75+</option>
+                  <option value="0">Kaikki havainnot</option>
+                </select>
+              </label>
+            </div>
+            <div class="potential-mini-legend" id="potentialMiniLegend" aria-label="Pisteiden selite">
+              <span><i class="potential-legend-dot" style="background:#2f6f73"></i> 85+ erittäin lupaava</span>
+              <span><i class="potential-legend-dot" style="background:#d5752c"></i> 70–84 hyvä</span>
+              <span><i class="potential-legend-dot" style="background:#6e7772"></i> tutkittava</span>
+              <span><i class="potential-legend-dot" style="background:#fff;border:2px solid #2f6f73"></i> valkoinen kehä = keli mukana</span>
+            </div>
+          </details>
         </div>
         <div class="sea-route-status" id="seaRouteStatus">Valitse "Lähtöpaikka", sitten klikkaa kartalta.</div>
       </div>
@@ -4174,6 +4194,39 @@ function isHazardMark(props){
   return HAZARD_NAV_CODES.has(props && props.navigointilajikoodi);
 }
 
+// Turvalaitteita voi olla tiheässä saaristossa satoja yhden näkymän sisällä - rajapinta ei
+// itse rajoita määrää muuta kuin bbox:lla. Vaaramerkit (kardinaali-/reunamerkit) näytetään
+// aina kaikki, koska ne ovat turvallisuuden kannalta oleellisia ja huomattavasti harvinaisempia.
+// Tavalliset suuntamerkit sulautetaan lähekkäin samaan tapaan kuin kalaspotit (ks.
+// dedupePotentialSpots), jotta kartta pysyy luettavana eikä pelkkä merkkimäärä peitä muuta.
+function thinEquipmentFeatures(features){
+  const hazards=[], plain=[];
+  for (const f of features) {
+    if (!f || !f.geometry || !Array.isArray(f.geometry.coordinates)) continue;
+    (isHazardMark(f.properties||{}) ? hazards : plain).push(f);
+  }
+  const minSeparation=Math.max(90, 40*potentialMetersPerPixel());
+  const maxPlain=90;
+  const kept=[];
+  for (const f of plain) {
+    const c=f.geometry.coordinates;
+    let merged=false;
+    for (const k of kept) {
+      const kc=k.geometry.coordinates;
+      if (haversineMeters({lat:kc[1],lng:kc[0]},{lat:c[1],lng:c[0]})<minSeparation) {
+        k._mergedCount=(k._mergedCount||1)+1;
+        merged=true;
+        break;
+      }
+    }
+    if (merged) continue;
+    if (kept.length>=maxPlain) continue;
+    f._mergedCount=1;
+    kept.push(f);
+  }
+  return hazards.concat(kept);
+}
+
 async function updateOfficialLayers(){
   if (!seaChartMap || !officialLayerGroup) return;
   officialLayerGroup.clearLayers();
@@ -4221,7 +4274,8 @@ async function updateOfficialLayers(){
       }).addTo(officialLayerGroup);
     }
     if (equipment) {
-      L.geoJSON(equipment, {
+      const thinnedEquipment = { ...equipment, features: thinEquipmentFeatures(equipment.features || []) };
+      L.geoJSON(thinnedEquipment, {
         pointToLayer: (feature, latlng) => {
           const p = feature.properties || {};
           return L.marker(latlng, { icon: isHazardMark(p) ? hazardMarkIcon() : safetyEquipmentIcon(), zIndexOffset: isHazardMark(p) ? 500 : 0 });
@@ -4233,7 +4287,10 @@ async function updateOfficialLayers(){
           const hazardNote = hazard
             ? `<p style="color:#a92f1f;font-weight:700;">⚠️ Merkitsee vaarallista kohdetta (kivi, kari tai matalikko) - pidä etäisyyttä. Ei koskaan navigointiohje, tarkista virallisesta merikartasta.</p>`
             : '';
-          layer.bindPopup(`<div class="nearby-popup"><h4>${hazard ? '⚠️ ' : ''}${name}</h4><p>${p.turvalaitetyyppifi||''}${p.sijaintifi ? ' · '+p.sijaintifi : ''}</p>${hazardNote}</div>`);
+          const mergedNote = feature._mergedCount > 1
+            ? `<p class="potential-area">Tässä kohtaa on ${feature._mergedCount} lähekkäistä turvalaitetta. Zoomaa lähemmäs nähdäksesi ne erikseen.</p>`
+            : '';
+          layer.bindPopup(`<div class="nearby-popup"><h4>${hazard ? '⚠️ ' : ''}${name}</h4><p>${p.turvalaitetyyppifi||''}${p.sijaintifi ? ' · '+p.sijaintifi : ''}</p>${hazardNote}${mergedNote}</div>`);
         }
       }).addTo(officialLayerGroup);
     }
@@ -4386,7 +4443,6 @@ let potentialSpotLastElements=[];
 let potentialSpotLastSpots=[];
 let potentialWeatherFetchSignature='';
 let potentialResultsUserClosed=false;
-let potentialResultsAutoOpened=false;
 let potentialFavoriteSetCache=null;
 
 function potentialSpotStatus(fi, en){
@@ -4500,12 +4556,17 @@ function potentialMetersPerPixel(){
 }
 
 // Mitä kauempaa katsotaan, sitä harvempi valikoima: yksi merkki edustaa laajempaa aluetta.
+//
+// Aiemmin nämä katot (120/70/40/25) sallivat kymmeniä merkkejä ruudulla yhtä aikaa, mikä
+// näytti käyttökelvottomalta ruuhkalta - itse merkkien limittymisen esto (ks. minSeparation
+// alla) ei riittänyt, koska pelkkä "eivät mene päällekkäin" ei tarkoita "on helppo silmäillä".
+// Käytännölliseen karttaan mahtuu kerralla vain kourallinen kohteita; loput löytyvät zoomaamalla.
 function potentialMaxResults(){
   const zoom=seaChartMap?seaChartMap.getZoom():12;
-  if (zoom>=13) return 120;
-  if (zoom>=11) return 70;
-  if (zoom>=10) return 40;
-  return 25;
+  if (zoom>=14) return 30;
+  if (zoom>=12) return 18;
+  if (zoom>=10) return 10;
+  return 6;
 }
 
 // Yhdistää lähekkäiset kohteet yhdeksi merkiksi, joka edustaa koko aluetta.
@@ -4519,7 +4580,7 @@ function potentialMaxResults(){
 function dedupePotentialSpots(spots){
   const kept=[];
   const maxResults=potentialMaxResults();
-  const minSeparation=Math.max(260, 56*potentialMetersPerPixel());
+  const minSeparation=Math.max(300, 64*potentialMetersPerPixel());
   spots.sort((a,b)=>b.score-a.score);
   for (const spot of spots) {
     let host=null, hostDistance=Infinity;
@@ -4679,10 +4740,6 @@ function renderPotentialResults(spots){
     const spot=potentialSpotLastSpots.find(s=>s.id===btn.dataset.potentialFav);
     if (spot) togglePotentialFavorite(spot);
   }));
-  if (!potentialResultsUserClosed && window.innerWidth>=760) {
-    potentialResultsAutoOpened=true;
-    togglePotentialResultsPanel(true);
-  }
 }
 
 // Kun merkki edustaa useaa lähekkäistä kohdetta, se sanotaan ääneen - muuten lukija luulee
