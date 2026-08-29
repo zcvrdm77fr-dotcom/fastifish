@@ -8,6 +8,7 @@ on:
       - 'depth-structures.js'
       - 'gtk-substrate.js'
       - 'gtk-habitats.js'
+      - 'velmu-fish.js'
       - 'sw.js'
       - '.github/workflows/check-map-scripts.yml'
 
@@ -28,4 +29,5 @@ jobs:
           node --check depth-structures.js
           node --check gtk-substrate.js
           node --check gtk-habitats.js
+          node --check velmu-fish.js
           node --check sw.js
