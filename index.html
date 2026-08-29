@@ -577,15 +577,46 @@ main { padding-bottom: 70px; }
   white-space: nowrap;
 }
 html[data-theme="dark"] .sea-chart-close-btn { background: rgba(20, 37, 34, .95); }
-/* "Piilota paneelit" - kertakäden siisti näkymä pelkästä kartasta, Luotsi-tyyliseen tapaan.
-   Palautuva ja täysin käyttäjän valittavissa - ei poista mitään pysyvästi, ks. exitSeaChartFullscreen. */
-.sea-chart-full-wrap.panels-hidden .sea-chart-toolbar,
-.sea-chart-full-wrap.panels-hidden .potential-results-panel,
-.sea-chart-full-wrap.panels-hidden .sea-chart-bottom-left,
-.sea-chart-full-wrap.panels-hidden .sea-chart-overlay-disclaimer,
-.sea-chart-full-wrap.panels-hidden .sea-disclaimer-badge {
-  display: none;
+/* Jokainen kartan paneeli voidaan piilottaa erikseen (✕) ja tuoda takaisin pienestä
+   "chip"-painikkeesta samalla paikalla - sama malli kuin varoitusbannerin ⚠️-badge jo käytti.
+   Aina palautuva seuraavalla avauskerralla, ei poista mitään pysyvästi. */
+.sea-panel-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 5;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(255, 253, 247, .9);
+  color: var(--ink);
+  font-size: .7rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+html[data-theme="dark"] .sea-panel-close { background: rgba(20, 37, 34, .9); }
+.sea-chart-reopen-badge {
+  position: absolute;
+  z-index: 900;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(255, 253, 247, .96);
+  color: var(--ink);
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-small);
+}
+html[data-theme="dark"] .sea-chart-reopen-badge { background: rgba(20, 37, 34, .95); }
+.sea-toolbar-reopen-badge { top: 36px; left: 8px; }
+.sea-hud-reopen-badge { bottom: 12px; left: 12px; }
+.sea-chart-hud { padding-right: 30px; }
+.sea-panel-hidden { display: none !important; }
 .sea-chart-full-wrap.sea-chart-maximized {
   position: fixed !important;
   inset: 0 !important;
@@ -607,7 +638,7 @@ html[data-theme="dark"] .sea-chart-close-btn { background: rgba(20, 37, 34, .95)
   right: 8px;
   z-index: 900;
   max-width: 360px;
-  padding: 10px;
+  padding: 32px 10px 10px;
   border-radius: 14px;
   background: rgba(255, 253, 247, .96);
   border: 1px solid var(--line);
@@ -709,6 +740,10 @@ html[data-theme="dark"] .potential-results-panel { background: rgba(20,37,34,.97
 .potential-popup .potential-area { margin: 0 0 7px; padding: 6px 8px; border-radius: 7px;
   background: rgba(47,111,115,.10); border-left: 3px solid #2f6f73; font-size: .86em; line-height: 1.5; }
 .potential-popup .potential-warning { padding-top: 7px; border-top: 1px dashed var(--line); font-size: .76rem; }
+.potential-popup .potential-warning-short { margin: 0 0 7px; color: var(--ink-soft); font-size: .74rem; font-weight: 700; }
+.potential-popup .potential-more { margin-bottom: 4px; }
+.potential-popup .potential-more summary { padding: 2px; }
+.potential-popup .potential-more[open] summary { margin-bottom: 6px; }
 .potential-popup .potential-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
 .potential-popup .potential-actions .btn { min-height: 34px; padding: 6px 10px; font-size: .72rem; }
 .speed-zone-label { background: rgba(169,70,53,.92); color: #fff; border: 0; box-shadow: none; font-weight: 700; font-size: .72rem; padding: 2px 6px; }
@@ -1816,7 +1851,6 @@ body.device-phone .columns {
         <button type="button" class="btn primary sea-chart-activate-btn" id="seaChartActivateBtn">🔍 Avaa kartta suureksi</button>
       </div>
       <div class="sea-chart-top-actions" id="seaChartTopActions">
-        <button type="button" class="sea-chart-close-btn sea-chart-panels-btn" id="seaChartPanelsToggleBtn" hidden>🧹 Piilota paneelit</button>
         <button type="button" class="sea-chart-close-btn" id="seaChartCloseBtn" hidden>✕ Sulje</button>
       </div>
 
@@ -1830,6 +1864,7 @@ body.device-phone .columns {
       <button type="button" class="sea-disclaimer-badge" id="seaDisclaimerBadge" hidden title="Huomio: ei virallinen navigointikartta - näytä uudelleen">⚠️</button>
 
       <div class="sea-chart-toolbar" id="seaChartToolbar">
+        <button type="button" class="sea-panel-close" id="seaToolbarCloseBtn" aria-label="Piilota työkalupalkki" title="Piilota työkalupalkki">✕</button>
         <div class="sea-route-panel-buttons">
           <button class="btn primary" id="seaSetStartBtn" type="button">📍 Lähtöpaikka</button>
           <button class="btn primary" id="seaSetEndBtn" type="button">🏁 Määränpää</button>
@@ -1893,6 +1928,7 @@ body.device-phone .columns {
         </div>
         <div class="sea-route-status" id="seaRouteStatus">Valitse "Lähtöpaikka", sitten klikkaa kartalta.</div>
       </div>
+      <button type="button" class="sea-chart-reopen-badge sea-toolbar-reopen-badge" id="seaToolbarReopenBtn" hidden title="Näytä työkalupalkki">🧭</button>
 
       <aside class="potential-results-panel" id="potentialResultsPanel" aria-label="Parhaat potentiaaliset kalapaikat" hidden>
         <div class="potential-results-head">
@@ -1906,6 +1942,7 @@ body.device-phone .columns {
       </aside>
 
       <div class="sea-chart-bottom-left" id="seaChartBottomLeft">
+        <button type="button" class="sea-panel-close sea-hud-close" id="seaHudCloseBtn" aria-label="Piilota mittarit" title="Piilota mittarit">✕</button>
         <div class="sea-chart-hud" id="seaChartHud">
           <div class="condition-chip"><span class="cc-label">Nopeus</span><span id="seaSpeedValue">–</span></div>
           <div class="condition-chip"><span class="cc-label">Tuuli</span><span id="seaWindValue">–</span></div>
@@ -1914,6 +1951,7 @@ body.device-phone .columns {
         </div>
         <p class="sea-chart-zoom-hint" id="seaChartZoomHint" hidden>Zoomaa lähemmäs nähdäksesi viralliset väylätiedot.</p>
       </div>
+      <button type="button" class="sea-chart-reopen-badge sea-hud-reopen-badge" id="seaHudReopenBtn" hidden title="Näytä mittarit">📊</button>
     </div>
     <p class="sea-chart-attribution">Väylätiedot: <a href="https://vayla.fi" target="_blank" rel="noopener">Väylävirasto</a>, CC BY 4.0. Merikartta-aineisto: <a href="https://traficom.fi" target="_blank" rel="noopener">Traficom</a>, CC BY 4.0. Potentiaalisten paikkojen rakennetiedot ja karttapohja: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-tekijät. Reaaliaikainen keli: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. Potentiaalipisteet ovat arvioita, eivät saalistakuita.</p>
     <div class="sea-route-info" id="seaRouteInfo" hidden></div>
@@ -4046,7 +4084,6 @@ function enterSeaChartFullscreen(){
   const wrap=document.getElementById("seaChartWrap");
   const overlay=document.getElementById("seaChartActivateOverlay");
   const closeBtn=document.getElementById("seaChartCloseBtn");
-  const panelsBtn=document.getElementById("seaChartPanelsToggleBtn");
   if (!wrap) return;
   // .page-elementeillä on sisääntuloanimaatio (transform), joka jää computed-tyyliin animaation
   // päätyttyäkin (matrix(1,0,0,1,0,0)) - CSS-spesifikaation mukaan mikä tahansa transform-arvo,
@@ -4059,7 +4096,6 @@ function enterSeaChartFullscreen(){
   wrap.classList.add("sea-chart-maximized");
   if (overlay) overlay.hidden = true;
   if (closeBtn) closeBtn.hidden = false;
-  if (panelsBtn) panelsBtn.hidden = false;
   setSeaChartInteractive(true);
   setTimeout(()=>{ if (seaChartMap) seaChartMap.invalidateSize(); },50);
 }
@@ -4067,32 +4103,29 @@ function exitSeaChartFullscreen(){
   const wrap=document.getElementById("seaChartWrap");
   const overlay=document.getElementById("seaChartActivateOverlay");
   const closeBtn=document.getElementById("seaChartCloseBtn");
-  const panelsBtn=document.getElementById("seaChartPanelsToggleBtn");
   if (!wrap) return;
   wrap.classList.remove("sea-chart-maximized");
   if (overlay) overlay.hidden = false;
   if (closeBtn) closeBtn.hidden = true;
-  if (panelsBtn) panelsBtn.hidden = true;
   setSeaChartInteractive(false);
-  // Paneelit palautetaan aina näkyviin seuraavaa avauskertaa varten - "piilota paneelit" on
-  // kertakäyttöinen siistimistila tälle istunnolle, ei pysyvä asetus.
-  setSeaChartPanelsHidden(false);
+  // Jokainen erikseen piilotettu paneeli palautetaan näkyviin seuraavaa avauskertaa varten -
+  // piilotus on kertakäyttöinen siistimistila tälle istunnolle, ei pysyvä asetus.
+  setSeaPanelHidden("seaChartToolbar", "seaToolbarReopenBtn", false);
+  setSeaPanelHidden("seaChartBottomLeft", "seaHudReopenBtn", false);
   if (seaChartWrapOriginalParent) {
     seaChartWrapOriginalParent.insertBefore(wrap, seaChartWrapOriginalNextSibling);
   }
   setTimeout(()=>{ if (seaChartMap) seaChartMap.invalidateSize(); },50);
 }
-function setSeaChartPanelsHidden(hidden){
-  const wrap=document.getElementById("seaChartWrap");
-  const btn=document.getElementById("seaChartPanelsToggleBtn");
-  if (!wrap) return;
-  wrap.classList.toggle("panels-hidden", hidden);
-  if (btn) btn.textContent = hidden ? "👁 Näytä paneelit" : "🧹 Piilota paneelit";
-}
-function toggleSeaChartPanelsHidden(){
-  const wrap=document.getElementById("seaChartWrap");
-  if (!wrap) return;
-  setSeaChartPanelsHidden(!wrap.classList.contains("panels-hidden"));
+// Yksi paneeli kerrallaan piiloon/takaisin - sama malli kuin varoitusbannerin ⚠️-badge:
+// pieni "chip" jää samalle paikalle muistuttamaan että paneeli on vain piilossa, ei poistettu.
+function setSeaPanelHidden(panelId, badgeId, hidden){
+  const panel=document.getElementById(panelId);
+  const badge=document.getElementById(badgeId);
+  // Luokka eikä hidden-attribuutti, koska esim. .sea-chart-bottom-left asettaa oman
+  // display:flex-arvonsa, joka muuten ohittaisi selaimen oletus-[hidden]-säännön.
+  if (panel) panel.classList.toggle("sea-panel-hidden", hidden);
+  if (badge) badge.hidden = !hidden;
 }
 function toggleSeaChartSeamarks(show){
   if (!seaChartMap || !seaChartSeamarkLayer) return;
@@ -4830,16 +4863,25 @@ function drawPotentialSpotMarkers(spots,totalElementCount){
     const favId=`potentialFav-${spot.id}-${index}`;
     const center=seaChartMap.getCenter();
     const distance=haversineKm(center.lat,center.lng,spot.lat,spot.lon);
-    const weatherHtml=spot.liveWeather ? `<div class="potential-breakdown"><span>${fi?'Rakenne':'Structure'} ${spot.structureScore}</span><span>${fi?'Keli nyt':'Conditions'} ${spot.weatherScore}</span></div><p class="potential-live">${escapeMapHtml(potentialWeatherSummary(spot))}</p>` : '';
+    const weatherSummaryLine=spot.liveWeather ? `<p class="potential-live">${escapeMapHtml(potentialWeatherSummary(spot))}</p>` : '';
+    const weatherBreakdown=spot.liveWeather ? `<div class="potential-breakdown"><span>${fi?'Rakenne':'Structure'} ${spot.structureScore}</span><span>${fi?'Keli nyt':'Conditions'} ${spot.weatherScore}</span></div>` : '';
+    // Popup näytti aiemmin kaiken kerralla (7-8 kappaletta tekstiä ennen toimintonappeja) - liikaa
+    // luettavaa yhdellä silmäyksellä, varsinkin puhelimella. Oleellisin (mikä, missä, kuinka hyvä,
+    // lyhyt varoitus) näkyy heti; syvempi perustelu ja koko lakiteksti jäävät "Lisätietoja"-taakse.
     marker.bindPopup(`<div class="nearby-popup potential-popup">
       <span class="potential-kind">${escapeMapHtml(spot.kind)}</span>
       <h4>${escapeMapHtml(spot.name)}</h4>
       <p class="potential-score">${spot.liveWeather?(fi?'Kokonaispotentiaali':'Overall potential'):(fi?'Rakenteen potentiaali':'Structure potential')}: ${rankScore}/100 · ${fmtKm(distance)} ${fi?'kartan keskeltä':'from map center'}</p>
       ${potentialAreaNote(spot, fi)}
-      ${weatherHtml}
-      <p class="potential-reason"><strong>${fi?'Miksi tämä näkyy':'Why it is shown'}:</strong> ${escapeMapHtml(spot.reason)}</p>
-      <p><strong>${fi?'Mahdolliset lajit':'Potential species'}:</strong> ${escapeMapHtml(speciesText)}</p>
-      <p class="potential-warning">⚠️ ${escapeMapHtml(spot.warning)} ${fi?'Tarkista aina ajantasaiset luvat ja rajoitukset.':'Always check current permits and restrictions.'}</p>
+      ${weatherSummaryLine}
+      <p class="potential-warning-short">⚠️ ${fi?'Ei navigointiohje - tarkista virallinen kartta.':'Not for navigation - check an official chart.'}</p>
+      <details class="potential-more">
+        <summary class="sea-layer-summary">${fi?'Lisätietoja':'More info'}</summary>
+        ${weatherBreakdown}
+        <p class="potential-reason"><strong>${fi?'Miksi tämä näkyy':'Why it is shown'}:</strong> ${escapeMapHtml(spot.reason)}</p>
+        <p><strong>${fi?'Mahdolliset lajit':'Potential species'}:</strong> ${escapeMapHtml(speciesText)}</p>
+        <p class="potential-warning">⚠️ ${escapeMapHtml(spot.warning)} ${fi?'Tarkista aina ajantasaiset luvat ja rajoitukset.':'Always check current permits and restrictions.'}</p>
+      </details>
       <div class="potential-actions">
         <button class="btn primary" type="button" id="${useId}">${fi?'Laske paikan keli':'Check conditions'}</button>
         <button class="btn" type="button" id="${favId}">${isPotentialFavorite(spot.id)?'★ '+(fi?'Suosikki':'Favorite'):'☆ '+(fi?'Tallenna':'Save')}</button>
@@ -4978,6 +5020,14 @@ function togglePotentialSpots(show){
     potentialSpotLastSpots=[];
     togglePotentialResultsPanel(false);
     return;
+  }
+  // "Lähelläsi" jäi aiemmin tyhjäksi jos kartta oli vielä koko-Suomen näkymässä - käyttäjä ei
+  // tiennyt että pitää zoomata itse ennen kuin mitään näkyy, mikä tuntui rikkinäiseltä. Zoomataan
+  // nyt automaattisesti omalle sijainnille (jos luvat sallivat) tai ainakin nykyisen keskikohdan
+  // lähelle, jotta kytkimen päälle laittaminen näyttää heti jotain sen sijaan että jää tyhjäksi.
+  if (seaChartMap && seaChartMap.getZoom() < 11) {
+    locateSeaChart();
+    seaChartMap.setView(seaChartMap.getCenter(), 12);
   }
   const select=document.getElementById('potentialSpotSpecies');
   if (select && select.querySelector(`option[value="${spSel.value}"]`)) select.value=spSel.value;
@@ -5428,8 +5478,14 @@ function onSeaChartMapClick(latlng){
   if (activateBtn) activateBtn.addEventListener("click", enterSeaChartFullscreen);
   const closeBtn=document.getElementById("seaChartCloseBtn");
   if (closeBtn) closeBtn.addEventListener("click", exitSeaChartFullscreen);
-  const panelsToggleBtn=document.getElementById("seaChartPanelsToggleBtn");
-  if (panelsToggleBtn) panelsToggleBtn.addEventListener("click", toggleSeaChartPanelsHidden);
+  const toolbarCloseBtn=document.getElementById("seaToolbarCloseBtn");
+  if (toolbarCloseBtn) toolbarCloseBtn.addEventListener("click", () => setSeaPanelHidden("seaChartToolbar", "seaToolbarReopenBtn", true));
+  const toolbarReopenBtn=document.getElementById("seaToolbarReopenBtn");
+  if (toolbarReopenBtn) toolbarReopenBtn.addEventListener("click", () => setSeaPanelHidden("seaChartToolbar", "seaToolbarReopenBtn", false));
+  const hudCloseBtn=document.getElementById("seaHudCloseBtn");
+  if (hudCloseBtn) hudCloseBtn.addEventListener("click", () => setSeaPanelHidden("seaChartBottomLeft", "seaHudReopenBtn", true));
+  const hudReopenBtn=document.getElementById("seaHudReopenBtn");
+  if (hudReopenBtn) hudReopenBtn.addEventListener("click", () => setSeaPanelHidden("seaChartBottomLeft", "seaHudReopenBtn", false));
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       const wrap=document.getElementById("seaChartWrap");
