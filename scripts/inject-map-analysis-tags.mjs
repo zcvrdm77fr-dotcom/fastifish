@@ -5,6 +5,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 const path = process.argv[2] || 'index.html';
 let html = await readFile(path, 'utf8');
 
+// Keep every browser entry path on the same analysis bundle version.
 const version = 9;
 const files = [
   'fishing-structures.js',
