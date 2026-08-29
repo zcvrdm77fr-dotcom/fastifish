@@ -22,10 +22,11 @@ jobs:
         run: node scripts/inject-map-analysis-tags.mjs index.html
       - name: Verify resulting HTML
         run: |
-          grep -F '<script src="/fishing-structures.js?v=8"></script>' index.html
-          grep -F '<script src="/depth-structures.js?v=8"></script>' index.html
-          grep -F '<script src="/gtk-substrate.js?v=8"></script>' index.html
-          grep -F '<script src="/gtk-habitats.js?v=8"></script>' index.html
+          grep -F '<script src="/fishing-structures.js?v=9"></script>' index.html
+          grep -F '<script src="/depth-structures.js?v=9"></script>' index.html
+          grep -F '<script src="/gtk-substrate.js?v=9"></script>' index.html
+          grep -F '<script src="/gtk-habitats.js?v=9"></script>' index.html
+          grep -F '<script src="/velmu-fish.js?v=9"></script>' index.html
       - name: Commit index update
         shell: bash
         run: |
