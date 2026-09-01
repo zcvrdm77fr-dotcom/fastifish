@@ -6846,73 +6846,7 @@ async function loadFeed(reset){
   feedLoading = true;
   const listEl = document.getElementById('feedList');
   const statusEl = document.getElementById('feedListStatus');
-  const moreBtn = document.getElementById('feedLoadMoreBtn');
-
-  if (reset) {
-    feedCursor = null;
-    feedHasMore = true;
-    feedPosts = [];
-    showFeedSkeleton();
-  }
-  if (statusEl) statusEl.textContent = '';
-  if (moreBtn) {
-    moreBtn.hidden = true;
-    moreBtn.disabled = true;
-  }
-
-  try {
-    const qs = feedCursor ? `?before=${feedCursor}&limit=20` : '?limit=20';
-    const data = await feedApi('/api/posts' + qs);
-    const posts = data.posts || [];
-    const knownIds = new Set(feedPosts.map(post => post.id));
-    posts.forEach(post => {
-      if (!knownIds.has(post.id)) feedPosts.push(post);
-    });
-    feedHasMore = posts.length === 20;
-    if (posts.length) feedCursor = posts[posts.length - 1].id;
-    feedLoading = false;
-    renderFeedPosts();
-    if (moreBtn) moreBtn.hidden = !feedHasMore;
-  } catch(e) {
-    feedLoading = false;
-    if (listEl && reset) listEl.innerHTML = '';
-    if (statusEl) statusEl.textContent = e.offline ? '' : 'Saaliiden lataus epäonnistui.';
-    if (e.offline) renderFeedAuth();
-  } finally {
-    feedLoading = false;
-    if (moreBtn) moreBtn.disabled = false;
-  }
-}
-
-document.getElementById('feedLoadMoreBtn');
-  if (reset) {
-    feedCursor = null;
-    feedHasMore = true;
-    if (listEl) listEl.innerHTML = '';
-  }
-  if (statusEl) statusEl.textContent = 'Ladataan saaliita...';
-  if (moreBtn) moreBtn.hidden = true;
-
-  try {
-    const qs = feedCursor ? `?before=${feedCursor}&limit=20` : '?limit=20';
-    const data = await feedApi('/api/posts' + qs);
-    const posts = data.posts || [];
-    posts.forEach((p, index) => { if (listEl) listEl.appendChild(renderPostCard(p, index)); });
-    feedHasMore = posts.length === 20;
-    if (posts.length) feedCursor = posts[posts.length - 1].id;
-
-    const totalShown = listEl ? listEl.children.length : 0;
-    if (statusEl) statusEl.textContent = totalShown === 0 ? 'Ei vielä saaliskuvia - ole ensimmäinen!' : '';
-    if (moreBtn) moreBtn.hidden = !feedHasMore;
-  } catch(e) {
-    if (statusEl) statusEl.textContent = e.offline ? '' : 'Saaliiden lataus epäonnistui.';
-    if (e.offline) renderFeedAuth(); // näytä selkeä selitys kirjautumislomakkeen tilalla
-  } finally {
-    feedLoading = false;
-  }
-}
-
-document.getElementById('feedLoadMoreBtn') && document.getElementById('feedLoadMoreBtn').addEventListener('click', () => loadFeed(false));
+  const moreBtn = document.getElementById('feedLoadMoreBtn') && document.getElementById('feedLoadMoreBtn').addEventListener('click', () => loadFeed(false));
 document.getElementById('feedSearchInput')?.addEventListener('input', renderFeedPosts);
 document.getElementById('feedSpeciesFilter')?.addEventListener('change', renderFeedPosts);
 
