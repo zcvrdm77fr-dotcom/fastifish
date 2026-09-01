@@ -6278,14 +6278,23 @@ async function submitComment(postId, wrap, countEl){
 async function deletePost(postId, card){
   if (!confirm('Poistetaanko tämä saaliskuva pysyvästi?')) return;
   try {
-    await feedApi('/api/posts/' + postId + '/delete', {
-      method: 'POST'
-    });
+    try {
+      await feedApi('/api/posts/' + postId + '/delete', {
+        method: 'POST'
+      });
+    } catch (e) {
+      // Tuotannossa voi olla hetken käytössä palvelinversio, jossa on vain vanha
+      // DELETE /api/posts/:id -reitti. Jos POST-reittiä ei löydy, käytetään sitä
+      // automaattisesti, jotta kuvan poisto ei hajoa frontendin päivittyessä ensin.
+      if (e.status !== 404) throw e;
+      await feedApi('/api/posts/' + postId, {
+        method: 'DELETE'
+      });
+    }
     card.remove();
   } catch(e) {
     alert(e.message || 'Poisto epäonnistui.');
-   }
-
+  }
 }
 
 function renderPostCard(post){
