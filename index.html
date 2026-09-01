@@ -445,69 +445,112 @@ main { padding-bottom: 70px; }
 .lure-product-model { font-family: 'Fjalla One', sans-serif; font-size: 1.25rem; margin: 2px 0 2px; }
 .lure-product-type { display: inline-flex; width: fit-content; padding: 4px 10px; border-radius: 999px; background: var(--mist); color: var(--lake-deep); font: 700 .64rem/1 'JetBrains Mono', monospace; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
 
-.feed-auth-card { max-width: 420px; }
-.feed-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.feed-field label { font: 700 .72rem/1 'JetBrains Mono', monospace; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); }
-.feed-field input[type="text"], .feed-field input[type="password"], .feed-field textarea {
-  padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-bright);
-  color: var(--ink); font: 500 .95rem/1.4 inherit;
+#feedi > .section-head { max-width: 760px; margin-bottom: 28px; }
+.feed-auth-card {
+  width: min(680px, 100%); max-width: none; margin-bottom: 34px; padding: clamp(20px, 4vw, 30px);
+  border-radius: 26px; box-shadow: var(--shadow-small);
 }
-.feed-field textarea { resize: vertical; min-height: 70px; }
-.feed-field input:focus, .feed-field textarea:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
-.feed-form-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.feed-switch-mode { border: 0; background: none; padding: 0; color: var(--lake-deep); font-weight: 700; text-decoration: underline; cursor: pointer; }
-.feed-error { color: var(--danger); font-size: .86rem; margin: 4px 0 0; }
-.feed-hint { color: var(--ink-soft); font-size: .8rem; margin: 6px 0 0; }
-.feed-user-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.feed-user-bar strong { font-family: 'Fjalla One', sans-serif; font-size: 1.1rem; font-weight: 400; }
-.feed-post-preview { width: 100%; max-height: 220px; object-fit: contain; background: var(--mist); border-radius: 14px; margin-top: 10px; display: none; }
-.feed-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; margin-top: 22px; }
-.feed-post-card { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--paper-bright); display: flex; flex-direction: column; }
+.feed-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.feed-field label { font: 700 .69rem/1 'JetBrains Mono', monospace; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft); }
+.feed-field input[type="text"], .feed-field input[type="password"], .feed-field textarea {
+  min-height: 48px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper-bright);
+  color: var(--ink); font: 500 .95rem/1.4 inherit; transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.feed-field textarea { resize: vertical; min-height: 94px; }
+.feed-field input:focus, .feed-field textarea:focus { outline: 0; border-color: var(--orange); box-shadow: 0 0 0 4px color-mix(in srgb, var(--orange) 16%, transparent); }
+.feed-form-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.feed-switch-mode { border: 0; background: none; padding: 8px 0; color: var(--lake-deep); font-weight: 700; text-decoration: none; cursor: pointer; }
+.feed-switch-mode:hover { text-decoration: underline; }
+.feed-error { color: var(--danger); font-size: .86rem; margin: 6px 0 0; }
+.feed-hint { color: var(--ink-soft); font-size: .82rem; margin: 8px 0 0; }
+.feed-user-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding-bottom: 18px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
+.feed-user-bar strong { font-size: 1rem; font-weight: 800; }
+.feed-post-preview { width: 100%; max-height: 380px; object-fit: contain; background: var(--mist); border-radius: 18px; margin-top: 12px; display: none; }
+.feed-list {
+  width: min(980px, 100%); display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+  align-items: start; gap: clamp(22px, 3vw, 32px); margin-top: 8px;
+}
+.feed-post-card {
+  overflow: hidden; display: flex; flex-direction: column; min-width: 0;
+  border: 1px solid var(--line); border-radius: 28px; background: var(--paper-bright);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--ink) 8%, transparent);
+  transition: transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+}
+.feed-post-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--lake) 45%, var(--line)); box-shadow: var(--shadow); }
+.feed-post-header { display: flex; align-items: center; gap: 12px; padding: 15px 17px; }
+.feed-post-avatar {
+  flex: 0 0 auto; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--mist); color: var(--lake-deep); font-size: .95rem; font-weight: 800; text-transform: uppercase;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.feed-post-meta { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.feed-post-user { overflow: hidden; color: var(--ink); font-size: .94rem; font-weight: 800; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+.feed-post-time { color: var(--ink-soft); font-size: .75rem; line-height: 1.25; }
 .feed-image-button {
   position: relative; width: 100%; aspect-ratio: var(--feed-image-ratio, 4/3);
-  min-height: 220px; max-height: min(72vh, 620px); display: grid; place-items: center; overflow: hidden;
-  padding: 0; border: 0; background: var(--mist); color: var(--ink-soft); cursor: zoom-in;
+  min-height: 240px; max-height: min(72vh, 620px); display: grid; place-items: center; overflow: hidden;
+  padding: 0; border: 0; border-block: 1px solid var(--line); background: var(--mist); color: var(--ink-soft); cursor: zoom-in;
 }
-.feed-post-image { width: 100%; height: 100%; object-fit: contain; display: block; }
+.feed-post-image { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform .35s ease; }
+.feed-image-button:hover .feed-post-image { transform: scale(1.012); }
+.feed-image-button::after {
+  content: "Avaa kuva"; position: absolute; right: 12px; bottom: 12px; padding: 7px 10px; border-radius: 999px;
+  background: var(--ink-fill); color: var(--paper-bright); font-size: .68rem; font-weight: 800;
+  opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .2s; pointer-events: none;
+}
+.feed-image-button:hover::after, .feed-image-button:focus-visible::after { opacity: .92; transform: translateY(0); }
 .feed-image-button.is-error { cursor: pointer; }
 .feed-image-button.is-error .feed-post-image { visibility: hidden; }
+.feed-image-button.is-error::after { display: none; }
 .feed-image-status { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; font-weight: 700; font-size: .85rem; }
 .feed-image-status[hidden] { display: none; }
 .feed-image-modal {
   position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; padding: 24px;
   background: rgba(8,16,15,.92); backdrop-filter: blur(8px); cursor: zoom-out;
 }
-.feed-image-modal img { display: block; max-width: min(96vw, 1400px); max-height: 92vh; object-fit: contain; border-radius: 12px; box-shadow: 0 18px 70px rgba(0,0,0,.45); cursor: default; }
+.feed-image-modal img { display: block; max-width: min(96vw, 1400px); max-height: 92vh; object-fit: contain; border-radius: 16px; box-shadow: 0 18px 70px rgba(0,0,0,.45); cursor: default; }
 .feed-image-modal-close {
   position: fixed; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
   z-index: 1; width: 44px; height: 44px; border: 1px solid rgba(255,255,255,.35); border-radius: 50%;
   background: rgba(0,0,0,.6); color: #fff; font-size: 1.5rem; cursor: pointer;
 }
-.feed-post-body { padding: 14px 16px 16px; }
-.feed-post-user { font-weight: 700; color: var(--lake-deep); }
-.feed-post-time { color: var(--ink-soft); font-size: .76rem; margin-left: 6px; }
-.feed-post-caption { margin: 8px 0 0; color: var(--ink); font-size: .92rem; word-break: break-word; }
-.feed-post-actions { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
-.feed-action-btn { display: inline-flex; align-items: center; gap: 6px; border: 0; background: transparent; color: var(--ink-soft); font-weight: 700; font-size: .82rem; cursor: pointer; padding: 4px 2px; }
-.feed-action-btn:hover { color: var(--ink); }
+.feed-post-body { padding: 17px; }
+.feed-post-caption { margin: 0 0 16px; color: var(--ink); font-size: 1rem; line-height: 1.5; word-break: break-word; }
+.feed-post-actions { display: flex; align-items: center; gap: 8px; }
+.feed-action-btn {
+  min-height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--mist);
+  color: var(--ink-soft); font-weight: 750; font-size: .82rem; cursor: pointer;
+  transition: transform .16s, color .16s, border-color .16s, background .16s;
+}
+.feed-action-btn:hover { transform: translateY(-1px); color: var(--ink); border-color: var(--lake); }
+.feed-action-btn:active { transform: translateY(0); }
 .feed-action-btn svg { width: 18px; height: 18px; }
-.feed-like-btn.liked { color: var(--danger); }
+.feed-like-btn.liked { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); }
 .feed-like-btn.liked svg { fill: var(--danger); stroke: var(--danger); }
-.feed-delete-btn { margin-left: auto; color: var(--danger); }
-.feed-comments { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.feed-delete-btn { margin-left: auto; border-color: transparent; background: transparent; color: var(--danger); }
+.feed-delete-btn:hover { border-color: color-mix(in srgb, var(--danger) 30%, var(--line)); color: var(--danger); }
+.feed-comments { margin-top: 17px; padding-top: 17px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
 .feed-comments[hidden] { display: none; }
-.feed-comment-item { font-size: .85rem; line-height: 1.4; position: relative; padding-right: 22px; }
-.feed-comment-item .feed-comment-user { font-weight: 700; color: var(--lake-deep); }
-.feed-comment-item .feed-comment-time { color: var(--ink-soft); font-size: .7rem; margin-left: 4px; }
-.feed-comment-item p { margin: 2px 0 0; color: var(--ink); word-break: break-word; }
-.feed-comment-delete-btn { position: absolute; top: 0; right: 0; border: 0; background: transparent; color: var(--danger); cursor: pointer; padding: 2px; line-height: 0; opacity: .6; }
+.feed-comment-list { display: flex; flex-direction: column; gap: 8px; }
+.feed-comment-item { position: relative; padding: 11px 38px 11px 12px; border-radius: 14px; background: var(--mist); font-size: .85rem; line-height: 1.4; }
+.feed-comment-item .feed-comment-user { color: var(--ink); font-weight: 800; }
+.feed-comment-item .feed-comment-time { color: var(--ink-soft); font-size: .7rem; margin-left: 6px; }
+.feed-comment-item p { margin: 4px 0 0; color: var(--ink); word-break: break-word; }
+.feed-comment-delete-btn { position: absolute; top: 9px; right: 9px; border: 0; background: transparent; color: var(--danger); cursor: pointer; padding: 4px; line-height: 0; opacity: .62; }
 .feed-comment-delete-btn:hover { opacity: 1; }
-.feed-comment-delete-btn svg { width: 14px; height: 14px; }
-.feed-comment-form { display: flex; gap: 8px; margin-top: 4px; }
-.feed-comment-input { flex: 1; min-width: 0; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; font-size: .85rem; }
-.feed-comment-status { font-size: .78rem; color: var(--ink-soft); }
-.feed-list-status { color: var(--ink-soft); font-size: .9rem; margin-top: 16px; }
-.feed-load-more { margin-top: 16px; }
+.feed-comment-delete-btn svg { width: 15px; height: 15px; }
+.feed-comment-form { display: flex; gap: 8px; margin-top: 2px; }
+.feed-comment-input {
+  flex: 1; min-width: 0; min-height: 42px; padding: 9px 13px; border: 1px solid var(--line);
+  border-radius: 14px; background: var(--paper); color: var(--ink); font: inherit; font-size: .88rem;
+}
+.feed-comment-input:focus { outline: 0; border-color: var(--orange); box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 14%, transparent); }
+.feed-comment-submit { min-height: 42px; border-radius: 14px; }
+.feed-comment-status { margin: 0; font-size: .78rem; color: var(--ink-soft); }
+.feed-list-status { width: min(980px, 100%); color: var(--ink-soft); font-size: .9rem; margin-top: 18px; }
+.feed-load-more { min-height: 46px; margin-top: 18px; padding-inline: 22px; border-radius: 999px; }
 
 @media (max-width: 680px) {
   .now-badge { position: static; margin-bottom: 10px; }
@@ -6362,14 +6405,38 @@ function openFeedImage(url, alt, trigger){
 }
 
 function renderPostCard(post, index = 0){
-  const card = document.createElement('div');
+  const card = document.createElement('article');
   card.className = 'feed-post-card';
+
+  const header = document.createElement('header');
+  header.className = 'feed-post-header';
+
+  const avatar = document.createElement('span');
+  avatar.className = 'feed-post-avatar';
+  avatar.setAttribute('aria-hidden', 'true');
+  avatar.textContent = String(post.username || '?').trim().charAt(0).toUpperCase() || '?';
+
+  const meta = document.createElement('div');
+  meta.className = 'feed-post-meta';
+
+  const userSpan = document.createElement('span');
+  userSpan.className = 'feed-post-user';
+  userSpan.textContent = post.username;
+
+  const timeSpan = document.createElement('time');
+  timeSpan.className = 'feed-post-time';
+  timeSpan.textContent = formatFeedTime(post.createdAt);
+
+  meta.append(userSpan, timeSpan);
+  header.append(avatar, meta);
+  card.appendChild(header);
 
   const imageUrl = feedAssetUrl(post.imageUrl);
   const imageButton = document.createElement('button');
   imageButton.type = 'button';
   imageButton.className = 'feed-image-button';
   imageButton.setAttribute('aria-label', 'Avaa saaliskuva suurena');
+  imageButton.title = 'Avaa kuva';
 
   const img = document.createElement('img');
   img.className = 'feed-post-image';
@@ -6425,16 +6492,6 @@ function renderPostCard(post, index = 0){
 
   const body = document.createElement('div');
   body.className = 'feed-post-body';
-
-  const userSpan = document.createElement('span');
-  userSpan.className = 'feed-post-user';
-  userSpan.textContent = post.username;
-  body.appendChild(userSpan);
-
-  const timeSpan = document.createElement('span');
-  timeSpan.className = 'feed-post-time';
-  timeSpan.textContent = formatFeedTime(post.createdAt);
-  body.appendChild(timeSpan);
 
   if (post.caption) {
     const p = document.createElement('p');
