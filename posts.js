@@ -257,13 +257,10 @@ router.post('/:id/comments', requireAuth, async (req, res) => {
   });
 });
 
-// Yksittäisen kommentin poisto - kommentin kirjoittaja tai ylläpitäjä. Tätä ei ollut ennen: ainoa
-// tapa poistaa yksi asiaton kommentti oli poistaa koko julkaisu, mikä ei ole käyttökelpoista jos
-// kuva itsessään on asiallinen mutta joku kommentoi sen alle vihapuhetta.
-// POST .../delete eikä HTTP DELETE -verbiä, samasta syystä kuin julkaisunkin poistoreitti: kun
-// sivusto ja API ovat eri osoitteissa, selain esilähettää DELETE-pyynnön OPTIONS-tarkistuksella,
-// eikä CORS-välikerros (server.js) salli DELETE-verbiä Access-Control-Allow-Methods-otsakkeessa.
-router.post('/:id/comments/:commentId/delete', requireAuth, (req, res) => {
+// Yksittäisen kommentin poisto - kommentin kirjoittaja tai ylläpitäjä. Sama käsittelijä
+// palvelee sekä nykyistä POST .../delete -reittiä että REST-tyylistä DELETE-reittiä. Näin
+// frontend ja API voivat päivittyä eri aikaan ilman että käyttäjä saa pelkän "Ei löytynyt" -virheen.
+function deleteCommentHandler(req, res){
   const post = findPostOr404(req, res);
   if (!post) return;
   const commentId = parseInt(req.params.commentId, 10);
@@ -278,8 +275,11 @@ router.post('/:id/comments/:commentId/delete', requireAuth, (req, res) => {
     return res.status(403).json({ error: 'Et voi poistaa tätä kommenttia.' });
   }
   db.prepare('DELETE FROM comments WHERE id = ?').run(comment.id);
-  res.json({ ok: true });
-});
+  res.json({ ok: true, id: comment.id });
+}
+
+router.post('/:id/comments/:commentId/delete', requireAuth, deleteCommentHandler);
+router.delete('/:id/comments/:commentId', requireAuth, deleteCommentHandler);
 
 // Julkaisun saa poistaa sen omistaja tai sivuston ylläpitäjä (ADMIN_USERNAMES). Poistetaan sekä
 // tietokantarivi (likes/comments poistuvat mukana ON DELETE CASCADE -viittausten ansiosta) että
