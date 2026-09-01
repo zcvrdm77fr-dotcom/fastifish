@@ -6329,7 +6329,18 @@ async function toggleLike(postId, btn){
 async function deleteComment(postId, commentId, item, countEl){
   if (!confirm('Poistetaanko tämä kommentti?')) return;
   try {
-    await feedApi('/api/posts/' + postId + '/comments/' + commentId + '/delete', { method: 'POST' });
+    try {
+      await feedApi('/api/posts/' + postId + '/comments/' + commentId + '/delete', {
+        method: 'POST'
+      });
+    } catch (e) {
+      // Jos tuotannossa oleva API-versio ei tunne POST-poistoreittiä, kokeile samaa
+      // taaksepäin yhteensopivaa DELETE-reittiä automaattisesti.
+      if (e.status !== 404) throw e;
+      await feedApi('/api/posts/' + postId + '/comments/' + commentId, {
+        method: 'DELETE'
+      });
+    }
     item.remove();
     if (countEl) countEl.textContent = String(Math.max(0, (parseInt(countEl.textContent, 10) || 1) - 1));
   } catch(e) {
