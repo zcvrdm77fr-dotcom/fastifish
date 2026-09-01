@@ -457,11 +457,11 @@ main { padding-bottom: 70px; }
 }
 #feedi > .section-head { grid-area: head; max-width: 840px; margin-bottom: 30px; }
 .feed-auth-card {
-  grid-area: auth; position: sticky; top: 96px; width: 100%; max-width: none; margin: 0;
-  padding: clamp(20px, 3vw, 28px); border-radius: 26px; box-shadow: var(--shadow-small);
+  grid-area: auth; position: sticky; top: 96px; width: 100%; max-width: none; max-height: calc(100vh - 112px); margin: 0;
+  padding: clamp(20px, 3vw, 28px); overflow-y: auto; overscroll-behavior: contain; border-radius: 26px; box-shadow: var(--shadow-small);
 }
 .feed-toolbar {
-  grid-area: toolbar; display: flex; align-items: end; justify-content: space-between; gap: 18px;
+  grid-area: toolbar; display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 18px;
   margin-bottom: 18px; padding: 14px 0; border-bottom: 1px solid var(--line);
 }
 .feed-toolbar-title { display: flex; flex-direction: column; gap: 2px; }
@@ -621,9 +621,12 @@ main { padding-bottom: 70px; }
   background-size: 220% 100%; animation: feed-shimmer 1.25s ease-in-out infinite;
 }
 @keyframes feed-shimmer { to { background-position-x: -220%; } }
+@media (prefers-reduced-motion: reduce) {
+  .feed-skeleton :is(.feed-skeleton-avatar, .feed-skeleton-line, .feed-skeleton-image, .feed-skeleton-body) { animation: none; }
+}
 @media (max-width: 900px) {
   #feedi.page.active { display: block; }
-  .feed-auth-card { position: static; margin-bottom: 26px; }
+  .feed-auth-card { position: static; max-height: none; overflow: visible; margin-bottom: 26px; }
   .feed-toolbar { margin-top: 4px; }
 }
 @media (max-width: 620px) {
@@ -6866,10 +6869,13 @@ async function loadFeed(reset){
     const posts = data.posts || [];
     const knownIds = new Set(feedPosts.map(post => post.id));
     posts.forEach(post => {
-      if (!knownIds.has(post.id)) feedPosts.push(post);
+      if (knownIds.has(post.id)) return;
+      knownIds.add(post.id);
+      feedPosts.push(post);
     });
     feedHasMore = posts.length === 20;
     if (posts.length) feedCursor = posts[posts.length - 1].id;
+    feedLoading = false;
     renderFeedPosts();
     if (moreBtn) moreBtn.hidden = !feedHasMore;
   } catch(e) {
