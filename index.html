@@ -452,12 +452,12 @@ main { padding-bottom: 70px; }
 }
 .feed-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .feed-field label { font: 700 .69rem/1 'JetBrains Mono', monospace; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft); }
-.feed-field input[type="text"], .feed-field input[type="password"], .feed-field textarea {
+.feed-field input[type="text"], .feed-field input[type="password"], .feed-field input[type="number"], .feed-field select, .feed-field textarea {
   min-height: 48px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper-bright);
   color: var(--ink); font: 500 .95rem/1.4 inherit; transition: border-color .2s, box-shadow .2s, background .2s;
 }
 .feed-field textarea { resize: vertical; min-height: 94px; }
-.feed-field input:focus, .feed-field textarea:focus { outline: 0; border-color: var(--orange); box-shadow: 0 0 0 4px color-mix(in srgb, var(--orange) 16%, transparent); }
+.feed-field input:focus, .feed-field select:focus, .feed-field textarea:focus { outline: 0; border-color: var(--orange); box-shadow: 0 0 0 4px color-mix(in srgb, var(--orange) 16%, transparent); }
 .feed-form-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .feed-switch-mode { border: 0; background: none; padding: 8px 0; color: var(--lake-deep); font-weight: 700; text-decoration: none; cursor: pointer; }
 .feed-switch-mode:hover { text-decoration: underline; }
@@ -466,6 +466,26 @@ main { padding-bottom: 70px; }
 .feed-user-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding-bottom: 18px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
 .feed-user-bar strong { font-size: 1rem; font-weight: 800; }
 .feed-post-preview { width: 100%; max-height: 380px; object-fit: contain; background: var(--mist); border-radius: 18px; margin-top: 12px; display: none; }
+.feed-catch-details { margin: 18px 0; border: 1px solid var(--line); border-radius: 18px; background: color-mix(in srgb, var(--mist) 58%, transparent); overflow: hidden; }
+.feed-catch-details summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 17px; color: var(--ink); font-weight: 800; cursor: pointer; list-style: none; }
+.feed-catch-details summary::-webkit-details-marker { display: none; }
+.feed-catch-details summary::after { content: "+"; color: var(--lake-deep); font-size: 1.2rem; line-height: 1; }
+.feed-catch-details[open] summary::after { content: "−"; }
+.feed-catch-optional { margin-left: auto; color: var(--ink-soft); font: 700 .66rem/1 'JetBrains Mono', monospace; letter-spacing: .05em; text-transform: uppercase; }
+.feed-catch-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; padding: 4px 17px 17px; border-top: 1px solid var(--line); }
+.feed-catch-grid .feed-field { margin-top: 14px; margin-bottom: 0; }
+.feed-catch-wide { grid-column: 1 / -1; }
+.feed-catch-privacy { grid-column: 1 / -1; margin: 10px 0 0; color: var(--ink-soft); font-size: .76rem; }
+.feed-catch-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 16px; }
+.feed-catch-stat { min-width: 0; padding: 10px 11px; border-radius: 14px; background: var(--mist); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 72%, transparent); }
+.feed-catch-stat-wide { grid-column: 1 / -1; }
+.feed-catch-stat-label { display: block; margin-bottom: 4px; color: var(--ink-soft); font: 700 .64rem/1 'JetBrains Mono', monospace; letter-spacing: .05em; text-transform: uppercase; }
+.feed-catch-stat-value { display: block; overflow: hidden; color: var(--ink); font-size: .88rem; font-weight: 750; line-height: 1.3; text-overflow: ellipsis; }
+@media (max-width: 520px) {
+  .feed-catch-grid { grid-template-columns: 1fr; }
+  .feed-catch-wide, .feed-catch-privacy { grid-column: auto; }
+}
+
 .feed-list {
   width: min(980px, 100%); display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
@@ -5987,6 +6007,49 @@ function renderFeedAuth(){
         <input type="file" id="feedPostImage" accept="image/*">
         <img id="feedPostPreview" class="feed-post-preview" alt="">
       </div>
+      <details class="feed-catch-details" open>
+        <summary>
+          <span>Saalistiedot</span>
+          <span class="feed-catch-optional">Vapaaehtoiset</span>
+        </summary>
+        <div class="feed-catch-grid">
+          <div class="feed-field feed-catch-wide">
+            <label for="feedPostSpecies">Kalalaji</label>
+            <select id="feedPostSpecies">
+              <option value="">Ei valintaa</option>
+              <optgroup label="Petokalat">
+                <option>Ahven</option><option>Hauki</option><option>Kuha</option><option>Toutain</option>
+              </optgroup>
+              <optgroup label="Lohikalat">
+                <option>Lohi</option><option>Taimen</option><option>Kirjolohi</option><option>Siika</option>
+                <option>Muikku</option><option>Harjus</option>
+              </optgroup>
+              <optgroup label="Muut yleiset saaliskalat">
+                <option>Made</option><option>Särki</option><option>Lahna</option><option>Säyne</option>
+                <option>Sorva</option><option>Suutari</option><option>Karppi</option><option>Kiiski</option>
+                <option>Salakka</option><option>Muu kala</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="feed-field">
+            <label for="feedPostWeight">Paino (kg)</label>
+            <input type="number" id="feedPostWeight" inputmode="decimal" min="0.01" max="500" step="0.01" placeholder="esim. 1,25">
+          </div>
+          <div class="feed-field">
+            <label for="feedPostLength">Pituus (cm)</label>
+            <input type="number" id="feedPostLength" inputmode="decimal" min="0.1" max="500" step="0.1" placeholder="esim. 46">
+          </div>
+          <div class="feed-field feed-catch-wide">
+            <label for="feedPostLocation">Saantipaikka</label>
+            <input type="text" id="feedPostLocation" maxlength="100" placeholder="esim. Päijänne, Asikkala">
+          </div>
+          <div class="feed-field feed-catch-wide">
+            <label for="feedPostLure">Viehe tai syötti</label>
+            <input type="text" id="feedPostLure" maxlength="100" placeholder="esim. 10 cm vihreä jigi">
+          </div>
+          <p class="feed-catch-privacy">Kaikki kentät ovat vapaaehtoisia. Jaa tarkka kalapaikka vain, jos haluat sen näkyvän kaikille.</p>
+        </div>
+      </details>
       <div class="feed-form-actions">
         <button class="btn primary" type="button" id="feedPostSubmitBtn">Julkaise</button>
       </div>
@@ -6147,6 +6210,11 @@ async function handleFeedNewPost(){
 }
   const captionEl = document.getElementById('feedPostCaption');
   const fileInput = document.getElementById('feedPostImage');
+  const speciesEl = document.getElementById('feedPostSpecies');
+  const weightEl = document.getElementById('feedPostWeight');
+  const lengthEl = document.getElementById('feedPostLength');
+  const locationEl = document.getElementById('feedPostLocation');
+  const lureEl = document.getElementById('feedPostLure');
   const errorEl = document.getElementById('feedPostError');
   const submitBtn = document.getElementById('feedPostSubmitBtn');
   const file = fileInput.files && fileInput.files[0];
@@ -6167,6 +6235,11 @@ async function handleFeedNewPost(){
  const formData = new FormData();
  formData.append('image', uploadFile, uploadFile.name);
  formData.append('caption', captionEl.value.trim());
+ if (speciesEl.value) formData.append('species', speciesEl.value);
+ if (weightEl.value) formData.append('weightKg', weightEl.value);
+ if (lengthEl.value) formData.append('lengthCm', lengthEl.value);
+ if (locationEl.value.trim()) formData.append('catchLocation', locationEl.value.trim());
+ if (lureEl.value.trim()) formData.append('lure', lureEl.value.trim());
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Tarkistetaan ja julkaistaan...';
@@ -6174,6 +6247,11 @@ async function handleFeedNewPost(){
     await feedApi('/api/posts', { method: 'POST', body: formData });
     captionEl.value = '';
     fileInput.value = '';
+    speciesEl.value = '';
+    weightEl.value = '';
+    lengthEl.value = '';
+    locationEl.value = '';
+    lureEl.value = '';
     document.getElementById('feedPostPreview').style.display = 'none';
     await loadFeed(true);
   } catch(e) {
@@ -6498,6 +6576,41 @@ function renderPostCard(post, index = 0){
     p.className = 'feed-post-caption';
     p.textContent = post.caption;
     body.appendChild(p);
+  }
+
+  const catchDetails = [
+    post.species ? { label: 'Kalalaji', value: post.species } : null,
+    Number(post.weightKg) > 0 ? {
+      label: 'Paino',
+      value: Number(post.weightKg).toLocaleString('fi-FI', { maximumFractionDigits: 2 }) + ' kg'
+    } : null,
+    Number(post.lengthCm) > 0 ? {
+      label: 'Pituus',
+      value: Number(post.lengthCm).toLocaleString('fi-FI', { maximumFractionDigits: 1 }) + ' cm'
+    } : null,
+    post.catchLocation ? { label: 'Saantipaikka', value: post.catchLocation, wide: true } : null,
+    post.lure ? { label: 'Viehe / syötti', value: post.lure, wide: true } : null
+  ].filter(Boolean);
+
+  if (catchDetails.length) {
+    const catchMeta = document.createElement('div');
+    catchMeta.className = 'feed-catch-meta';
+    catchDetails.forEach(detail => {
+      const item = document.createElement('div');
+      item.className = 'feed-catch-stat' + (detail.wide ? ' feed-catch-stat-wide' : '');
+
+      const label = document.createElement('span');
+      label.className = 'feed-catch-stat-label';
+      label.textContent = detail.label;
+
+      const value = document.createElement('span');
+      value.className = 'feed-catch-stat-value';
+      value.textContent = detail.value;
+
+      item.append(label, value);
+      catchMeta.appendChild(item);
+    });
+    body.appendChild(catchMeta);
   }
 
   const actions = document.createElement('div');

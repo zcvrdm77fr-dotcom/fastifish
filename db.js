@@ -59,3 +59,22 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_comments_post_created
     ON comments(post_id, created_at);
 `);
+
+// Lisää vapaaehtoiset saalistiedot myös jo olemassa olevaan tietokantaan. CREATE TABLE IF NOT
+// EXISTS ei lisää uusia sarakkeita vanhaan tauluun, joten tehdään pieni idempotentti migraatio.
+const postColumns = new Set(
+  db.prepare('PRAGMA table_info(posts)').all().map(column => column.name)
+);
+const optionalPostColumns = [
+  ['species', 'TEXT'],
+  ['weight_g', 'INTEGER'],
+  ['length_cm', 'REAL'],
+  ['catch_location', 'TEXT'],
+  ['lure', 'TEXT']
+];
+for (const [name, type] of optionalPostColumns) {
+  if (!postColumns.has(name)) {
+    db.exec(`ALTER TABLE posts ADD COLUMN ${name} ${type}`);
+  }
+}
+

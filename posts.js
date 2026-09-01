@@ -14,6 +14,23 @@ const MAX_CAPTION_LEN = 280;
 const MAX_COMMENT_LEN = 300;
 const POST_COOLDOWN_MS = 60 * 1000; // roskapostin/tulvimisen esto - yksi julkaisu per minuutti per käyttäjä
 const COMMENT_COOLDOWN_MS = 5 * 1000; // kevyempi esto kommenteille - ei tarvitse yhtä pitkää taukoa kuin kuvajulkaisulle
+const ALLOWED_SPECIES = new Set([
+  'Ahven', 'Hauki', 'Kuha', 'Toutain',
+  'Lohi', 'Taimen', 'Kirjolohi', 'Siika', 'Muikku', 'Harjus',
+  'Made', 'Särki', 'Lahna', 'Säyne', 'Sorva', 'Suutari',
+  'Karppi', 'Kiiski', 'Salakka', 'Muu kala'
+]);
+
+function optionalText(value, maxLength){
+  if (typeof value !== 'string') return null;
+  const text = value.trim().slice(0, maxLength);
+  return text || null;
+}
+
+function optionalNumber(value){
+  if (value === undefined || value === null || String(value).trim() === '') return null;
+  return Number(String(value).trim().replace(',', '.'));
+}
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -35,6 +52,7 @@ const router = express.Router();
 function selectPosts({ before, limit, myUserId }){
   const sql = `
     SELECT posts.id, posts.caption, posts.created_at, posts.image_path, posts.user_id,
+      posts.species, posts.weight_g, posts.length_cm, posts.catch_location, posts.lure,
       users.username,
       (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count,
       (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
@@ -52,6 +70,11 @@ function serializePost(r, myUserId, myIsAdmin){
     id: r.id,
     username: r.username,
     caption: r.caption,
+    species: r.species || null,
+    weightKg: r.weight_g === null ? null : r.weight_g / 1000,
+    lengthCm: r.length_cm === null ? null : r.length_cm,
+    catchLocation: r.catch_location || null,
+    lure: r.lure || null,
     createdAt: r.created_at,
     imageUrl: `/uploads/${r.image_path}`,
     likeCount: r.like_count,
@@ -75,6 +98,21 @@ router.post('/', requireAuth, upload.single('image'), async (req, res) => {
     return res.status(400).json({ error: 'Liitä saaliskuva.' });
   }
   const caption = typeof req.body.caption === 'string' ? req.body.caption.trim().slice(0, MAX_CAPTION_LEN) : '';
+  const species = optionalText(req.body.species, 40);
+  const weightKg = optionalNumber(req.body.weightKg);
+  const lengthCm = optionalNumber(req.body.lengthCm);
+  const catchLocation = optionalText(req.body.catchLocation, 100);
+  const lure = optionalText(req.body.lure, 100);
+
+  if (species && !ALLOWED_SPECIES.has(species)) {
+    return res.status(400).json({ error: 'Valitse kalalaji valikosta.' });
+  }
+  if (weightKg !== null && (!Number.isFinite(weightKg) || weightKg <= 0 || weightKg > 500)) {
+    return res.status(400).json({ error: 'Painon tulee olla 0,01–500 kg.' });
+  }
+  if (lengthCm !== null && (!Number.isFinite(lengthCm) || lengthCm <= 0 || lengthCm > 500)) {
+    return res.status(400).json({ error: 'Pituuden tulee olla 0,1–500 cm.' });
+  }
 
   const recent = db.prepare(`
     SELECT created_at FROM posts WHERE user_id = ? ORDER BY id DESC LIMIT 1
@@ -98,7 +136,8 @@ router.post('/', requireAuth, upload.single('image'), async (req, res) => {
   }
 
   try {
-    const modResult = await moderatePost(processedBuffer, 'image/jpeg', caption);
+    const moderationText = [caption, species, catchLocation, lure].filter(Boolean).join('\n');
+    const modResult = await moderatePost(processedBuffer, 'image/jpeg', moderationText);
     if (!modResult.allowed) {
       return res.status(400).json({ error: modResult.reason || 'Kuva ei läpäissyt sisällöntarkistusta.' });
     }
@@ -112,14 +151,25 @@ router.post('/', requireAuth, upload.single('image'), async (req, res) => {
   const filename = `${crypto.randomBytes(16).toString('hex')}.jpg`;
   await fs.promises.writeFile(path.join(UPLOADS_DIR, filename), processedBuffer);
 
+  const weightG = weightKg === null ? null : Math.round(weightKg * 1000);
+  const roundedLengthCm = lengthCm === null ? null : Math.round(lengthCm * 10) / 10;
   const info = db.prepare(`
-    INSERT INTO posts (user_id, image_path, caption, status) VALUES (?, ?, ?, 'published')
-  `).run(req.user.id, filename, caption);
+    INSERT INTO posts (
+      user_id, image_path, caption, species, weight_g, length_cm, catch_location, lure, status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'published')
+  `).run(
+    req.user.id, filename, caption, species, weightG, roundedLengthCm, catchLocation, lure
+  );
 
   res.status(201).json({
     id: info.lastInsertRowid,
     username: req.user.username,
     caption,
+    species,
+    weightKg,
+    lengthCm: roundedLengthCm,
+    catchLocation,
+    lure,
     imageUrl: `/uploads/${filename}`,
     likeCount: 0,
     commentCount: 0,
