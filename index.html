@@ -241,6 +241,11 @@ body::before {
 button, input, select { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
+:where(button, a, input, select, summary):focus-visible {
+  outline: 3px solid var(--orange);
+  outline: 3px solid color-mix(in srgb, var(--orange) 72%, white);
+  outline-offset: 3px;
+}
 .shell { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
 
 .topbar {
@@ -507,8 +512,9 @@ main { padding-bottom: 70px; }
 .nearby-map-wrap.is-empty { display: none; }
 #nearbyMap { width: 100%; height: 100%; background: var(--mist); }
 #seaChartMap { width: 100%; height: 100%; background: var(--mist); }
-.sea-chart-compact-head { margin-bottom: 10px; }
+.sea-chart-compact-head { margin-bottom: 16px; }
 .sea-chart-compact-head h2 { margin: 0; }
+.sea-chart-compact-head p { max-width: 660px; margin: 0; color: var(--ink-soft); }
 .sea-chart-full-wrap.sea-chart-full-wrap { height: 560px; margin-bottom: 10px; }
 @media (max-width: 680px) {
   .sea-chart-full-wrap.sea-chart-full-wrap { height: calc(100vh - 210px); height: calc(100svh - 210px); min-height: 480px; border-radius: 16px; }
@@ -637,20 +643,35 @@ html[data-theme="dark"] .sea-chart-reopen-badge { background: rgba(20, 37, 34, .
   left: 8px;
   right: 8px;
   z-index: 900;
-  max-width: 360px;
-  padding: 32px 10px 10px;
-  border-radius: 14px;
+  max-width: 350px;
+  padding: 32px 12px 12px;
+  border-radius: 18px;
   background: rgba(255, 253, 247, .96);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-small);
+  backdrop-filter: blur(16px);
 }
 html[data-theme="dark"] .sea-chart-toolbar { background: rgba(20, 37, 34, .96); }
 .sea-chart-maximized .sea-chart-toolbar { max-height: calc(100svh - 96px); overflow-y: auto; overscroll-behavior: contain; }
 .sea-route-panel-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.sea-route-details { margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line); }
+.sea-route-details .sea-layer-summary { width: 100%; justify-content: space-between; }
+.sea-route-details .sea-route-panel-buttons { margin-top: 7px; }
 .sea-toolbar-row2 { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
 .sea-chart-toolbar .btn { min-height: 36px; padding: 0 12px; font-size: .78rem; white-space: nowrap; }
 .sea-chart-toolbar .btn.armed { outline: 2px solid var(--orange); outline-offset: 1px; }
 .sea-chart-toggle { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: .78rem; color: var(--ink); cursor: pointer; white-space: nowrap; }
+.sea-primary-toggle {
+  width: 100%;
+  min-height: 42px;
+  margin: 0;
+  padding: 8px 11px;
+  border: 1px solid rgba(47,111,115,.3);
+  border-radius: 12px;
+  background: var(--mist);
+  background: color-mix(in srgb, var(--mist) 72%, transparent);
+}
+.sea-primary-toggle input { flex: 0 0 auto; }
 .sea-route-status { margin-top: 8px; color: var(--ink-soft); font-size: .78rem; }
 .sea-spot-panel { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
 .sea-spot-panel[hidden] { display: none; }
@@ -660,6 +681,18 @@ html[data-theme="dark"] .sea-chart-toolbar { background: rgba(20, 37, 34, .96); 
 .sea-spot-panel .potential-list-toggle { min-height: 34px; padding-inline: 10px; flex: none; }
 .sea-spot-toprow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .sea-spot-status { min-height: 26px; flex: 1 1 auto; display: flex; align-items: center; color: var(--ink-soft); font-size: .72rem; line-height: 1.3; }
+.sea-spot-status.is-loading::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  margin-right: 7px;
+  border: 2px solid var(--line);
+  border-top-color: var(--lake);
+  border-radius: 50%;
+  animation: sea-spot-spin .7s linear infinite;
+}
+@keyframes sea-spot-spin { to { transform: rotate(360deg); } }
 .potential-mini-legend { display: flex; flex-wrap: wrap; gap: 7px 10px; margin-top: 8px; color: var(--ink-soft); font-size: .67rem; }
 .potential-mini-legend span { display: inline-flex; align-items: center; gap: 4px; }
 .potential-legend-dot { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(23,52,47,.18); }
@@ -821,7 +854,6 @@ html[data-theme="dark"] .potential-results-panel { background: rgba(20,37,34,.97
 .check b { color: var(--ink); }
 
 footer { margin-top: 45px; padding: 36px 0 44px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .82rem; }
-button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
 
 @media (max-width: 900px) {
   .nav { gap: 18px; }
@@ -844,7 +876,10 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--orange); outlin
   .tab-btn { min-height: 50px; padding-inline: 12px; }
   .sea-spot-toprow { flex-direction: column; align-items: stretch; }
   .sea-spot-panel .potential-list-toggle { width: 100%; }
-  .potential-results-panel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 42%; border-radius: 16px; }
+  .sea-chart-toolbar { left: 8px; right: 8px; max-width: none; padding-inline: 10px; }
+  .sea-chart-compact-head { text-align: left; }
+  .sea-chart-compact-head p { font-size: .9rem; }
+  .potential-results-panel { top: auto; left: 8px; right: 8px; bottom: 72px; width: auto; max-height: 48%; border-radius: 16px; }
   .hero { gap: 54px; padding-block: 48px 52px; }
   h1 { font-size: clamp(4rem, 24vw, 6.2rem); }
   .hero-copy::after { bottom: -28px; }
@@ -1846,12 +1881,13 @@ body.device-phone .columns {
   <section id="merikartta" class="page">
     <div class="section-head sea-chart-compact-head">
       <h2>Kalastus- ja merikartta</h2>
+      <p>Avaa Suomen kalapaikat heti kartalle, suodata kohdekalan mukaan ja tarkista paras paikka ennen lähtöä.</p>
     </div>
     <div class="nearby-map-wrap sea-chart-full-wrap" id="seaChartWrap">
       <div id="seaChartMap"></div>
 
       <div class="sea-chart-activate-overlay" id="seaChartActivateOverlay">
-        <button type="button" class="btn primary sea-chart-activate-btn" id="seaChartActivateBtn">🔍 Avaa kartta suureksi</button>
+        <button type="button" class="btn primary sea-chart-activate-btn" id="seaChartActivateBtn">🔍 Avaa kalastuskartta</button>
       </div>
       <div class="sea-chart-top-actions" id="seaChartTopActions">
         <button type="button" class="sea-chart-close-btn" id="seaChartCloseBtn" hidden>✕ Sulje</button>
@@ -1868,15 +1904,10 @@ body.device-phone .columns {
 
       <div class="sea-chart-toolbar" id="seaChartToolbar">
         <button type="button" class="sea-panel-close" id="seaToolbarCloseBtn" aria-label="Piilota työkalupalkki" title="Piilota työkalupalkki">✕</button>
-        <div class="sea-route-panel-buttons">
-          <button class="btn primary" id="seaSetStartBtn" type="button">📍 Lähtöpaikka</button>
-          <button class="btn primary" id="seaSetEndBtn" type="button">🏁 Määränpää</button>
-          <button class="btn" id="seaRouteClearBtn" type="button">Tyhjennä</button>
-        </div>
         <div class="sea-toolbar-row2">
-          <label class="sea-chart-toggle sea-chart-toggle-compact">
-            <input type="checkbox" id="potentialSpotsToggle">
-            <span id="potentialSpotsToggleLabel">🎣 Kalaspotit lähelläsi</span>
+          <label class="sea-chart-toggle sea-chart-toggle-compact sea-primary-toggle">
+            <input type="checkbox" id="potentialSpotsToggle" checked>
+            <span id="potentialSpotsToggleLabel">🎣 Parhaat kalapaikat</span>
           </label>
           <button class="btn" id="seaChartLocateBtn" type="button">📍 Paikanna</button>
           <details class="sea-layer-details">
@@ -1966,7 +1997,15 @@ body.device-phone .columns {
             </div>
           </details>
         </div>
-        <div class="sea-route-status" id="seaRouteStatus">Valitse "Lähtöpaikka", sitten klikkaa kartalta.</div>
+        <details class="sea-route-details">
+          <summary class="sea-layer-summary">🧭 Reitti ja veneily</summary>
+          <div class="sea-route-panel-buttons">
+            <button class="btn primary" id="seaSetStartBtn" type="button">📍 Lähtöpaikka</button>
+            <button class="btn primary" id="seaSetEndBtn" type="button">🏁 Määränpää</button>
+            <button class="btn" id="seaRouteClearBtn" type="button">Tyhjennä</button>
+          </div>
+          <div class="sea-route-status" id="seaRouteStatus">Valitse "Lähtöpaikka", sitten klikkaa kartalta.</div>
+        </details>
       </div>
       <button type="button" class="sea-chart-reopen-badge sea-toolbar-reopen-badge" id="seaToolbarReopenBtn" hidden title="Näytä työkalupalkki">🧭</button>
 
@@ -2401,6 +2440,7 @@ const UI_TRANS = {
     page_varusteet_title: "Varusteet ja taktiikat",
     page_varusteet_desc: "Pieni muistilista ennen kuin lähdet rannalle tai veneelle.",
     page_merikartta_title: "Kalastus- ja merikartta",
+    page_merikartta_desc: "Avaa Suomen kalapaikat heti kartalle, suodata kohdekalan mukaan ja tarkista paras paikka ennen lähtöä.",
     page_linkit_title: "Hyötylinkit",
     page_linkit_desc: "Ostohakuja, sääpalveluja ja virallisia linkkejä samassa nipussa.",
     label_pressure_delta: "Ilmanpaineen muutos (hPa/3h)",
@@ -2494,6 +2534,7 @@ const UI_TRANS = {
     page_varusteet_title: "Gear & Tactics",
     page_varusteet_desc: "A quick checklist before heading out to the shore or boat.",
     page_merikartta_title: "Fishing & Marine Map",
+    page_merikartta_desc: "Open fishing spots across Finland instantly, filter by target species, and compare the best options before heading out.",
     page_linkit_title: "Useful Links",
     page_linkit_desc: "License searches, weather services, and official links in one bundle.",
     label_pressure_delta: "Barometric Change (hPa/3h)",
@@ -3351,7 +3392,7 @@ function setLanguage(lang, saveToLocalStorage = true) {
     "uistimet": { h2: trans.page_uistimet_title, p: trans.page_uistimet_desc },
     "kalalajit": { h2: trans.page_kalalajit_title, p: trans.page_kalalajit_desc },
     "varusteet": { h2: trans.page_varusteet_title, p: trans.page_varusteet_desc },
-    "merikartta": { h2: trans.page_merikartta_title },
+    "merikartta": { h2: trans.page_merikartta_title, p: trans.page_merikartta_desc },
     "oppaat": { h2: trans.page_oppaat_title, p: trans.page_oppaat_desc },
     "linkit": { h2: trans.page_linkit_title, p: trans.page_linkit_desc }
   };
@@ -3973,14 +4014,10 @@ function ensureLeaflet(){
   leafletLoadPromise=new Promise((resolve,reject)=>{
     const css=document.createElement("link");
     css.rel="stylesheet";
-    css.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-    css.integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=";
-    css.crossOrigin="";
+    css.href="/vendor/leaflet/leaflet.css";
     document.head.appendChild(css);
     const script=document.createElement("script");
-    script.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-    script.integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=";
-    script.crossOrigin="";
+    script.src="/vendor/leaflet/leaflet.js";
     script.onload=()=>resolve();
     script.onerror=reject;
     document.head.appendChild(script);
@@ -4066,7 +4103,7 @@ function renderSeaChart(){
   seaChartMap=L.map(mapEl,{
     scrollWheelZoom:false, zoomControl:false, dragging:false,
     touchZoom:false, doubleClickZoom:false, boxZoom:false, keyboard:false
-  }).setView([63.0,26.0],5);
+  }).setView([64.2,26.0],6);
   // Avaimeton OpenStreetMap-karttapohja. CARTO-rasterilaatat vaativat nykyisin API-avaimen
   // ja näyttävät ilman sitä kartan päällä "API key required" -vesileiman.
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
@@ -4093,6 +4130,8 @@ function renderSeaChart(){
   seaChartMap.on('moveend', updateSeaChartWeather);
   updateOfficialLayers();
   updateSeaChartWeather();
+  const potentialToggle=document.getElementById('potentialSpotsToggle');
+  if (potentialToggle && potentialToggle.checked) togglePotentialSpots(true);
 
   // Kaappausvaiheen kuuntelija (capture:true) tarvitaan, koska Leaflet pysäyttää klikkauksen
   // etenemisen karttatasolle jos käyttäjä klikkaa suoraan väylän/merkin/alueen päälle - ilman
@@ -4536,8 +4575,8 @@ const OVERPASS_ENDPOINTS = [
 // Koko Suomen vahvat kohteet toimitetaan sivun mukana kompaktina tiedostona. Selain ei enää
 // odota ruuhkaista Overpass-hakua karttaa siirrettäessä. Aineistossa ovat vain nimenomaisesti
 // kalastukseen merkityt paikat sekä nimetyt kosket, virtasuvannot, matalikot ja salmet.
-const POTENTIAL_SPOT_DATA_URL = 'kalapaikat.json';
-const POTENTIAL_SPOT_MIN_ZOOM = 8;
+const POTENTIAL_SPOT_DATA_URL = '/kalapaikat.json';
+const POTENTIAL_SPOT_MIN_ZOOM = 6;
 const POTENTIAL_SPOT_MAX_RESULTS = 120;
 const FINLAND_DATA_BOUNDS = { south:59.3, west:19.0, north:70.3, east:31.7 };
 
@@ -4555,9 +4594,12 @@ let potentialWeatherFetchSignature='';
 let potentialResultsUserClosed=false;
 let potentialFavoriteSetCache=null;
 
-function potentialSpotStatus(fi, en){
+function potentialSpotStatus(fi, en, loading=false){
   const el=document.getElementById('potentialSpotStatus');
-  if (el) el.textContent=currentLang==='fi' ? fi : en;
+  if (el) {
+    el.textContent=currentLang==='fi' ? fi : en;
+    el.classList.toggle('is-loading',loading);
+  }
 }
 
 function escapeMapHtml(value){
@@ -4585,6 +4627,17 @@ function classifyPotentialSpot(el, selectedSpecies){
   const t=el.tags||{};
   const ll=potentialElementLatLng(el);
   if (!ll) return null;
+
+  const leisure=String(t.leisure||'').toLowerCase();
+  const water=String(t.water||'').toLowerCase();
+  const amenity=String(t.amenity||'').toLowerCase();
+  const manMade=String(t.man_made||'').toLowerCase();
+  const clearlyNotFishable=
+    ['swimming_pool','wading_pool','water_park','splash_pad'].includes(leisure) ||
+    ['swimming_pool','wading_pool','splash_pool','wastewater','sewage'].includes(water) ||
+    amenity==='fountain' || water==='fountain' ||
+    ['wastewater_plant','sewage_treatment'].includes(manMade);
+  if (clearlyNotFishable || t.fishing==='no' || t.access==='private' || t.access==='no') return null;
 
   const isTaggedFishing=t.leisure==='fishing' || t.sport==='fishing' || (t.fishing && t.fishing!=='no');
   const isRapids=t.waterway==='rapids' || t.water==='rapids';
@@ -4978,7 +5031,7 @@ function renderPotentialSpotMarkers(elements){
 
 async function loadPotentialSpotDataset(){
   if (!potentialSpotDataPromise) {
-    potentialSpotDataPromise=fetch(POTENTIAL_SPOT_DATA_URL,{cache:'force-cache'})
+    potentialSpotDataPromise=fetch(POTENTIAL_SPOT_DATA_URL,{cache:'force-cache',credentials:'same-origin'})
       .then(res=>{
         if (!res.ok) throw new Error(`spot dataset failed: ${res.status}`);
         return res.json();
@@ -5026,8 +5079,8 @@ async function updatePotentialSpots(){
     return;
   }
 
-  if (!potentialSpotDataPromise) {
-    potentialSpotStatus('Avataan Suomen valmista kalapaikka-aineistoa…','Opening the bundled Finland fishing-spot data…');
+  if (!potentialSpotDatasetMeta) {
+    potentialSpotStatus('Avataan Suomen valmista kalapaikka-aineistoa…','Opening the bundled Finland fishing-spot data…',true);
   }
   try {
     const allElements=await loadPotentialSpotDataset();
@@ -5065,13 +5118,10 @@ function togglePotentialSpots(show){
     togglePotentialResultsPanel(false);
     return;
   }
-  // "Lähelläsi" jäi aiemmin tyhjäksi jos kartta oli vielä koko-Suomen näkymässä - käyttäjä ei
-  // tiennyt että pitää zoomata itse ennen kuin mitään näkyy, mikä tuntui rikkinäiseltä. Zoomataan
-  // nyt automaattisesti omalle sijainnille (jos luvat sallivat) tai ainakin nykyisen keskikohdan
-  // lähelle, jotta kytkimen päälle laittaminen näyttää heti jotain sen sijaan että jää tyhjäksi.
-  if (seaChartMap && seaChartMap.getZoom() < 11) {
-    locateSeaChart();
-    seaChartMap.setView(seaChartMap.getCenter(), 12);
+  // Näytä koko Suomen valmiit paikat heti. Käyttäjä voi tarkentaa omaan sijaintiinsa
+  // erillisellä Paikanna-painikkeella, joten kartta ei käynnistä GPS:ää yllättäen.
+  if (seaChartMap && seaChartMap.getZoom() < POTENTIAL_SPOT_MIN_ZOOM) {
+    seaChartMap.setView([64.2,26.0],POTENTIAL_SPOT_MIN_ZOOM);
   }
   const select=document.getElementById('potentialSpotSpecies');
   if (select && select.querySelector(`option[value="${spSel.value}"]`)) select.value=spSel.value;
@@ -5082,7 +5132,7 @@ function updatePotentialSpotLanguage(){
   const fi=currentLang==='fi';
   const toggleLabel=document.getElementById('potentialSpotsToggleLabel');
   const speciesLabel=document.getElementById('potentialSpotSpeciesLabel');
-  if (toggleLabel) toggleLabel.textContent=fi?'🎣 Kalaspotit lähelläsi':'🎣 Fishing spots near you';
+  if (toggleLabel) toggleLabel.textContent=fi?'🎣 Parhaat kalapaikat':'🎣 Best fishing spots';
   if (speciesLabel) speciesLabel.textContent=fi?'Kalalaji':'Species';
   const select=document.getElementById('potentialSpotSpecies');
   if (select) {
@@ -7049,6 +7099,12 @@ setGauge(0);
 setLanguage(currentLang, false);
 renderConsentBanner();
 initGeoLocation();
+
+// Lämmitä pieni, sivuston mukana toimitettava paikkatiedosto selaimen ollessa vapaana.
+// Kartta avautuu tämän ansiosta useimmiten heti, mutta alkusivun kriittinen lataus ei odota dataa.
+const warmPotentialSpotDataset=()=>loadPotentialSpotDataset().catch(()=>{});
+if ('requestIdleCallback' in window) requestIdleCallback(warmPotentialSpotDataset,{timeout:3000});
+else setTimeout(warmPotentialSpotDataset,1800);
 
 (function(){
   const switchEl=document.getElementById("intentSwitch");

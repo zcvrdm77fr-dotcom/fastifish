@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v9';
+const CACHE_VERSION = 'v10';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/manifest.json',
@@ -6,6 +6,13 @@ const STATIC_ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
   '/apple-touch-icon.png',
+  '/vendor/leaflet/leaflet.css',
+  '/vendor/leaflet/leaflet.js',
+  '/vendor/leaflet/images/layers-2x.png',
+  '/vendor/leaflet/images/layers.png',
+  '/vendor/leaflet/images/marker-icon-2x.png',
+  '/vendor/leaflet/images/marker-icon.png',
+  '/vendor/leaflet/images/marker-shadow.png',
   '/kalapaikat.json',
   '/fishing-structures.js',
   '/depth-structures.js',

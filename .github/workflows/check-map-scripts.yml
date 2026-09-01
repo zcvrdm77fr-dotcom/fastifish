@@ -9,7 +9,10 @@ on:
       - 'gtk-substrate.js'
       - 'gtk-habitats.js'
       - 'velmu-fish.js'
+      - 'index.html'
+      - 'scripts/check-index-inline.mjs'
       - 'sw.js'
+      - 'vendor/leaflet/**'
       - '.github/workflows/check-map-scripts.yml'
 
 permissions:
@@ -31,3 +34,5 @@ jobs:
           node --check gtk-habitats.js
           node --check velmu-fish.js
           node --check sw.js
+      - name: Check inline JavaScript syntax
+        run: node scripts/check-index-inline.mjs index.html
