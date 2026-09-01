@@ -445,10 +445,47 @@ main { padding-bottom: 70px; }
 .lure-product-model { font-family: 'Fjalla One', sans-serif; font-size: 1.25rem; margin: 2px 0 2px; }
 .lure-product-type { display: inline-flex; width: fit-content; padding: 4px 10px; border-radius: 999px; background: var(--mist); color: var(--lake-deep); font: 700 .64rem/1 'JetBrains Mono', monospace; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
 
-#feedi > .section-head { max-width: 760px; margin-bottom: 28px; }
+#feedi.page.active {
+  display: grid; grid-template-columns: minmax(0, 680px) minmax(280px, 1fr);
+  grid-template-areas:
+    "head head"
+    "toolbar auth"
+    "list auth"
+    "status auth"
+    "more auth";
+  align-items: start; column-gap: clamp(28px, 5vw, 64px);
+}
+#feedi > .section-head { grid-area: head; max-width: 840px; margin-bottom: 30px; }
 .feed-auth-card {
-  width: min(680px, 100%); max-width: none; margin-bottom: 34px; padding: clamp(20px, 4vw, 30px);
-  border-radius: 26px; box-shadow: var(--shadow-small);
+  grid-area: auth; position: sticky; top: 96px; width: 100%; max-width: none; margin: 0;
+  padding: clamp(20px, 3vw, 28px); border-radius: 26px; box-shadow: var(--shadow-small);
+}
+.feed-toolbar {
+  grid-area: toolbar; display: flex; align-items: end; justify-content: space-between; gap: 18px;
+  margin-bottom: 18px; padding: 14px 0; border-bottom: 1px solid var(--line);
+}
+.feed-toolbar-title { display: flex; flex-direction: column; gap: 2px; }
+.feed-toolbar-title strong { font-size: 1.05rem; }
+.feed-visible-count { color: var(--ink-soft); font-size: .76rem; }
+.feed-toolbar-controls { display: flex; align-items: center; gap: 8px; }
+.feed-search, .feed-filter {
+  min-height: 42px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper-bright);
+  color: var(--ink); font: 600 .84rem/1 inherit;
+}
+.feed-search { width: min(220px, 32vw); padding: 9px 14px; }
+.feed-filter { max-width: 170px; padding: 9px 32px 9px 13px; }
+.feed-search:focus, .feed-filter:focus { outline: 0; border-color: var(--orange); box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 14%, transparent); }
+.feed-composer-prompt { display: flex; flex-direction: column; gap: 14px; }
+.feed-composer-copy { display: flex; flex-direction: column; gap: 3px; }
+.feed-composer-copy strong { font-size: 1.04rem; }
+.feed-composer-copy span { color: var(--ink-soft); font-size: .84rem; }
+.feed-composer-toggle { width: 100%; min-height: 48px; border-radius: 14px; }
+.feed-composer-form { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
+.feed-composer-form[hidden] { display: none; }
+.feed-composer-identity { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.feed-composer-avatar {
+  width: 38px; height: 38px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%;
+  background: var(--mist); color: var(--lake-deep); font-weight: 800; box-shadow: inset 0 0 0 1px var(--line);
 }
 .feed-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .feed-field label { font: 700 .69rem/1 'JetBrains Mono', monospace; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft); }
@@ -487,9 +524,8 @@ main { padding-bottom: 70px; }
 }
 
 .feed-list {
-  width: min(980px, 100%); display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
-  align-items: start; gap: clamp(22px, 3vw, 32px); margin-top: 8px;
+  grid-area: list; width: 100%; display: grid; grid-template-columns: minmax(0, 1fr);
+  align-items: start; gap: 26px; margin: 0;
 }
 .feed-post-card {
   overflow: hidden; display: flex; flex-direction: column; min-width: 0;
@@ -569,8 +605,33 @@ main { padding-bottom: 70px; }
 .feed-comment-input:focus { outline: 0; border-color: var(--orange); box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 14%, transparent); }
 .feed-comment-submit { min-height: 42px; border-radius: 14px; }
 .feed-comment-status { margin: 0; font-size: .78rem; color: var(--ink-soft); }
-.feed-list-status { width: min(980px, 100%); color: var(--ink-soft); font-size: .9rem; margin-top: 18px; }
-.feed-load-more { min-height: 46px; margin-top: 18px; padding-inline: 22px; border-radius: 999px; }
+.feed-list-status { grid-area: status; width: 100%; color: var(--ink-soft); font-size: .9rem; margin-top: 18px; }
+.feed-load-more { grid-area: more; width: fit-content; min-height: 46px; margin-top: 18px; padding-inline: 22px; border-radius: 999px; }
+.feed-skeleton { overflow: hidden; border: 1px solid var(--line); border-radius: 28px; background: var(--paper-bright); }
+.feed-skeleton-head { height: 72px; padding: 15px 17px; display: flex; align-items: center; gap: 12px; }
+.feed-skeleton-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--mist); }
+.feed-skeleton-lines { flex: 1; display: grid; gap: 8px; }
+.feed-skeleton-line { height: 10px; border-radius: 999px; background: var(--mist); }
+.feed-skeleton-line:first-child { width: 42%; }
+.feed-skeleton-line:last-child { width: 28%; }
+.feed-skeleton-image { aspect-ratio: 4/3; background: var(--mist); }
+.feed-skeleton-body { height: 104px; margin: 18px; border-radius: 16px; background: var(--mist); }
+.feed-skeleton :is(.feed-skeleton-avatar, .feed-skeleton-line, .feed-skeleton-image, .feed-skeleton-body) {
+  background-image: linear-gradient(100deg, transparent 20%, color-mix(in srgb, var(--paper-bright) 72%, transparent) 45%, transparent 70%);
+  background-size: 220% 100%; animation: feed-shimmer 1.25s ease-in-out infinite;
+}
+@keyframes feed-shimmer { to { background-position-x: -220%; } }
+@media (max-width: 900px) {
+  #feedi.page.active { display: block; }
+  .feed-auth-card { position: static; margin-bottom: 26px; }
+  .feed-toolbar { margin-top: 4px; }
+}
+@media (max-width: 620px) {
+  .feed-toolbar { align-items: stretch; flex-direction: column; gap: 12px; }
+  .feed-toolbar-controls { width: 100%; }
+  .feed-search { width: 100%; min-width: 0; flex: 1; }
+  .feed-filter { width: 44%; min-width: 126px; }
+}
 
 @media (max-width: 680px) {
   .now-badge { position: static; margin-bottom: 10px; }
@@ -2124,6 +2185,23 @@ body.device-phone .columns {
       <p>Kirjaudu sisään ja jaa saaliskuvasi muiden kalastajien nähtäväksi. Kuvat ja käyttäjänimet tarkistetaan automaattisesti ennen julkaisua.</p>
     </div>
     <div class="content-card feed-auth-card" id="feedAuthCard"></div>
+    <div class="feed-toolbar" aria-label="Saalisfeedin haku ja suodatus">
+      <div class="feed-toolbar-title">
+        <strong>Tuoreimmat saaliit</strong>
+        <span class="feed-visible-count" id="feedVisibleCount"></span>
+      </div>
+      <div class="feed-toolbar-controls">
+        <input class="feed-search" id="feedSearchInput" type="search" placeholder="Hae feedistä…" aria-label="Hae saaliita">
+        <select class="feed-filter" id="feedSpeciesFilter" aria-label="Suodata kalalajin mukaan">
+          <option value="">Kaikki lajit</option>
+          <option>Ahven</option><option>Hauki</option><option>Kuha</option><option>Toutain</option>
+          <option>Lohi</option><option>Taimen</option><option>Kirjolohi</option><option>Siika</option>
+          <option>Muikku</option><option>Harjus</option><option>Made</option><option>Särki</option>
+          <option>Lahna</option><option>Säyne</option><option>Sorva</option><option>Suutari</option>
+          <option>Karppi</option><option>Kiiski</option><option>Salakka</option><option>Muu kala</option>
+        </select>
+      </div>
+    </div>
     <div class="feed-list" id="feedList"></div>
     <p class="feed-list-status" id="feedListStatus">Ladataan saaliita...</p>
     <button class="btn feed-load-more" id="feedLoadMoreBtn" type="button" hidden>Lataa lisää</button>
@@ -5883,6 +5961,7 @@ let feedAuthMode = 'login'; // 'login' | 'signup'
 let feedCursor = null;      // pienin tähän mennessä ladattu postauksen id (sivutus)
 let feedHasMore = true;
 let feedLoading = false;
+let feedPosts = [];
 let feedApiOffline = false; // tosi jos palvelinta ei ole määritetty tai se ei vastaa
 
 // Saalisfeedin palvelin voi olla eri osoitteessa kuin itse sivusto: GitHub Pages tarjoilee vain
@@ -5995,10 +6074,21 @@ function renderFeedAuth(){
   if (feedUser) {
     card.innerHTML = `
       <div class="feed-user-bar">
-        <span>Kirjautuneena: <strong>${escapeHtml(feedUser.username)}</strong></span>
+        <div class="feed-composer-identity">
+          <span class="feed-composer-avatar" aria-hidden="true">${escapeHtml(String(feedUser.username || '?').charAt(0).toUpperCase())}</span>
+          <span>Kirjautuneena: <strong>${escapeHtml(feedUser.username)}</strong></span>
+        </div>
         <button class="btn" type="button" id="feedLogoutBtn">Kirjaudu ulos</button>
       </div>
-      <div class="feed-field" style="margin-top:16px;">
+      <div class="feed-composer-prompt">
+        <div class="feed-composer-copy">
+          <strong>Jaa uusi saalis</strong>
+          <span>Lisää kuva ja halutessasi saalistiedot.</span>
+        </div>
+        <button class="btn primary feed-composer-toggle" type="button" id="feedComposerToggle" aria-expanded="false">＋ Lisää julkaisu</button>
+      </div>
+      <div class="feed-composer-form" id="feedComposerForm" hidden>
+      <div class="feed-field">
         <label for="feedPostCaption">Uusi saalis</label>
         <textarea id="feedPostCaption" maxlength="280" placeholder="Kerro saaliista..."></textarea>
       </div>
@@ -6055,7 +6145,17 @@ function renderFeedAuth(){
       </div>
       <p class="feed-hint">Kuva ja teksti tarkistetaan automaattisesti ennen julkaisua - epäasiallinen sisältö hylätään.</p>
       <p class="feed-error" id="feedPostError" hidden></p>
+      </div>
     `;
+    const composerToggle = document.getElementById('feedComposerToggle');
+    const composerForm = document.getElementById('feedComposerForm');
+    composerToggle.addEventListener('click', () => {
+      const willOpen = composerForm.hidden;
+      composerForm.hidden = !willOpen;
+      composerToggle.setAttribute('aria-expanded', String(willOpen));
+      composerToggle.textContent = willOpen ? '− Sulje julkaisija' : '＋ Lisää julkaisu';
+      if (willOpen) document.getElementById('feedPostCaption').focus();
+    });
     document.getElementById('feedLogoutBtn').addEventListener('click', handleFeedLogout);
     document.getElementById('feedPostSubmitBtn').addEventListener('click', handleFeedNewPost);
     const fileInput = document.getElementById('feedPostImage');
@@ -6253,6 +6353,13 @@ async function handleFeedNewPost(){
     locationEl.value = '';
     lureEl.value = '';
     document.getElementById('feedPostPreview').style.display = 'none';
+    const composerForm = document.getElementById('feedComposerForm');
+    const composerToggle = document.getElementById('feedComposerToggle');
+    if (composerForm) composerForm.hidden = true;
+    if (composerToggle) {
+      composerToggle.setAttribute('aria-expanded', 'false');
+      composerToggle.textContent = '＋ Lisää julkaisu';
+    }
     await loadFeed(true);
   } catch(e) {
     errorEl.textContent = e.message;
@@ -6319,6 +6426,11 @@ async function toggleLike(postId, btn){
     btn.classList.toggle('liked', data.liked);
     const countEl = btn.querySelector('.feed-like-count');
     if (countEl) countEl.textContent = data.likeCount;
+    const post = feedPosts.find(item => item.id === postId);
+    if (post) {
+      post.likedByMe = data.liked;
+      post.likeCount = data.likeCount;
+    }
   } catch(e) {
     // Hiljainen epäonnistuminen (esim. verkkokatkos) - painike jää ennalleen, voi yrittää uudelleen.
   } finally {
@@ -6343,6 +6455,7 @@ async function deleteComment(postId, commentId, item, countEl){
     }
     item.remove();
     if (countEl) countEl.textContent = String(Math.max(0, (parseInt(countEl.textContent, 10) || 1) - 1));
+    updateFeedPostCommentCount(postId, -1);
   } catch(e) {
     alert(e.message || 'Poisto epäonnistui.');
   }
@@ -6419,6 +6532,7 @@ async function submitComment(postId, wrap, countEl){
     input.value = '';
     if (statusEl) statusEl.textContent = '';
     if (countEl) countEl.textContent = String((parseInt(countEl.textContent, 10) || 0) + 1);
+    updateFeedPostCommentCount(postId, 1);
   } catch(e) {
     if (statusEl) statusEl.textContent = e.message || 'Kommentin lähetys epäonnistui.';
   } finally {
@@ -6442,7 +6556,8 @@ async function deletePost(postId, card){
         method: 'DELETE'
       });
     }
-    card.remove();
+    feedPosts = feedPosts.filter(post => post.id !== postId);
+    renderFeedPosts();
   } catch(e) {
     alert(e.message || 'Poisto epäonnistui.');
   }
@@ -6672,12 +6787,104 @@ function renderPostCard(post, index = 0){
   return card;
 }
 
+function updateFeedPostCommentCount(postId, delta){
+  const post = feedPosts.find(item => item.id === postId);
+  if (post) post.commentCount = Math.max(0, Number(post.commentCount || 0) + delta);
+}
+
+function feedSearchText(post){
+  return [post.username, post.caption, post.species, post.catchLocation, post.lure]
+    .filter(Boolean).join(' ').toLocaleLowerCase('fi-FI');
+}
+
+function renderFeedPosts(){
+  const listEl = document.getElementById('feedList');
+  const statusEl = document.getElementById('feedListStatus');
+  const countEl = document.getElementById('feedVisibleCount');
+  const searchEl = document.getElementById('feedSearchInput');
+  const speciesEl = document.getElementById('feedSpeciesFilter');
+  if (!listEl) return;
+
+  const query = String(searchEl && searchEl.value || '').trim().toLocaleLowerCase('fi-FI');
+  const species = String(speciesEl && speciesEl.value || '');
+  const visible = feedPosts.filter(post => {
+    if (species && post.species !== species) return false;
+    return !query || feedSearchText(post).includes(query);
+  });
+
+  listEl.innerHTML = '';
+  visible.forEach((post, index) => listEl.appendChild(renderPostCard(post, index)));
+  if (countEl) countEl.textContent = feedPosts.length
+    ? visible.length + ' / ' + feedPosts.length + ' ladatusta julkaisusta'
+    : '';
+
+  if (statusEl && !feedLoading) {
+    statusEl.textContent = feedPosts.length === 0
+      ? 'Ei vielä saaliskuvia – ole ensimmäinen!'
+      : (visible.length === 0 ? 'Näillä hakuehdoilla ei löytynyt saaliita.' : '');
+  }
+}
+
+function showFeedSkeleton(){
+  const listEl = document.getElementById('feedList');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+  for (let i = 0; i < 2; i += 1) {
+    const skeleton = document.createElement('article');
+    skeleton.className = 'feed-skeleton';
+    skeleton.setAttribute('aria-hidden', 'true');
+    skeleton.innerHTML =
+      '<div class="feed-skeleton-head"><span class="feed-skeleton-avatar"></span>' +
+      '<span class="feed-skeleton-lines"><i class="feed-skeleton-line"></i><i class="feed-skeleton-line"></i></span></div>' +
+      '<div class="feed-skeleton-image"></div><div class="feed-skeleton-body"></div>';
+    listEl.appendChild(skeleton);
+  }
+}
+
 async function loadFeed(reset){
   if (feedLoading) return;
   feedLoading = true;
   const listEl = document.getElementById('feedList');
   const statusEl = document.getElementById('feedListStatus');
   const moreBtn = document.getElementById('feedLoadMoreBtn');
+
+  if (reset) {
+    feedCursor = null;
+    feedHasMore = true;
+    feedPosts = [];
+    showFeedSkeleton();
+  }
+  if (statusEl) statusEl.textContent = '';
+  if (moreBtn) {
+    moreBtn.hidden = true;
+    moreBtn.disabled = true;
+  }
+
+  try {
+    const qs = feedCursor ? `?before=${feedCursor}&limit=20` : '?limit=20';
+    const data = await feedApi('/api/posts' + qs);
+    const posts = data.posts || [];
+    const knownIds = new Set(feedPosts.map(post => post.id));
+    posts.forEach(post => {
+      if (!knownIds.has(post.id)) feedPosts.push(post);
+    });
+    feedHasMore = posts.length === 20;
+    if (posts.length) feedCursor = posts[posts.length - 1].id;
+    feedLoading = false;
+    renderFeedPosts();
+    if (moreBtn) moreBtn.hidden = !feedHasMore;
+  } catch(e) {
+    feedLoading = false;
+    if (listEl && reset) listEl.innerHTML = '';
+    if (statusEl) statusEl.textContent = e.offline ? '' : 'Saaliiden lataus epäonnistui.';
+    if (e.offline) renderFeedAuth();
+  } finally {
+    feedLoading = false;
+    if (moreBtn) moreBtn.disabled = false;
+  }
+}
+
+document.getElementById('feedLoadMoreBtn');
   if (reset) {
     feedCursor = null;
     feedHasMore = true;
@@ -6706,6 +6913,8 @@ async function loadFeed(reset){
 }
 
 document.getElementById('feedLoadMoreBtn') && document.getElementById('feedLoadMoreBtn').addEventListener('click', () => loadFeed(false));
+document.getElementById('feedSearchInput')?.addEventListener('input', renderFeedPosts);
+document.getElementById('feedSpeciesFilter')?.addEventListener('change', renderFeedPosts);
 
 async function initFeedPage(){
   await fetchFeedUser();
