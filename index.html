@@ -1345,7 +1345,7 @@ html[data-theme="dark"] .theme-toggle-btn .icon-moon { display: none; }
   background: rgba(244, 240, 229, 0.95);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--line);
-  height: 64px;
+  height: calc(70px + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0);
   box-shadow: 0 -4px 20px rgba(23, 52, 47, 0.08);
 }
@@ -1355,7 +1355,7 @@ body.device-phone .mobile-bottom-nav {
   align-items: center;
 }
 body.device-phone {
-  padding-bottom: calc(76px + env(safe-area-inset-bottom, 0)) !important;
+  padding-bottom: calc(82px + env(safe-area-inset-bottom, 0)) !important;
 }
 body.device-phone .topbar .tabs {
   display: none !important;
@@ -1372,15 +1372,16 @@ body.device-phone .topbar .tabs {
   background: transparent;
   color: var(--ink-soft);
   cursor: pointer;
-  font-size: 0.72rem;
+  min-width: 0;
+  font-size: 0.7rem;
   font-weight: 700;
   gap: 3px;
   transition: all 0.2s ease;
-  padding: 4px 0;
+  padding: 6px 2px 4px;
 }
 .mobile-nav-item svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   stroke: currentColor;
   stroke-width: 2.2;
   transition: transform 0.2s, stroke 0.2s;
@@ -1583,13 +1584,87 @@ body.device-phone .columns {
   grid-template-columns: 1fr !important;
   gap: 12px !important;
 }
+
+/* Mobile-first app shell: tärkein sisältö ja peukalonavigaatio ensin. */
+body.device-phone .topbar {
+  position: sticky !important;
+  top: 0;
+  z-index: 1000;
+}
+body.device-phone .nav {
+  min-height: 58px !important;
+  padding: 0 !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+body.device-phone .brand { gap: 8px; padding: 0 !important; font-size: 1.08rem; }
+body.device-phone .brand-mark { width: 34px; height: 34px; }
+body.device-phone .topbar-actions {
+  width: auto !important;
+  margin: 0 0 0 auto !important;
+  align-self: center !important;
+  justify-content: flex-end !important;
+  gap: 7px !important;
+}
+body.device-phone .theme-toggle-btn { width: 36px; height: 36px; }
+body.device-phone .lang-selector { gap: 1px; padding: 2px 4px; }
+body.device-phone .lang-btn { min-height: 32px; padding: 4px 7px; font-size: .72rem; }
+body.device-phone .hero { display: block !important; padding-block: 12px 8px !important; }
+body.device-phone .hero-copy, body.device-phone .site-intro { display: none !important; }
+body.device-phone .hero.hero-solo { display: none !important; }
+body.device-phone .hero-panel {
+  width: 100%; max-width: none; padding: 16px !important; border-radius: 18px !important;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 7%, transparent) !important;
+}
+body.device-phone .hero-panel::before { display: none; }
+body.device-phone .panel-title { margin-bottom: 14px; font-size: 1.25rem; }
+body.device-phone .controls { gap: 11px !important; }
+body.device-phone .refresh { min-height: 52px; }
+body.device-phone main { padding-bottom: 28px; }
+body.device-phone .page { scroll-margin-top: 66px; }
+body.device-phone .section-head h2, body.device-phone .section-head p { text-align: left !important; }
+body.device-phone .section-head h2 { font-size: 2rem !important; }
+body.device-phone .section-head p { margin-inline: 0 !important; line-height: 1.45; }
+body.device-phone .content-card { border-radius: 16px; }
+body.device-phone footer { margin-top: 24px; padding: 22px 0 28px; }
+body.device-phone .feed-toolbar { padding-inline: 2px; }
+body.device-phone .feed-toolbar-title strong { font-size: 1.8rem; }
+body.device-phone .feed-auth-card { padding: 16px; border-radius: 16px; }
+body.device-phone .feed-post-card { border-radius: 14px; }
+body.device-phone .feed-post-header { padding: 12px 13px; }
+body.device-phone .feed-post-body { padding: 13px; }
+
+.mobile-more-sheet {
+  position: fixed; inset: 0; z-index: 9998; display: grid; align-items: end;
+  background: color-mix(in srgb, var(--ink) 48%, transparent); backdrop-filter: blur(4px);
+}
+.mobile-more-sheet[hidden] { display: none; }
+.mobile-more-panel {
+  width: 100%; padding: 10px 12px calc(82px + env(safe-area-inset-bottom, 0));
+  border: 1px solid var(--line); border-bottom: 0; border-radius: 24px 24px 0 0;
+  background: var(--paper-bright); box-shadow: 0 -18px 48px rgba(13,33,29,.24);
+}
+.mobile-more-handle { width: 42px; height: 4px; margin: 0 auto 14px; border-radius: 999px; background: var(--line); }
+.mobile-more-title { display: flex; align-items: center; justify-content: space-between; margin: 0 4px 12px; }
+.mobile-more-title strong { font-size: 1rem; }
+.mobile-more-close { width: 38px; height: 38px; border: 0; border-radius: 50%; background: var(--mist); color: var(--ink); font-size: 1.2rem; cursor: pointer; }
+.mobile-more-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
+.mobile-more-item {
+  min-height: 58px; display: flex; align-items: center; gap: 11px; padding: 11px 13px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--paper); color: var(--ink);
+  font-weight: 750; text-align: left; cursor: pointer;
+}
+.mobile-more-item svg { width: 21px; height: 21px; flex: 0 0 auto; stroke: var(--lake-deep); }
+.mobile-more-item.active { border-color: var(--orange); background: color-mix(in srgb, var(--orange) 8%, var(--paper)); }
+body.mobile-menu-open { overflow: hidden; }
 </style>
 <!-- AdSense-skripti EI lataudu tässä automaattisesti. Se injektoidaan dynaamisesti loadAdSense()-funktiolla
      vasta kun käyttäjä on hyväksynyt evästeet ("cookie_consent" = "all"), ks. sivun lopun <script>. -->
 <!-- Saalisfeedin palvelimen osoite. Muokkaa feed-config.js:ää, älä tätä riviä. -->
 <script src="feed-config.js"></script>
 </head>
-<body>
+<body class="device-phone">
 
 <div id="consentBanner" class="consent-banner hidden"></div>
 
@@ -3681,14 +3756,25 @@ function setLanguage(lang, saveToLocalStorage = true) {
     }
   }
 
-  // Update mobile bottom nav labels if they exist
-  document.querySelectorAll(".mobile-nav-item").forEach(btn => {
+  // Update mobile navigation and the thumb-friendly More sheet.
+  const mobileTabMap = lang === 'fi'
+    ? { kelimittari:'Keli', uistimet:'Uistimet', merikartta:'Kartta', feedi:'Saaliit', kalalajit:'Kalat', varusteet:'Varusteet', oppaat:'Oppaat', linkit:'Linkit' }
+    : { kelimittari:'Weather', uistimet:'Lures', merikartta:'Map', feedi:'Catches', kalalajit:'Fish', varusteet:'Gear', oppaat:'Guides', linkit:'Links' };
+  document.querySelectorAll(".mobile-nav-item[data-page], .mobile-more-item").forEach(btn => {
     const pageId = btn.dataset.page;
     const labelSpan = btn.querySelector(".m-nav-label");
-    if (labelSpan && tabMap[pageId]) {
-      labelSpan.textContent = tabMap[pageId];
+    if (labelSpan && mobileTabMap[pageId]) {
+      labelSpan.textContent = mobileTabMap[pageId];
     }
   });
+  const mobileNav = document.getElementById("mobileBottomNav");
+  if (mobileNav) mobileNav.setAttribute('aria-label', lang === 'fi' ? 'Päänavigaatio' : 'Main navigation');
+  const moreNavLabel = document.querySelector(".mobile-nav-item[data-more-menu] .m-nav-label");
+  if (moreNavLabel) moreNavLabel.textContent = lang === 'fi' ? 'Lisää' : 'More';
+  const moreTitle = document.getElementById("mobileMoreTitle");
+  if (moreTitle) moreTitle.textContent = lang === 'fi' ? 'Lisää palveluita' : 'More services';
+  const moreClose = document.querySelector(".mobile-more-close");
+  if (moreClose) moreClose.setAttribute('aria-label', lang === 'fi' ? 'Sulje' : 'Close');
   
   // Update dynamic location labels if they are "Oma sijaintisi" or "Your Location"
   Object.keys(DYNAMIC_LOCATIONS).forEach(key => {
@@ -5947,7 +6033,10 @@ function showPage(id){
   const tabId = id === "uistinDetail" ? "uistimet" : id;
   document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===tabId));
-  document.querySelectorAll(".mobile-nav-item").forEach(b=>b.classList.toggle("active",b.dataset.page===tabId));
+  const mobileMorePages = ["kalalajit", "varusteet", "oppaat", "linkit"];
+  document.querySelectorAll(".mobile-nav-item[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===tabId));
+  document.querySelector(".mobile-nav-item[data-more-menu]")?.classList.toggle("active", mobileMorePages.includes(tabId));
+  document.querySelectorAll(".mobile-more-item").forEach(b=>b.classList.toggle("active",b.dataset.page===tabId));
   const hero = document.querySelector(".hero");
   hero.classList.toggle("hero-solo", id!=="kelimittari");
   hero.classList.toggle("hero-feed-hidden", id==="feedi");
@@ -7494,62 +7583,98 @@ function applyDeviceView() {
   const choice = storage.getItem('device_view');
   if (choice === 'phone') {
     document.body.classList.add('device-phone');
-    // Ensure sticky bottom nav is shown
+
     let bottomNav = document.getElementById("mobileBottomNav");
+    let moreSheet = document.getElementById("mobileMoreSheet");
     if (!bottomNav) {
-      bottomNav = document.createElement("div");
+      bottomNav = document.createElement("nav");
       bottomNav.id = "mobileBottomNav";
       bottomNav.className = "mobile-bottom-nav";
+      bottomNav.setAttribute("aria-label", "Päänavigaatio");
       bottomNav.innerHTML = `
-        <button class="mobile-nav-item active" data-page="kelimittari">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <button class="mobile-nav-item active" type="button" data-page="kelimittari">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="5"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
           <span class="m-nav-label">Keli</span>
         </button>
-        <button class="mobile-nav-item" data-page="uistimet">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 1-3 3 3 3 0 0 1-3-3v-4h6"></path><circle cx="6" cy="14" r="1"></circle></svg>
+        <button class="mobile-nav-item" type="button" data-page="uistimet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 1-6 0v-4h6"></path><circle cx="6" cy="14" r="1"></circle></svg>
           <span class="m-nav-label">Uistimet</span>
         </button>
-        <button class="mobile-nav-item" data-page="kalalajit">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c4-5 11-5 15 0 2-1 4-1.5 5-1.5s-.5 2-1.5 4c1 1 1.5 3 1.5 5s-2.5 1-4.5 0c-4 4-11 4-15 0"></path><circle cx="15" cy="11" r="1" fill="currentColor"></circle></svg>
-          <span class="m-nav-label">Kalat</span>
-        </button>
-        <button class="mobile-nav-item" data-page="varusteet">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2" ry="2"></rect><path d="M16 8V5a3 3 0 0 0-6 0v3"></path></svg>
-          <span class="m-nav-label">Varusteet</span>
-        </button>
-        <button class="mobile-nav-item" data-page="oppaat">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-          <span class="m-nav-label">Oppaat</span>
-        </button>
-        <button class="mobile-nav-item" data-page="merikartta">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
+        <button class="mobile-nav-item" type="button" data-page="merikartta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><path d="M9 3v15M15 6v15"></path></svg>
           <span class="m-nav-label">Kartta</span>
         </button>
-        <button class="mobile-nav-item" data-page="feedi">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg>
+        <button class="mobile-nav-item" type="button" data-page="feedi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg>
           <span class="m-nav-label">Saaliit</span>
         </button>
-        <button class="mobile-nav-item" data-page="linkit">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-          <span class="m-nav-label">Linkit</span>
+        <button class="mobile-nav-item" type="button" data-more-menu="true" aria-expanded="false" aria-controls="mobileMoreSheet">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="19" cy="12" r="1.7"></circle></svg>
+          <span class="m-nav-label">Lisää</span>
         </button>
       `;
       document.body.appendChild(bottomNav);
-      
-      // Bind mobile nav click actions
-      bottomNav.querySelectorAll(".mobile-nav-item").forEach(item => {
+
+      moreSheet = document.createElement("div");
+      moreSheet.id = "mobileMoreSheet";
+      moreSheet.className = "mobile-more-sheet";
+      moreSheet.hidden = true;
+      moreSheet.innerHTML = `
+        <div class="mobile-more-panel" role="dialog" aria-modal="true" aria-labelledby="mobileMoreTitle">
+          <div class="mobile-more-handle" aria-hidden="true"></div>
+          <div class="mobile-more-title">
+            <strong id="mobileMoreTitle">Lisää palveluita</strong>
+            <button class="mobile-more-close" type="button" aria-label="Sulje">×</button>
+          </div>
+          <div class="mobile-more-grid">
+            <button class="mobile-more-item" type="button" data-page="kalalajit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12c4-5 11-5 15 0 2-1 4-1.5 5-1.5s-.5 2-1.5 4c1 1 1.5 3 1.5 5s-2.5 1-4.5 0c-4 4-11 4-15 0"></path><circle cx="15" cy="11" r="1" fill="currentColor"></circle></svg><span class="m-nav-label">Kalat</span></button>
+            <button class="mobile-more-item" type="button" data-page="varusteet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="18" height="12" rx="2"></rect><path d="M16 8V5a3 3 0 0 0-6 0v3"></path></svg><span class="m-nav-label">Varusteet</span></button>
+            <button class="mobile-more-item" type="button" data-page="oppaat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span class="m-nav-label">Oppaat</span></button>
+            <button class="mobile-more-item" type="button" data-page="linkit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg><span class="m-nav-label">Linkit</span></button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(moreSheet);
+
+      const moreButton = bottomNav.querySelector("[data-more-menu]");
+      const closeMoreMenu = () => {
+        moreSheet.hidden = true;
+        moreButton.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("mobile-menu-open");
+        moreButton.focus();
+      };
+      const openMoreMenu = () => {
+        moreSheet.hidden = false;
+        moreButton.setAttribute("aria-expanded", "true");
+        document.body.classList.add("mobile-menu-open");
+        moreSheet.querySelector(".mobile-more-close").focus();
+      };
+
+      bottomNav.querySelectorAll(".mobile-nav-item[data-page]").forEach(item => {
+        item.addEventListener("click", () => showPage(item.dataset.page));
+      });
+      moreButton.addEventListener("click", () => moreSheet.hidden ? openMoreMenu() : closeMoreMenu());
+      moreSheet.querySelector(".mobile-more-close").addEventListener("click", closeMoreMenu);
+      moreSheet.addEventListener("click", e => { if (e.target === moreSheet) closeMoreMenu(); });
+      moreSheet.addEventListener("keydown", e => { if (e.key === "Escape") closeMoreMenu(); });
+      moreSheet.querySelectorAll(".mobile-more-item").forEach(item => {
         item.addEventListener("click", () => {
+          closeMoreMenu();
           showPage(item.dataset.page);
         });
       });
     }
-    
-    // Trigger setLanguage to properly translate the newly added labels
+
     setLanguage(currentLang, false);
+    const activePage = document.querySelector(".page.active")?.id || "kelimittari";
+    const morePages = ["kalalajit", "varusteet", "oppaat", "linkit"];
+    bottomNav.querySelectorAll(".mobile-nav-item[data-page]").forEach(item => item.classList.toggle("active", item.dataset.page === activePage));
+    bottomNav.querySelector("[data-more-menu]")?.classList.toggle("active", morePages.includes(activePage));
+    moreSheet?.querySelectorAll(".mobile-more-item").forEach(item => item.classList.toggle("active", item.dataset.page === activePage));
   } else {
-    document.body.classList.remove('device-phone');
-    const bottomNav = document.getElementById("mobileBottomNav");
-    if (bottomNav) bottomNav.remove();
+    document.body.classList.remove('device-phone', 'mobile-menu-open');
+    document.getElementById("mobileBottomNav")?.remove();
+    document.getElementById("mobileMoreSheet")?.remove();
   }
 }
 
@@ -7609,12 +7734,14 @@ function renderDeviceSelector() {
   
   document.getElementById("deviceChoosePhone").addEventListener("click", () => {
     storage.setItem('device_view', 'phone');
+    storage.setItem('device_view_manual', '1');
     applyDeviceView();
     overlay.remove();
   });
   
   document.getElementById("deviceChooseDesktop").addEventListener("click", () => {
     storage.setItem('device_view', 'desktop');
+    storage.setItem('device_view_manual', '1');
     applyDeviceView();
     overlay.remove();
   });
@@ -7656,8 +7783,10 @@ else setTimeout(warmPotentialSpotDataset,1800);
 // ensikäynnillä (myös hakukoneiden/AdSensen tarkistusroboteilla) - sisältö ei ollut lainkaan
 // näkyvissä ennen klikkausta. Nyt näkymä päätellään automaattisesti näytön leveyden perusteella,
 // ja käyttäjä voi vaihtaa sen manuaalisesti alapalkin "Vaihda näkymä" -painikkeesta.
-if (!storage.getItem('device_view')) {
-  storage.setItem('device_view', window.innerWidth < 820 ? 'phone' : 'desktop');
+const savedDeviceView = storage.getItem('device_view');
+const deviceViewWasChosen = storage.getItem('device_view_manual') === '1';
+if (!savedDeviceView || !deviceViewWasChosen) {
+  storage.setItem('device_view', window.innerWidth < 960 ? 'phone' : 'desktop');
 }
 applyDeviceView();
 
