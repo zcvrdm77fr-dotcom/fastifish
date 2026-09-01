@@ -460,10 +460,28 @@ main { padding-bottom: 70px; }
 .feed-hint { color: var(--ink-soft); font-size: .8rem; margin: 6px 0 0; }
 .feed-user-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .feed-user-bar strong { font-family: 'Fjalla One', sans-serif; font-size: 1.1rem; font-weight: 400; }
-.feed-post-preview { width: 100%; max-height: 220px; object-fit: cover; border-radius: 14px; margin-top: 10px; display: none; }
+.feed-post-preview { width: 100%; max-height: 220px; object-fit: contain; background: var(--mist); border-radius: 14px; margin-top: 10px; display: none; }
 .feed-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; margin-top: 22px; }
 .feed-post-card { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--paper-bright); display: flex; flex-direction: column; }
-.feed-post-image { width: 100%; aspect-ratio: 4/3; object-fit: cover; background: var(--mist); display: block; }
+.feed-image-button {
+  position: relative; width: 100%; aspect-ratio: 4/3; display: grid; place-items: center; overflow: hidden;
+  padding: 0; border: 0; background: var(--mist); color: var(--ink-soft); cursor: zoom-in;
+}
+.feed-post-image { width: 100%; height: 100%; object-fit: contain; display: block; }
+.feed-image-button.is-error { cursor: pointer; }
+.feed-image-button.is-error .feed-post-image { visibility: hidden; }
+.feed-image-status { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; font-weight: 700; font-size: .85rem; }
+.feed-image-status[hidden] { display: none; }
+.feed-image-modal {
+  position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; padding: 24px;
+  background: rgba(8,16,15,.92); backdrop-filter: blur(8px); cursor: zoom-out;
+}
+.feed-image-modal img { display: block; max-width: min(96vw, 1400px); max-height: 92vh; object-fit: contain; border-radius: 12px; box-shadow: 0 18px 70px rgba(0,0,0,.45); cursor: default; }
+.feed-image-modal-close {
+  position: fixed; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
+  z-index: 1; width: 44px; height: 44px; border: 1px solid rgba(255,255,255,.35); border-radius: 50%;
+  background: rgba(0,0,0,.6); color: #fff; font-size: 1.5rem; cursor: pointer;
+}
 .feed-post-body { padding: 14px 16px 16px; }
 .feed-post-user { font-weight: 700; color: var(--lake-deep); }
 .feed-post-time { color: var(--ink-soft); font-size: .76rem; margin-left: 6px; }
@@ -6297,16 +6315,107 @@ async function deletePost(postId, card){
   }
 }
 
-function renderPostCard(post){
+function feedImageRetryUrl(url){
+  const retryUrl = new URL(url, window.location.href);
+  retryUrl.searchParams.set('ff_retry', String(Date.now()));
+  return retryUrl.href;
+}
+
+function openFeedImage(url, alt, trigger){
+  const modal = document.createElement('div');
+  modal.className = 'feed-image-modal';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-label', 'Saaliskuva suurena');
+
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.className = 'feed-image-modal-close';
+  closeBtn.setAttribute('aria-label', 'Sulje suuri kuva');
+  closeBtn.textContent = '×';
+
+  const largeImg = document.createElement('img');
+  largeImg.src = url;
+  largeImg.alt = alt;
+
+  const previousOverflow = document.body.style.overflow;
+  const close = () => {
+    document.removeEventListener('keydown', onKeyDown);
+    document.body.style.overflow = previousOverflow;
+    modal.remove();
+    if (trigger) trigger.focus();
+  };
+  const onKeyDown = (event) => {
+    if (event.key === 'Escape') close();
+  };
+
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) close();
+  });
+  document.addEventListener('keydown', onKeyDown);
+  modal.append(closeBtn, largeImg);
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+  closeBtn.focus();
+}
+
+function renderPostCard(post, index = 0){
   const card = document.createElement('div');
   card.className = 'feed-post-card';
 
+  const imageUrl = feedAssetUrl(post.imageUrl);
+  const imageButton = document.createElement('button');
+  imageButton.type = 'button';
+  imageButton.className = 'feed-image-button';
+  imageButton.setAttribute('aria-label', 'Avaa saaliskuva suurena');
+
   const img = document.createElement('img');
   img.className = 'feed-post-image';
-  img.src = feedAssetUrl(post.imageUrl);
-  img.loading = 'lazy';
+  img.loading = index < 6 ? 'eager' : 'lazy';
+  img.decoding = 'async';
   img.alt = 'Saaliskuva käyttäjältä ' + post.username;
-  card.appendChild(img);
+
+  const imageStatus = document.createElement('span');
+  imageStatus.className = 'feed-image-status';
+  imageStatus.hidden = true;
+
+  let retryCount = 0;
+  let imageFailed = false;
+  const loadImage = () => {
+    imageFailed = false;
+    imageButton.classList.remove('is-error');
+    imageStatus.hidden = true;
+    img.src = retryCount ? feedImageRetryUrl(imageUrl) : imageUrl;
+  };
+  img.addEventListener('load', () => {
+    imageFailed = false;
+    imageButton.classList.remove('is-error');
+    imageStatus.hidden = true;
+  });
+  img.addEventListener('error', () => {
+    if (retryCount < 1) {
+      retryCount += 1;
+      setTimeout(loadImage, 500);
+      return;
+    }
+    imageFailed = true;
+    imageButton.classList.add('is-error');
+    imageStatus.textContent = 'Kuvan lataus epäonnistui. Paina ja yritä uudelleen.';
+    imageStatus.hidden = false;
+  });
+  imageButton.addEventListener('click', () => {
+    if (imageFailed) {
+      retryCount = 0;
+      loadImage();
+      return;
+    }
+    openFeedImage(img.currentSrc || img.src, img.alt, imageButton);
+  });
+
+  imageButton.append(img, imageStatus);
+  card.appendChild(imageButton);
+  loadImage();
 
   const body = document.createElement('div');
   body.className = 'feed-post-body';
@@ -6394,7 +6503,7 @@ async function loadFeed(reset){
     const qs = feedCursor ? `?before=${feedCursor}&limit=20` : '?limit=20';
     const data = await feedApi('/api/posts' + qs);
     const posts = data.posts || [];
-    posts.forEach(p => { if (listEl) listEl.appendChild(renderPostCard(p)); });
+    posts.forEach((p, index) => { if (listEl) listEl.appendChild(renderPostCard(p, index)); });
     feedHasMore = posts.length === 20;
     if (posts.length) feedCursor = posts[posts.length - 1].id;
 
