@@ -21,7 +21,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FastFishing - Tietosuojaseloste</title>
     <meta name="description" content="FastFishingin tietosuojaseloste: mitä tietoja kerätään, mihin evästeitä käytetään (Google AdSense, Google Analytics) ja miten voit hallita suostumustasi." />
-    <link rel="canonical" href="https://www.fastfishin.com/tietosuoja.html" />
+    <meta name="author" content="FastFishingin ylläpitäjä" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://fastfishin.com/tietosuoja.html" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
     <style>
@@ -581,8 +583,8 @@
         <aside class="hero-panel" aria-label="Yhteenveto">
             <div class="panel-title"><strong>Lyhyesti</strong><span class="pill">tietosuoja</span></div>
             <p style="margin:0;color:var(--ink-soft);font-size:1.05rem;">
-                Keräämme vain sivuston toiminnan kannalta tarpeellisia tietoja: IP-osoitteen, selaintiedot, evästeet ja anonyymit käyttötilastot.
-                Emme myy tietoja kolmansille osapuolille. Google AdSense näyttää mainoksia ja Google Analytics kerää anonyymejä kävijätilastoja, molemmat evästeiden avulla – nämä aktivoituvat vasta suostumuksellasi, ja voit hallita asetuksia itse.
+                Ilman käyttäjätiliä keräämme lähinnä teknisiä lokitietoja ja suostumusvalintasi. Jos käytät Saalisvirtaa, tallennamme käyttäjänimen, suojatun salasanatiivisteen sekä itse julkaisemasi kuvat, tekstit ja saalistiedot.
+                Emme myy tietoja. Google-tagit toimivat ennen suostumusta rajoitetussa, evästeettömässä Consent Mode -tilassa; mainos- ja analytiikkaevästeitä käytetään vasta hyväksynnän jälkeen.
             </p>
         </aside>
     </header>
@@ -615,8 +617,10 @@
                 <ul>
                     <li><strong>IP-osoite</strong> – tietoturvan varmistamiseen ja palvelun tekniseen toimintaan.</li>
                     <li><strong>Selaintiedot</strong> (esim. käyttäjäagentti) – sivuston tekniseen optimointiin.</li>
-                    <li><strong>Evästeet (cookies)</strong> – käyttökokemuksen parantamiseen, mainosten näyttämiseen (Google AdSense) ja kävijäseurantaan (Google Analytics). Nämä ladataan vain suostumuksellasi.</li>
-                    <li><strong>Sivuston käyttötiedot</strong> (anonymisoituja, Google Analyticsin kautta) – kävijätilastojen analysointiin, esim. suosituimmat sivut ja käytetyt laitetyypit.</li>
+                    <li><strong>Suostumus- ja käyttöliittymävalinnat</strong> – esimerkiksi evästesuostumus, kieli, teema ja laitenäkymä tallennetaan evästeeseen tai selaimen paikalliseen tallennustilaan.</li>
+                    <li><strong>Käyttäjätili</strong> – käyttäjänimi, yksisuuntaisesti tiivistetty salasana, tilin luontiaika ja 30 päivää voimassa oleva satunnainen istuntotunnus. Selväkielistä salasanaa ei tallenneta.</li>
+                    <li><strong>Saalisvirran sisältö</strong> – kuva, kuvateksti, kommentit, tykkäykset sekä vapaaehtoiset kalalaji-, paino-, pituus-, saantipaikka- ja viehetiedot.</li>
+                    <li><strong>Sivuston käyttötiedot</strong> – Google Analyticsin suostumustilan mukaiset sivu- ja laitetiedot, kun Google-tagit ovat käytössä.</li>
                 </ul>
             </article>
 
@@ -627,61 +631,81 @@
                 <p>Kerättyjä tietoja käytetään seuraaviin tarkoituksiin:</p>
                 <ul>
                     <li><strong>Sivuston toiminnan varmistaminen</strong> – teknisten vikojen korjaaminen ja sujuva käyttö.</li>
+                    <li><strong>Käyttäjätilin ja Saalisvirran toteuttaminen</strong> – kirjautuminen, julkaisujen näyttäminen sekä omien julkaisujen ja kommenttien hallinta.</li>
+                    <li><strong>Turvallisuus ja väärinkäytösten ehkäisy</strong> – istuntojen suojaaminen, julkaisurajoitukset ja automaattinen sisällöntarkistus.</li>
                     <li><strong>Palvelun kehittäminen</strong> – käyttäjäkokemuksen parantaminen analysoimalla suosituimpia osioita.</li>
                     <li><strong>Kävijätilastojen analysointi</strong> (Google Analytics) – kävijämäärien ja sivuston käytön ymmärtäminen.</li>
-                    <li><strong>Mainosten näyttäminen</strong> – Google AdSense -mainokset, jotka perustuvat käyttäjän aiempiin vierailuihin.</li>
+                    <li><strong>Mainosten näyttäminen</strong> – Google AdSense -mainokset suostumusvalintasi mukaisesti.</li>
                 </ul>
+                <p><strong>Käsittelyperusteet:</strong> käyttäjätiliä ja pyytämiäsi Saalisvirran toimintoja käsitellään palvelun toteuttamiseksi; palvelun tietoturva ja tekniset lokit perustuvat rekisterinpitäjän oikeutettuun etuun; valinnainen analytiikka, mainosevästeet ja personointi perustuvat suostumukseen, jonka voi peruuttaa.</p>
             </article>
 
-            <!-- 3 -->
+            <!-- 4 -->
             <article class="privacy-card full">
                 <span class="tag">4</span>
-                <h2>Google AdSense, Google Analytics &amp; kolmannen osapuolen evästeet</h2>
-                <p>Tällä sivustolla käytetään Google AdSense -mainontaa sekä Google Analytics -kävijäseurantaa. Kolmannen osapuolen toimittajat, mukaan lukien Google, käyttävät evästeitä mainosten näyttämiseen ja kävijätilastojen keräämiseen.</p>
+                <h2>Saalisvirta, julkisuus ja automaattinen tarkistus</h2>
+                <p>Saalisvirtaan lähettämäsi käyttäjänimi, kuva, kuvateksti, kommentit ja valitsemasi saalistiedot julkaistaan verkkosivulla kaikkien nähtäviksi. Älä julkaise kuvassa tai tekstissä henkilötietoja, joita et halua julkisiksi. Saantipaikka on vapaaehtoinen; voit ilmoittaa tarkan paikan sijaan laajemman vesistön tai jättää kentän tyhjäksi.</p>
                 <ul>
-                    <li>Googlen mainosevästeiden avulla Google ja sen kumppanit voivat näyttää käyttäjille mainoksia, jotka perustuvat heidän vierailuihinsa tällä ja/tai muilla verkkosivustoilla.</li>
-                    <li><strong>Google Analytics</strong> kerää anonymisoituja tietoja sivuston käytöstä (esim. vieraillut sivut, laitetyyppi, suunnilleen sijainti), jotta voimme ymmärtää, miten sivustoa käytetään ja kehittää sitä. IP-osoite lyhennetään/anonymisoidaan ennen tallennusta.</li>
-                    <li>Sekä mainos- että analytiikkaevästeet ladataan vasta, kun hyväksyt ne evästebannerista. Jos valitset "Hylkää", nämä evästeet eivät aktivoidu.</li>
-                    <li>Käyttäjät voivat poistaa <strong>personoidun mainonnan</strong> käytöstä käymällä osoitteessa <a href="https://www.aboutads.info" target="_blank" rel="noopener">www.aboutads.info</a> tai <a href="https://adssettings.google.com" target="_blank" rel="noopener">Google Ads Settings</a>.</li>
-                    <li>Käyttäjät voivat estää Google Analyticsin seurannan kokonaan asentamalla <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analyticsin selainlisäosan</a>.</li>
+                    <li>Palvelin muuntaa kuvan JPEG-muotoon ja poistaa alkuperäisen kuvan metatiedot, mukaan lukien mahdollisen EXIF-GPS-sijainnin.</li>
+                    <li>Kuva tarkistetaan palvelimella paikallisesti NSFWJS-mallilla ja tekstit paikallisella sanalistalla ennen julkaisua. Kuvaa ei lähetetä ulkoiseen tekoälypalveluun.</li>
+                    <li>Voit poistaa oman julkaisusi tai kommenttisi käyttöliittymästä. Ylläpitäjä voi poistaa sääntöjen vastaisen sisällön.</li>
+                    <li>Tykkäys tallennetaan käyttäjätilisi ja julkaisun välisenä tietona, jotta sama tili ei voi lisätä rajattomasti tykkäyksiä.</li>
                 </ul>
-                <p style="margin-top:12px;"><strong>Tietojen siirto EU/ETA-alueen ulkopuolelle:</strong> Google Analytics ja Google AdSense voivat siirtää käsittelemäänsä dataa EU/ETA-alueen ulkopuolelle, muun muassa Yhdysvaltoihin, osana Googlen globaalia infrastruktuuria. Siirrot perustuvat Googlen käyttämiin EU:n komission hyväksymiin vakiosopimuslausekkeisiin (Standard Contractual Clauses) sekä Google Ads Data Processing Termsiin. Lisätietoa Googlen tietosuojakäytännöistä: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</p>
             </article>
 
             <!-- 5 -->
-            <article class="privacy-card">
+            <article class="privacy-card full">
                 <span class="tag">5</span>
-                <h2>Tietojen säilytys &amp; suojaaminen</h2>
-                <p>Säilytämme tietoja vain niin kauan kuin se on tarpeellista, ja säilytysaika vaihtelee tietotyypin mukaan:</p>
+                <h2>Google AdSense, Google Analytics &amp; kolmannen osapuolen evästeet</h2>
+                <p>Tällä sivustolla käytetään Google AdSense -mainontaa sekä Google Analytics -kävijäseurantaa. Sivusto käyttää Googlen edistynyttä Consent Mode -tilaa: tagit voivat latautua oletusarvolla "denied", mutta mainos- tai analytiikkaevästeitä ei silloin lueta eikä kirjoiteta. Google voi silti vastaanottaa evästeettömän suostumus- ja mittaussignaalin.</p>
                 <ul>
-                    <li><strong>Google Analytics -tiedot</strong> (esim. käyntitiedot, laitetiedot): säilytys noin 14 kuukautta, jonka jälkeen ne poistuvat automaattisesti Googlen oletusasetusten mukaisesti.</li>
-                    <li><strong>Google AdSense -mainosevästeet</strong>: säilytysaika määräytyy Googlen omien käytäntöjen mukaan, tyypillisesti enintään 24 kuukautta evästeen asettamisesta.</li>
-                    <li><strong>Palvelinlokit / IP-osoitteet</strong>: säilytetään tietoturvan varmistamiseksi enintään muutamia kuukausia, ellei pidempi säilytys ole tarpeen väärinkäytösten selvittämiseksi.</li>
+                    <li>Googlen mainosevästeiden avulla Google ja sen kumppanit voivat näyttää käyttäjille mainoksia, jotka perustuvat heidän vierailuihinsa tällä ja/tai muilla verkkosivustoilla.</li>
+                    <li><strong>Google Analytics</strong> käsittelee suostumustilan mukaisia tietoja sivuston käytöstä, kuten vierailtuja sivuja, laitetyyppiä ja likimääräistä sijaintia.</li>
+                    <li>Jos hyväksyt valinnaiset evästeet, <code>ad_storage</code>, <code>ad_user_data</code>, <code>ad_personalization</code> ja <code>analytics_storage</code> päivitetään sallituiksi. Jos hylkäät, ne jäävät estetyiksi.</li>
+                    <li>Käyttäjät voivat poistaa <strong>personoidun mainonnan</strong> käytöstä käymällä osoitteessa <a href="https://www.aboutads.info" target="_blank" rel="noopener">www.aboutads.info</a> tai <a href="https://adssettings.google.com" target="_blank" rel="noopener">Google Ads Settings</a>.</li>
+                    <li>Käyttäjät voivat estää Google Analyticsin seurannan kokonaan asentamalla <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analyticsin selainlisäosan</a>.</li>
                 </ul>
-                <p style="margin-top:12px;">Sivusto on suojattu yleisin teknisin menetelmin luvattomalta käytöltä. Tietoja ei luovuteta ulkopuolisille markkinointitarkoituksiin.</p>
+                <p>Lisätietoa evästeettömistä mittaussignaaleista on <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode" target="_blank" rel="noopener">Googlen Consent Mode -kuvauksessa</a>.</p>
+                <p style="margin-top:12px;"><strong>Tietojen siirto EU/ETA-alueen ulkopuolelle:</strong> Google Analytics ja Google AdSense voivat siirtää käsittelemäänsä dataa EU/ETA-alueen ulkopuolelle, muun muassa Yhdysvaltoihin, osana Googlen globaalia infrastruktuuria. Siirrot perustuvat Googlen käyttämiin EU:n komission hyväksymiin vakiosopimuslausekkeisiin (Standard Contractual Clauses) sekä Google Ads Data Processing Termsiin. Lisätietoa Googlen tietosuojakäytännöistä: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</p>
             </article>
 
             <!-- 6 -->
             <article class="privacy-card">
                 <span class="tag">6</span>
+                <h2>Tietojen säilytys &amp; suojaaminen</h2>
+                <p>Säilytämme tietoja vain niin kauan kuin se on tarpeellista, ja säilytysaika vaihtelee tietotyypin mukaan:</p>
+                <ul>
+                    <li><strong>Käyttäjätili</strong> säilyy, kunnes pyydät sen poistamista. Salasana säilytetään vain bcrypt-tiivisteenä.</li>
+                    <li><strong>Julkaisut ja kommentit</strong> säilyvät, kunnes poistat ne tai pyydät poistamista. Tilin poisto poistaa samalla siihen liittyvät julkaisut, kommentit ja tykkäykset.</li>
+                    <li><strong>Istunto</strong> on voimassa enintään 30 päivää tai kunnes kirjaudut ulos.</li>
+                    <li><strong>Palvelinlokit</strong> säilyvät palveluntarjoajan teknisten ja tietoturva-asetusten mukaisen ajan.</li>
+                    <li><strong>Google-tiedot ja evästeet</strong> säilyvät Googlen palveluasetusten ja tietosuojakäytäntöjen mukaisesti.</li>
+                </ul>
+                <p style="margin-top:12px;">Staattinen sivusto toimitetaan GitHub Pagesin kautta. Käyttäjätilit ja Saalisvirran sisältö säilytetään FastFishingin erillisellä API-palvelimella. Istuntoeväste on HTTP-only, Secure- ja SameSite-suojattu; eri verkkotunnuksessa toimittaessa istuntotunnus voidaan tallentaa käyttäjän selaimeen API-kutsuja varten. Tietoja ei luovuteta ulkopuolisille suoramarkkinointiin.</p>
+            </article>
+
+            <!-- 7 -->
+            <article class="privacy-card">
+                <span class="tag">7</span>
                 <h2>Käyttäjän oikeudet</h2>
                 <p>Sinulla on oikeus:</p>
                 <ul>
                     <li><strong>Tarkastaa</strong> omat henkilötietosi.</li>
                     <li><strong>Pyytää</strong> virheellisten tietojen korjaamista.</li>
                     <li><strong>Pyytää</strong> tietojen poistamista.</li>
+                    <li><strong>Rajoittaa</strong> tietojen käsittelyä soveltuvissa tilanteissa.</li>
                     <li><strong>Vastustaa</strong> henkilötietojesi käsittelyä tietyissä tilanteissa, esimerkiksi suoramarkkinointiin liittyen.</li>
                     <li><strong>Pyytää</strong> tietojen siirtämistä järjestelmästä toiseen (tiedon siirrettävyys), siltä osin kuin se on sovellettavissa.</li>
-                    <li><strong>Peruuttaa</strong> evästeisiin liittyvä suostumus selaimesi asetusten kautta tai sivustomme evästeasetuksia käyttämällä.</li>
+                    <li><strong>Peruuttaa</strong> evästeisiin liittyvä suostumus poistamalla <code>cookie_consent</code>-evästeen ja sivuston paikallisen tallennustiedon tai selaimen asetuksista.</li>
                     <li><strong>Tehdä valitus valvontaviranomaiselle</strong>, jos koet, että henkilötietojesi käsittely rikkoo tietosuojalainsäädäntöä. Suomessa toimivaltainen valvontaviranomainen on Tietosuojavaltuutetun toimisto (<a href="https://tietosuoja.fi" target="_blank" rel="noopener">tietosuoja.fi</a>).</li>
                 </ul>
             </article>
 
-            <!-- 7 -->
+            <!-- 8 -->
             <article class="privacy-card full">
-                <span class="tag">7</span>
+                <span class="tag">8</span>
                 <h2>Yhteydenotot</h2>
-                <p>Jos sinulla on kysyttävää tästä tietosuojaselosteesta, voit ottaa yhteyttä ylläpitoon sähköpostitse.</p>
+                <p>Jos haluat tarkastaa tai poistaa käyttäjätilisi tiedot tai sinulla on kysyttävää tästä tietosuojaselosteesta, ota yhteyttä ylläpitoon sähköpostitse. Kerro pyynnössä käyttäjänimesi; henkilöllisyys voidaan joutua varmistamaan ennen tilitietojen luovuttamista tai poistamista.</p>
                 <div class="contact-block">
                     <strong>📧 Sähköposti:</strong>
                     <a href="mailto:fastfish.official@gmail.com">fastfish.official@gmail.com</a>
@@ -694,7 +718,7 @@
         <p style="margin-top:40px;color:var(--ink-soft);font-size:.92rem;border-top:1px solid var(--line);padding-top:24px;">
             Tätä tietosuojaselostetta päivitetään tarvittaessa. Viimeisin versio on aina nähtävillä tällä sivulla.
             <br />
-            <strong>Viimeksi päivitetty:</strong> 15.7.2026
+            <strong>Viimeksi päivitetty:</strong> 2.9.2026
         </p>
     </main>
 
@@ -702,6 +726,8 @@
     <footer>
         <div class="shell">
             Sääaineisto: Open-Meteo. Kuun vaihe lasketaan selaimessa. Pisteytys on suuntaa-antava: kalastuspaikka, veden lämpö, ravintokalojen liike ja paikallinen paine voivat ratkaista enemmän kuin mikään yksittäinen mittari.
+            <a href="tietoa-meista.html" style="color:inherit;text-decoration:underline;">Tietoa meistä</a> ·
+            <a href="toimitusperiaatteet.html" style="color:inherit;text-decoration:underline;">Toimitusperiaatteet</a> ·
             <a href="tietosuoja.html" style="color:inherit;text-decoration:underline;">Tietosuojaseloste</a>
         </div>
     </footer>

@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "node server.js",
-    "build": "echo 'Static app ready'",
-    "lint": "echo 'No linting needed'",
+    "build": "node scripts/validate-site.mjs",
+    "lint": "node scripts/validate-site.mjs",
+    "test": "node scripts/validate-site.mjs",
     "start": "node server.js"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.fastfishin.com/sitemap.xml
+Sitemap: https://fastfishin.com/sitemap.xml

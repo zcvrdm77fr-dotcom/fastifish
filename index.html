@@ -29,16 +29,17 @@ if ('serviceWorker' in navigator) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FastFishing - kalakelien mittari ja vieheopas</title>
 <meta name="description" content="FastFishing näyttää reaaliaikaisen kalakelin, parhaat kalastusajat ja vieheopas suomalaisille kalastuspaikoille - katso paine, tuuli ja lämpötila yhdellä silmäyksellä.">
+<meta name="author" content="FastFishingin ylläpitäjä">
+<meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#17342f">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<!-- HUOM: vaihda alla oleva osoite oikeaan verkkotunnukseesi ennen julkaisua -->
-<link rel="canonical" href="https://www.fastfishin.com/">
+<link rel="canonical" href="https://fastfishin.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FastFishing">
 <meta property="og:title" content="FastFishing - kalakelien mittari ja vieheopas">
 <meta property="og:description" content="Reaaliaikainen kalakelin mittari, parhaat kalastusajat ja vieheopas suomalaisille kalastuspaikoille.">
-<meta property="og:url" content="https://www.fastfishin.com/">
+<meta property="og:url" content="https://fastfishin.com/">
 <meta property="og:locale" content="fi_FI">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="FastFishing - kalakelien mittari ja vieheopas">
@@ -48,11 +49,12 @@ if ('serviceWorker' in navigator) {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "FastFishing",
-  "url": "https://www.fastfishin.com/",
+  "url": "https://fastfishin.com/",
   "description": "Kalakelin mittari, joka yhdistää sään, ilmanpaineen muutoksen ja kellonajan arvioidakseen parhaat kalastusajat suomalaisilla kalastuspaikoilla.",
   "applicationCategory": "SportsApplication",
   "operatingSystem": "Any (selainpohjainen)",
   "inLanguage": ["fi", "en"],
+  "creator": {"@type":"Person","name":"FastFishingin ylläpitäjä","url":"https://fastfishin.com/tietoa-meista.html"},
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
 }
 </script>
@@ -66,7 +68,7 @@ if ('serviceWorker' in navigator) {
       "name": "Mihin FastFishingin kalakelipisteytys perustuu?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Pisteytys yhdistää ilmanpaineen muutoksen viimeisen kuuden tunnin ajalta, tuulen nopeuden, pilvisyyden, veden ja ilman lämpötilan sekä sen, osuuko ajankohta aamu- tai iltahämärään. Säädata haetaan Open-Meteo-palvelusta, ja kunkin kalalajin kohdalla painotukset on säädetty lajille tyypillisen käyttäytymisen mukaan."
+        "text": "Pisteytys yhdistää ilmanpaineen muutoksen viimeisen kuuden tunnin ajalta, tuulen nopeuden, pilvisyyden, ilman lämpötilan, kuun vaiheen sekä sen, osuuko ajankohta aamu- tai iltahämärään. Säädata haetaan Open-Meteo-palvelusta. Tarkat painotukset ja mallin rajoitukset julkaistaan FastFishingin metodologiasivulla."
       }
     },
     {
@@ -1756,13 +1758,12 @@ body.device-phone .columns {
     <div class="content-card" style="margin-top:32px">
       <h2>Miten kalakelipisteytys lasketaan</h2>
       <p>
-        FastFishingin kelimittari ei arvo satunnaislukua, vaan yhdistää neljä
-        säämuuttujaa, joiden vaikutuksesta kalojen syöntiaktiivisuuteen on
-        vuosikymmenten kokemusperäistä näyttöä suomalaisilta kalavesiltä:
+        FastFishingin kelimittari ei arvo satunnaislukua, vaan yhdistää kuusi
+        muuttujaa harrastuskalastuksessa käytettyjen kokemusperäisten
+        nyrkkisääntöjen pohjalta:
         ilmanpaineen muutoksen viimeisen kuuden tunnin ajalta, tuulen
-        nopeuden ja suunnan, pilvisyyden sekä veden ja ilman lämpötilan.
-        Näiden lisäksi pisteytys huomioi, osuuko ajankohta aamu- tai
-        iltahämärään, jolloin monet petokalat syövät aktiivisimmin.
+        nopeuden, pilvisyyden, ilman lämpötilan, kuun vaiheen sekä sen,
+        osuuko ajankohta aamu- tai iltahämärään.
       </p>
       <p>
         Säädata haetaan automaattisesti <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>-palvelusta valitulle
@@ -1780,6 +1781,9 @@ body.device-phone .columns {
         pohjanmuodot - ratkaisevat käytännössä usein enemmän kuin mikään
         yksittäinen sääparametri. Työkalu kannattaa yhdistää omaan
         paikallistuntemukseen, ei korvata sitä.
+      </p>
+      <p>
+        <a class="btn" href="metodologia.html">Katso tarkat painotukset, rajat ja esimerkkilasku →</a>
       </p>
 
       <h3>Usein kysyttyä</h3>
@@ -2240,6 +2244,8 @@ body.device-phone .columns {
     Sääaineisto: Open-Meteo. Kuun vaihe lasketaan selaimessa. Pisteytys on suuntaa-antava: kalastuspaikka, veden lämpö, ravintokalojen liike ja paikallinen paine voivat ratkaista enemmän kuin mikään yksittäinen mittari.
     <a href="tietosuoja.html" style="color:inherit; text-decoration:underline;">Tietosuojaseloste</a>
     · <a href="tietoa-meista.html" style="color:inherit; text-decoration:underline;">Tietoa meistä</a>
+    · <a href="metodologia.html" style="color:inherit; text-decoration:underline;">Kelimittarin metodologia</a>
+    · <a href="toimitusperiaatteet.html" style="color:inherit; text-decoration:underline;">Toimitusperiaatteet</a>
   </div>
 </footer>
 
@@ -2591,7 +2597,7 @@ const UI_TRANS = {
     tab_linkit: "Linkit",
     hero_eyebrow: "Milloin kala puree parhaiten?",
     hero_title: "Tiedä milloin heittää",
-    hero_lead: "FastFishing yhdistää reaaliaikaiset säätiedot, ilmanpaineen kehityksen ja kuun asennon tieteelliseen kalansyöntikaavaan. Löydä parhaat ajat ja viehesuositukset heti.",
+    hero_lead: "FastFishing yhdistää reaaliaikaisen sään, ilmanpaineen kehityksen ja kuun vaiheen läpinäkyväksi kalakeliarvioksi. Vertaile ajankohtia ja katso käytännön viehesuositukset heti.",
     hero_btn_check: "Katso kelimittari",
     hero_btn_lure: "Katso viehesuositukset",
     panel_title: "Valitse kohde ja kala",
@@ -2685,7 +2691,7 @@ const UI_TRANS = {
     tab_linkit: "Links",
     hero_eyebrow: "When will the fish bite?",
     hero_title: "Know when to cast",
-    hero_lead: "FastFishing combines real-time weather, pressure changes, and moon phase into a scientific fish feeding formula. Find the best times and lure recommendations instantly.",
+    hero_lead: "FastFishing combines real-time weather, pressure changes, and moon phase into a transparent bite index. Compare times and get practical lure suggestions instantly.",
     hero_btn_check: "Check Bite Index",
     hero_btn_lure: "See Lure Guide",
     panel_title: "Select Spot & Species",
