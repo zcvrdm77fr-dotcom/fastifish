@@ -1,0 +1,88 @@
+:root {
+  --ink: #17342f;
+  --ink-soft: #45645e;
+  --lake: #2f6f73;
+  --lake-deep: #24585c;
+  --mist: #d9e8e4;
+  --paper: #f4f0e5;
+  --paper-bright: #fffdf7;
+  --line: #c9d5cf;
+  --orange: #d5752c;
+  --shadow: 0 8px 24px rgba(23, 52, 47, .09);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #eef3f0;
+  --ink-soft: #a8c2b9;
+  --lake: #59a3a7;
+  --lake-deep: #7fd6d6;
+  --mist: #17302c;
+  --paper: #0d1a16;
+  --paper-bright: #142522;
+  --line: #29423b;
+  --orange: #e2884a;
+  --shadow: 0 8px 24px rgba(0, 0, 0, .35);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.72 "Source Sans 3", Arial, Helvetica, sans-serif;
+}
+a { color: var(--lake-deep); }
+.shell { width: min(920px, 92%); margin: 0 auto; }
+.topbar { background: #17342f; color: #fff; }
+.topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 64px; }
+.brand { color: #fff; text-decoration: none; font-weight: 800; letter-spacing: .02em; }
+.nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 14px; }
+.nav a { color: #d8ece8; text-decoration: none; font-size: .9rem; font-weight: 700; }
+.theme-toggle { border: 1px solid rgba(255,255,255,.35); background: transparent; color: #fff; border-radius: 999px; padding: 7px 10px; cursor: pointer; }
+.hero { background: #24585c; color: #fff; padding: clamp(42px, 8vw, 76px) 0 52px; }
+.crumb { color: #bfe3e0; font-size: .85rem; margin-bottom: 16px; }
+.crumb a { color: inherit; }
+.eyebrow { color: #f3c393; font: 700 .75rem/1 "JetBrains Mono", monospace; letter-spacing: .11em; text-transform: uppercase; }
+h1, h2, h3 { line-height: 1.13; }
+h1 { margin: 14px 0 18px; font-family: "Fjalla One", Arial, sans-serif; font-size: clamp(2.25rem, 6vw, 3.7rem); font-weight: 400; }
+h2 { margin: 0 0 14px; font-family: "Fjalla One", Arial, sans-serif; color: var(--lake-deep); font-size: clamp(1.55rem, 4vw, 2rem); font-weight: 400; scroll-margin-top: 20px; }
+h3 { margin: 26px 0 8px; }
+p { margin: 0 0 16px; }
+.lead { max-width: 760px; font-size: 1.12rem; }
+.article-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; color: #d8ece8; font-size: .9rem; }
+.article-meta a { color: #fff; font-weight: 700; }
+main { padding: 28px 0 48px; }
+.toc, .card { background: var(--paper-bright); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+.toc { margin: 0 0 24px; padding: 18px 24px; }
+.toc strong { display: block; margin-bottom: 8px; }
+.toc ul { columns: 2; column-gap: 28px; margin: 0; padding-left: 20px; }
+.toc li { break-inside: avoid; margin: 6px 0; }
+.card { margin: 24px 0; padding: clamp(24px, 5vw, 40px); }
+.note { border-left: 4px solid var(--orange); background: var(--mist); border-radius: 8px; padding: 16px 18px; margin: 22px 0; }
+.table-wrap { overflow-x: auto; margin: 18px 0; }
+table { width: 100%; border-collapse: collapse; min-width: 620px; }
+th, td { border-bottom: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+th { color: var(--ink-soft); font-size: .8rem; letter-spacing: .03em; text-transform: uppercase; }
+code { background: var(--mist); border-radius: 5px; padding: 2px 6px; }
+.formula { font: 700 .95rem/1.65 "JetBrains Mono", monospace; overflow-wrap: anywhere; }
+.source-list li, .check-list li { margin: 8px 0; }
+footer { padding: 34px 0; background: var(--paper-bright); border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .9rem; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; }
+.consent-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999; background: #17342f; color: #fff; padding: 18px 20px; box-shadow: 0 -6px 20px rgba(0,0,0,.2); }
+.consent-banner[hidden] { display: none; }
+.consent-inner { width: min(1000px, 100%); margin: auto; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
+.consent-inner p { flex: 1 1 360px; margin: 0; }
+.consent-inner a { color: #9fd8d1; }
+.consent-actions { display: flex; gap: 10px; }
+.consent-actions button { padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+.consent-decline { border: 1px solid #fff; background: transparent; color: #fff; }
+.consent-accept { border: 0; background: #d5752c; color: #fff; font-weight: 800; }
+
+@media (max-width: 700px) {
+  .topbar-inner { align-items: flex-start; padding: 14px 0; }
+  .nav a { display: none; }
+  .toc ul { columns: 1; }
+}
+
