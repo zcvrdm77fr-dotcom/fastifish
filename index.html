@@ -559,12 +559,16 @@ main { padding-bottom: 70px; }
 .feed-post-user { overflow: hidden; color: var(--lake-deep); font-size: .94rem; font-weight: 800; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
 .feed-post-time { color: var(--ink-soft); font-size: .75rem; line-height: 1.25; }
 .feed-image-button {
+  --feed-image-max-height: min(56vh, 560px);
   position: relative; width: 100%; aspect-ratio: var(--feed-image-ratio, 4/3);
-  min-height: 260px; max-height: min(78vh, 760px); display: grid; place-items: center; overflow: hidden;
+  min-height: 260px; max-height: var(--feed-image-max-height); display: grid; place-items: center; overflow: hidden;
   padding: 0; border: 0; border-block: 1px solid var(--line); background: var(--mist); color: var(--ink-soft); cursor: zoom-in;
 }
-.feed-post-image { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform .35s ease; }
-.feed-image-button:hover .feed-post-image { transform: scale(1.012); }
+.feed-post-image {
+  display: block; width: auto; max-width: 100%; height: auto; max-height: var(--feed-image-max-height);
+  object-fit: contain; transition: filter .2s ease;
+}
+.feed-image-button:hover .feed-post-image { filter: brightness(.98); }
 .feed-image-button::after {
   content: "Avaa kuva"; position: absolute; right: 12px; bottom: 12px; padding: 7px 10px; border-radius: 999px;
   background: var(--ink-fill); color: var(--paper-bright); font-size: .68rem; font-weight: 800;
@@ -650,7 +654,7 @@ main { padding-bottom: 70px; }
   .feed-search { width: 100%; min-width: 0; flex: 1; }
   .feed-filter { width: 44%; min-width: 126px; }
   .feed-post-card, .feed-skeleton { border-radius: 16px; }
-  .feed-image-button { min-height: 220px; max-height: 72vh; }
+  .feed-image-button { --feed-image-max-height: min(52vh, 460px); min-height: 220px; }
 }
 
 @media (max-width: 680px) {
@@ -6705,8 +6709,8 @@ function renderPostCard(post, index = 0){
     img.src = retryCount ? feedImageRetryUrl(imageUrl) : imageUrl;
   };
   img.addEventListener('load', () => {
-    // Käytä kortissa kuvan omaa kuvasuhdetta. Pystykuva saa näin selvästi enemmän korkeutta
-    // kuin vanhassa kiinteässä 4:3-laatikossa, mutta enimmäiskorkeus pitää feedin selattavana.
+    // Käytä kortissa kuvan omaa kuvasuhdetta. Kuvan ja kehyksen yhteinen korkeusraja
+    // varmistaa, että myös pystykuva näkyy kokonaan eikä vuoda rajatun kehyksen ulkopuolelle.
     if (img.naturalWidth > 0 && img.naturalHeight > 0) {
       imageButton.style.setProperty('--feed-image-ratio', img.naturalWidth + ' / ' + img.naturalHeight);
     }
