@@ -1,4 +1,4 @@
-name: Apply dependency audit fixes
+name: Refresh overridden dependency lock
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  audit-fix:
+  lock:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,21 +20,20 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - name: Apply compatible security updates
-        run: npm audit fix
+      - name: Refresh lockfile with qs security override
+        run: npm install
       - name: Require clean production audit
         run: npm audit --omit=dev --audit-level=moderate
-      - name: Commit lockfile security updates
+      - name: Commit lockfile
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add package.json package-lock.json
+          git add package-lock.json
           if git diff --cached --quiet; then
-            echo 'No dependency lock changes required.'
+            echo 'Lockfile already current.'
             exit 0
           fi
-          git commit -m 'Update audited dependencies'
+          git commit -m 'Refresh dependency lock'
           git push origin HEAD:fix/final-hardening-feed
