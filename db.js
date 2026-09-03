@@ -1,11 +1,14 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { DATA_DIR } from './paths.js';
+import { hashSessionToken } from './session-token.js';
 
 export const db = new Database(path.join(DATA_DIR, 'fastfishing.db'));
 
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
+db.pragma('busy_timeout = 5000');
+db.pragma('synchronous = NORMAL');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -47,6 +50,12 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS schema_migrations (
+    version INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
   CREATE INDEX IF NOT EXISTS idx_sessions_user
     ON sessions(user_id);
 
@@ -60,21 +69,43 @@ db.exec(`
     ON comments(post_id, created_at);
 `);
 
-// Lisää vapaaehtoiset saalistiedot myös jo olemassa olevaan tietokantaan. CREATE TABLE IF NOT
-// EXISTS ei lisää uusia sarakkeita vanhaan tauluun, joten tehdään pieni idempotentti migraatio.
-const postColumns = new Set(
-  db.prepare('PRAGMA table_info(posts)').all().map(column => column.name)
-);
-const optionalPostColumns = [
-  ['species', 'TEXT'],
-  ['weight_g', 'INTEGER'],
-  ['length_cm', 'REAL'],
-  ['catch_location', 'TEXT'],
-  ['lure', 'TEXT']
-];
-for (const [name, type] of optionalPostColumns) {
-  if (!postColumns.has(name)) {
-    db.exec(`ALTER TABLE posts ADD COLUMN ${name} ${type}`);
-  }
+function applyMigration(version, name, up) {
+  const applied = db.prepare('SELECT 1 FROM schema_migrations WHERE version = ?').get(version);
+  if (applied) return;
+
+  const migrate = db.transaction(() => {
+    up();
+    db.prepare('INSERT INTO schema_migrations (version, name) VALUES (?, ?)').run(version, name);
+  });
+  migrate();
 }
 
+applyMigration(1, 'optional post metadata', () => {
+  const postColumns = new Set(
+    db.prepare('PRAGMA table_info(posts)').all().map(column => column.name)
+  );
+  const optionalPostColumns = [
+    ['species', 'TEXT'],
+    ['weight_g', 'INTEGER'],
+    ['length_cm', 'REAL'],
+    ['catch_location', 'TEXT'],
+    ['lure', 'TEXT']
+  ];
+  for (const [name, type] of optionalPostColumns) {
+    if (!postColumns.has(name)) {
+      db.exec(`ALTER TABLE posts ADD COLUMN ${name} ${type}`);
+    }
+  }
+});
+
+applyMigration(2, 'hash session tokens at rest', () => {
+  const rows = db.prepare('SELECT token FROM sessions').all();
+  const update = db.prepare('UPDATE sessions SET token = ? WHERE token = ?');
+  for (const row of rows) {
+    update.run(hashSessionToken(row.token), row.token);
+  }
+});
+
+applyMigration(3, 'optimize published feed pagination', () => {
+  db.exec('CREATE INDEX IF NOT EXISTS idx_posts_status_id ON posts(status, id DESC)');
+});
