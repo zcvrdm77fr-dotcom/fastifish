@@ -13,20 +13,16 @@ function addPublisherMeta(html, file) {
 }
 
 function removeLegacyConsentGrant(html, file) {
-  let out = html;
-  while (out.includes('cookie_consent')) {
-    const marker = out.indexOf('cookie_consent');
-    const compactStart = out.lastIndexOf('(function(){', marker);
-    const spacedStart = out.lastIndexOf('(function () {', marker);
-    const start = Math.max(compactStart, spacedStart);
-    const end = out.indexOf('})();', marker);
-    if (start < 0 || end < 0) break;
-
-    const block = out.slice(start, end + 5);
-    if (!/gtag\(['"]consent['"],\s*['"]update['"]/.test(block)) break;
-
-    out = out.slice(0, start) + out.slice(end + 5);
-  }
+  // Sisältösivuilla legacy-silta esiintyy sekä formatoituna että yhdelle riville minifioituna.
+  // Poistetaan try/catch-lohko vain kun samassa lyhyessä lohkossa esiintyvät sekä
+  // cookie_consent että suora gtag consent update -> granted.
+  let out = html.replace(
+    /try\s*\{[\s\S]{0,2500}?cookie_consent[\s\S]{0,2500}?gtag\(['"]consent['"],\s*['"]update['"][\s\S]{0,2500}?catch\s*\(e\)\s*\{\s*\}/g,
+    ''
+  );
+  out = out
+    .replace(/\(function\(\)\{\s*\}\)\(\);/g, '')
+    .replace(/\(function \(\) \{\s*\}\)\(\);/g, '');
 
   if (/gtag\(['"]consent['"],\s*['"]update['"]/.test(out)) {
     throw new Error(`${file}: legacy direct consent update remains`);
