@@ -12,7 +12,7 @@ test('hyvä iltakeli saa paremman pistemäärän kuin kova tuuli keskellä päiv
 test('findBestWindow valitsee parhaat peräkkäiset tunnit', () => {
   const hourly = [
     { time:'2026-09-03T12:00', hour:12, temp:26, pressure:1020, pressure6hAgo:1018, wind:11, cloud:5 },
-    { time:'2026-09-03T18:00', hour:18, temp:18, pressure:1012, pressure6hAgo:1014, wind:4, cloud:60 },
+    { time:'2026-09-03T18:00', hour:18, temp:18, pressure:1016, pressure6hAgo:1012, wind:9, cloud:30 },
     { time:'2026-09-03T19:00', hour:19, temp:17, pressure:1011, pressure6hAgo:1014, wind:3, cloud:70 },
     { time:'2026-09-03T20:00', hour:20, temp:16, pressure:1010, pressure6hAgo:1013, wind:3, cloud:75 }
   ];
