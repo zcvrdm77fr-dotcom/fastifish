@@ -20,6 +20,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-7506133239289138">
 
 <title>Hauen kalastus: rakenteen lukeminen ja väijyntäpaikat | FastFishing</title>
 
@@ -131,6 +132,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 </style>
 
 <!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes käyttäjä hyväksyy evästeet. -->
+
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -141,20 +143,6 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
     'analytics_storage': 'denied',
     'wait_for_update': 500
   });
-  (function(){
-    try {
-      var m = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);
-      var stored = m ? decodeURIComponent(m[1]) : (window.localStorage ? localStorage.getItem('cookie_consent') : null);
-      if (stored === 'all') {
-        gtag('consent', 'update', {
-          'ad_storage': 'granted',
-          'ad_user_data': 'granted',
-          'ad_personalization': 'granted',
-          'analytics_storage': 'granted'
-        });
-      }
-    } catch(e) {}
-  })();
   gtag('js', new Date());
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
@@ -171,7 +159,7 @@ html[data-theme="dark"] .theme-toggle-fab .icon-moon{display:none;}
 
 <header class="hero">
 <div class="container">
-<div class="crumb"><a href="index.html">Etusivu</a> → Kalastusoppaat → Hauen kalastus</div>
+<div class="crumb"><a href="/">Etusivu</a> → Kalastusoppaat → Hauen kalastus</div>
 <span class="eyebrow">Väijyvä petokala</span>
 <h1>Hauen kalastus: opi lukemaan rakenne, älä vain vaihtamaan viehettä</h1>
 <p>
@@ -183,7 +171,7 @@ Suurin osa haukikalastajista vaihtaa viehettä, kun kala ei tartu. Kokeneempi ka
 <span>Julkaistu <time datetime="2026-08-13">13.8.2026</time></span>
 <span>Päivitetty <time datetime="2026-09-02">2.9.2026</time></span>
 </div>
-<a class="button" href="index.html">← Palaa FastFishing-kelimittariin</a>
+<a class="button" href="/">← Palaa FastFishing-kelimittariin</a>
 </div>
 </header>
 
@@ -345,7 +333,7 @@ Hauelle ei ole valtakunnallista alamittaa, mutta monilla vesistöillä on omia, 
 <footer>
 <p>&copy; 2026 FastFishing – Kalastusoppaat ja kelimittari.</p>
 <p>
-<a href="index.html">Etusivu</a> |
+<a href="/">Etusivu</a> |
 <a href="tietoa-meista.html">Tietoa meistä</a> |
 <a href="metodologia.html">Kelimittarin metodologia</a> |
 <a href="toimitusperiaatteet.html">Toimitusperiaatteet</a> |
@@ -353,70 +341,5 @@ Hauelle ei ole valtakunnallista alamittaa, mutta monilla vesistöillä on omia, 
 </p>
 </footer>
 
-<div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
-  <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
-    <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
-    </div>
-  </div>
-</div>
-<script>
-(function(){
-  function setConsentCookie(value){
-    try {
-      localStorage.setItem('cookie_consent', value);
-      document.cookie = 'cookie_consent=' + encodeURIComponent(value) + ';path=/;max-age=' + (60*60*24*365) + ';SameSite=Lax';
-    } catch(e){}
-  }
-  function getConsentCookie(){
-    try {
-      var m = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);
-      return m ? decodeURIComponent(m[1]) : (window.localStorage ? localStorage.getItem('cookie_consent') : null);
-    } catch(e){ return null; }
-  }
-  var banner = document.getElementById('cookieConsentBanner');
-  var existing = getConsentCookie();
-  if (!existing && banner) { banner.style.display = 'block'; }
-  var acceptBtn = document.getElementById('cookieAcceptBtn');
-  var declineBtn = document.getElementById('cookieDeclineBtn');
-  if (acceptBtn) acceptBtn.addEventListener('click', function(){
-    setConsentCookie('all');
-    if (typeof gtag === 'function') {
-      gtag('consent', 'update', {
-        'ad_storage': 'granted', 'ad_user_data': 'granted',
-        'ad_personalization': 'granted', 'analytics_storage': 'granted'
-      });
-    }
-    if (banner) banner.style.display = 'none';
-  });
-  if (declineBtn) declineBtn.addEventListener('click', function(){
-    setConsentCookie('min');
-    if (banner) banner.style.display = 'none';
-  });
-})();
-</script>
-<script>
-(function () {
-  var root = document.documentElement;
-  var btn = document.getElementById('themeToggleFab');
-  function setStored(theme) {
-    try { localStorage.setItem('color_theme', theme); } catch (e) {}
-    try {
-      var d = new Date(); d.setTime(d.getTime() + 365*24*60*60*1000);
-      document.cookie = 'color_theme=' + encodeURIComponent(theme) + '; expires=' + d.toUTCString() + '; path=/; SameSite=Lax';
-    } catch (e) {}
-  }
-  if (btn) {
-    btn.addEventListener('click', function () {
-      var current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-      var next = current === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      setStored(next);
-    });
-  }
-})();
-</script>
 </body>
 </html>
