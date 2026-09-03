@@ -106,8 +106,9 @@ test('feed metadata survives create -> database -> feed roundtrip', { timeout: 3
       headers: { Cookie: cookie, Origin: frontendOrigin },
       body: form
     });
-    assert.equal(createResponse.status, 201, await createResponse.text());
-    const created = await createResponse.json();
+    const createBody = await createResponse.text();
+    assert.equal(createResponse.status, 201, createBody);
+    const created = JSON.parse(createBody);
     assert.equal(created.species, 'Ahven');
     assert.equal(created.weightKg, 1.25);
     assert.equal(created.lengthCm, 46.5);
