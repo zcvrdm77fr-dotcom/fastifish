@@ -16,7 +16,7 @@
   }
 
   // Mainos- ja analytiikkasuostumus kuuluu Google-certified CMP:lle.
-  // Sisältösivut eivät enää lue, kirjoita tai näytä FastFishingin omaa cookie_consent-tilaa.
+  // Sisältösivut eivät enää lue, kirjoita tai näytä FastFishingin vanhaa suostumustilaa.
 
   // Sisältösivuilta oppaisiin johtavat linkit viedään nyt oikealle opaskeskukselle
   // eikä takaisin suuren etusivun yksittäiseen SPA-osioon.
