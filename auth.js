@@ -30,10 +30,11 @@ const signupLimiter = createRateLimiter({
 });
 
 function cleanupSessions(userId = null){
-  db.prepare("DELETE FROM sessions WHERE expires_at <= datetime('now')").run();
+  db.prepare("DELETE FROM sessions WHERE julianday(expires_at) <= julianday('now')").run();
   if (userId) {
+    // Ennen uuden session lisäämistä pidetään korkeintaan neljä vanhaa, jolloin uusi tekee viidennen.
     const extra = db.prepare(`
-      SELECT token FROM sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT -1 OFFSET 5
+      SELECT token FROM sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT -1 OFFSET 4
     `).all(userId);
     const del = db.prepare('DELETE FROM sessions WHERE token = ?');
     const tx = db.transaction(rows => rows.forEach(row => del.run(row.token)));
