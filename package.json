@@ -1,6 +1,6 @@
 {
   "name": "fastfishing",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "FastFishing - kalakelien mittari, vieheopas ja saalisyhteisö",
   "main": "server.js",
   "type": "module",
