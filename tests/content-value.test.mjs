@@ -5,6 +5,9 @@ import fs from 'node:fs';
 const root = new URL('../', import.meta.url);
 const planner = fs.readFileSync(new URL('../kalareissun-suunnittelu.html', import.meta.url), 'utf8');
 const hub = fs.readFileSync(new URL('../kalastusoppaat.html', import.meta.url), 'utf8');
+const qualityJs = fs.readFileSync(new URL('../adsense-quality.js', import.meta.url), 'utf8');
+const qualityCss = fs.readFileSync(new URL('../adsense-quality.css', import.meta.url), 'utf8');
+const about = fs.readFileSync(new URL('../tietoa-meista.html', import.meta.url), 'utf8');
 
 function visibleText(html) {
   return html
@@ -34,4 +37,12 @@ test('guide hub makes the planning workflow a first-class internal destination',
   assert.match(hub, /href=["']kalareissun-suunnittelu\.html["']/i);
   assert.match(hub, /10 minuutin reissusuunnitelma/i);
   assert.match(hub, /Tavoitteena ei ole julkaista mahdollisimman monta lähes samanlaista sivua/i);
+});
+
+test('commercial affiliate promo is suspended while editorial content is being strengthened', () => {
+  assert.match(qualityJs, /suspendAffiliatePromoDuringReview/);
+  assert.match(qualityJs, /gearPromoGrid/);
+  assert.match(qualityCss, /#gearPromoGrid\{display:none!important\}/);
+  assert.match(about, /affiliate-tuoteruudukko on tällä hetkellä pois käytöstä/i);
+  assert.match(qualityJs, /kalareissun-suunnittelu\.html/);
 });
