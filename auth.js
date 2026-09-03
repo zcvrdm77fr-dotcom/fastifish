@@ -1,14 +1,15 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import { db } from './db.js';
 import { moderateUsername, ModerationUnavailableError } from './moderation.js';
 import { createRateLimiter } from './security.js';
+import { createSessionToken, hashSessionToken } from './session-token.js';
 
 const SESSION_COOKIE = 'ff_session';
 const SESSION_DAYS = 30;
 const CROSS_SITE = process.env.CROSS_SITE_COOKIES === '1';
 const USERNAME_RE = /^[a-zA-Z0-9äöåÄÖÅ_-]{3,20}$/;
+const SESSION_TOKEN_RE = /^[a-f0-9]{64}$/i;
 
 const RESERVED_USERNAMES = new Set([
   'admin', 'administrator', 'ylläpito', 'yllapito', 'moderaattori', 'moderator',
@@ -44,9 +45,10 @@ function cleanupSessions(userId = null){
 
 function createSession(userId){
   cleanupSessions(userId);
-  const token = crypto.randomBytes(32).toString('hex');
+  const token = createSessionToken();
+  const tokenDigest = hashSessionToken(token);
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
-  db.prepare('INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)').run(token, userId, expiresAt);
+  db.prepare('INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)').run(tokenDigest, userId, expiresAt);
   return { token, expiresAt };
 }
 
@@ -72,9 +74,10 @@ function readSessionToken(req){
   const header = req.headers.authorization;
   if (header && header.startsWith('Bearer ')) {
     const token = header.slice(7).trim();
-    if (/^[a-f0-9]{64}$/i.test(token)) return token;
+    if (SESSION_TOKEN_RE.test(token)) return token;
   }
-  return (req.cookies && req.cookies[SESSION_COOKIE]) || null;
+  const cookieToken = req.cookies && req.cookies[SESSION_COOKIE];
+  return typeof cookieToken === 'string' && SESSION_TOKEN_RE.test(cookieToken) ? cookieToken : null;
 }
 
 const ADMIN_USERNAMES = new Set(
@@ -90,15 +93,16 @@ export function isAdminUsername(username){
 export function attachUser(req, res, next){
   const token = readSessionToken(req);
   if (!token) return next();
+  const tokenDigest = hashSessionToken(token);
   const row = db.prepare(`
     SELECT users.id as id, users.username as username, sessions.expires_at as expires_at
     FROM sessions JOIN users ON users.id = sessions.user_id
     WHERE sessions.token = ?
-  `).get(token);
+  `).get(tokenDigest);
   if (row && new Date(row.expires_at) > new Date()) {
     req.user = { id: row.id, username: row.username, isAdmin: isAdminUsername(row.username) };
   } else if (row) {
-    db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
+    db.prepare('DELETE FROM sessions WHERE token = ?').run(tokenDigest);
   }
   next();
 }
@@ -157,7 +161,7 @@ router.post('/login', loginLimiter, async (req, res) => {
 
 router.post('/logout', (req, res) => {
   const token = readSessionToken(req);
-  if (token) db.prepare('DELETE FROM sessions WHERE token = ?').run(token);
+  if (token) db.prepare('DELETE FROM sessions WHERE token = ?').run(hashSessionToken(token));
   clearSessionCookie(res);
   res.json({ ok: true });
 });
