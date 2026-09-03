@@ -4,6 +4,7 @@ import { db } from './db.js';
 import { moderateUsername, ModerationUnavailableError } from './moderation.js';
 import { createRateLimiter } from './security.js';
 import { createSessionToken, hashSessionToken } from './session-token.js';
+import { asyncHandler } from './async-handler.js';
 
 const SESSION_COOKIE = 'ff_session';
 const SESSION_DAYS = 30;
@@ -33,7 +34,6 @@ const signupLimiter = createRateLimiter({
 function cleanupSessions(userId = null){
   db.prepare("DELETE FROM sessions WHERE julianday(expires_at) <= julianday('now')").run();
   if (userId) {
-    // Ennen uuden session lisäämistä pidetään korkeintaan neljä vanhaa, jolloin uusi tekee viidennen.
     const extra = db.prepare(`
       SELECT token FROM sessions WHERE user_id = ? ORDER BY created_at DESC LIMIT -1 OFFSET 4
     `).all(userId);
@@ -114,7 +114,7 @@ export function requireAuth(req, res, next){
 
 const router = express.Router();
 
-router.post('/signup', signupLimiter, async (req, res) => {
+router.post('/signup', signupLimiter, asyncHandler(async (req, res) => {
   const { username, password } = req.body || {};
   if (typeof username !== 'string' || !USERNAME_RE.test(username)) {
     return res.status(400).json({ error: 'Käyttäjänimen tulee olla 3-20 merkkiä (kirjaimet, numerot, - ja _).' });
@@ -143,9 +143,9 @@ router.post('/signup', signupLimiter, async (req, res) => {
   const { token, expiresAt } = createSession(info.lastInsertRowid);
   setSessionCookie(res, token, expiresAt);
   res.json({ username, token: CROSS_SITE ? token : null, expiresAt });
-});
+}));
 
-router.post('/login', loginLimiter, async (req, res) => {
+router.post('/login', loginLimiter, asyncHandler(async (req, res) => {
   const { username, password } = req.body || {};
   if (typeof username !== 'string' || typeof password !== 'string' || username.length > 100 || password.length > 100) {
     return res.status(400).json({ error: 'Anna käyttäjänimi ja salasana.' });
@@ -157,7 +157,7 @@ router.post('/login', loginLimiter, async (req, res) => {
   const { token, expiresAt } = createSession(user.id);
   setSessionCookie(res, token, expiresAt);
   res.json({ username: user.username, token: CROSS_SITE ? token : null, expiresAt });
-});
+}));
 
 router.post('/logout', (req, res) => {
   const token = readSessionToken(req);
