@@ -528,6 +528,8 @@ main { padding-bottom: 70px; }
 .feed-catch-grid .feed-field { margin-top: 14px; margin-bottom: 0; }
 .feed-catch-wide { grid-column: 1 / -1; }
 .feed-catch-privacy { grid-column: 1 / -1; margin: 10px 0 0; color: var(--ink-soft); font-size: .76rem; }
+.feed-location-share { display:flex; align-items:center; gap:8px; margin-top:8px; color:var(--ink-soft); font-size:.78rem; }
+.feed-location-share input { width:auto; min-height:0; }
 .feed-catch-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 16px; }
 .feed-catch-stat { min-width: 0; padding: 10px 11px; border-radius: 14px; background: var(--mist); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 72%, transparent); }
 .feed-catch-stat-wide { grid-column: 1 / -1; }
@@ -1608,14 +1610,21 @@ body.device-phone .columns {
       <span>FastFishing</span>
     </div>
     <nav class="tabs" aria-label="Sivut" id="navTabs">
-      <button class="tab-btn active" data-page="kelimittari">Kelimittari</button>
-      <button class="tab-btn" data-page="uistimet">Uistimet</button>
-      <button class="tab-btn" data-page="kalalajit">Kalalajit</button>
-      <button class="tab-btn" data-page="varusteet">Varusteet</button>
-      <button class="tab-btn" data-page="oppaat">Oppaat</button>
-      <button class="tab-btn" data-page="merikartta">Kalastuskartta</button>
+      <button class="tab-btn active" data-page="kelimittari">Keli</button>
+      <button class="tab-btn" data-page="merikartta">Kartta</button>
       <button class="tab-btn" data-page="feedi">Saaliit</button>
-      <button class="tab-btn" data-page="linkit">Linkit</button>
+      <button class="tab-btn" data-page="oppaat">Oppaat</button>
+      <div class="ff-more-wrap">
+        <button type="button" class="tab-btn ff-more-btn" aria-haspopup="true" aria-expanded="false">Lisää</button>
+        <div class="ff-more-menu" hidden>
+          <div class="ff-more-title">Vieheet & kalat</div>
+          <button class="tab-btn ff-more-item" data-page="uistimet">Uistimet</button>
+          <button class="tab-btn ff-more-item" data-page="kalalajit">Kalalajit</button>
+          <div class="ff-more-title">Muu tietopankki</div>
+          <button class="tab-btn ff-more-item" data-page="varusteet">Varusteet</button>
+          <button class="tab-btn ff-more-item" data-page="linkit">Linkit</button>
+        </div>
+      </div>
     </nav>
     <div class="topbar-actions">
       <button class="theme-toggle-btn" id="themeToggleBtn" type="button" aria-label="Vaihda tumma/vaalea tila" title="Tumma/vaalea tila">
@@ -1639,7 +1648,7 @@ body.device-phone .columns {
     </div>
     <div class="eyebrow">Kalapäivän suunnitteluun</div>
     <h1>FastFishing</h1>
-    <p class="lead">Yksi sivu, josta näkee nopeasti kelin, syönti-ikkunan ja millä vieheellä kannattaisi aloittaa. Ei lupaa kalaa, mutta säästää vähän arvailua.</p>
+    <p class="lead">Yksi sivu, josta näet nopeasti kalakelin, parhaat kalastusajat ja millä vieheellä kannattaa aloittaa.</p>
     <div class="hero-actions">
       <a class="btn primary" href="#kelimittari" data-go="kelimittari">Katso keli</a>
       <a class="btn" href="#uistimet" data-go="uistimet">Mitä laittaisin siimaan?</a>
@@ -1728,8 +1737,8 @@ body.device-phone .columns {
         <div id="hourlyHost"></div>
 
         <div class="daily-forecast-head">
-          <h3 id="dailyForecastTitle">7 vuorokauden syöntiennuste</h3>
-          <p id="dailyForecastSub">Valitse päivä nähdäksesi sen tuntikohtaisen ennusteen</p>
+          <h3 id="dailyForecastTitle">7 vuorokauden kalakeliennuste</h3>
+          <p id="dailyForecastSub">Valitse päivä nähdäksesi tuntikohtaiset kalakelipisteet</p>
         </div>
         <div id="dailyForecastHost" class="daily-forecast-row"></div>
 
@@ -6008,21 +6017,15 @@ function feedAssetUrl(url){
   return /^https?:\/\//i.test(url) ? url : FEED_API_BASE + url;
 }
 
-// Istuntotunnus talletetaan vain localStorageen (ei document.cookieen), koska eri osoitteessa
-// olevan palvelimen asettama eväste ei kulje selaimessa perille - Safari ja Firefox estävät
-// kolmannen osapuolen evästeet oletuksena.
-const FEED_TOKEN_KEY = 'ff_session_token';
-function getFeedToken(){
-  try { return localStorage.getItem(FEED_TOKEN_KEY) || ''; } catch(e) { return feedTokenFallback; }
+// Istunto kulkee vain api.fastfishin.com-palvelimen HttpOnly-evästeessä. Vanha
+// localStorage-bearer poistetaan heti, jotta sivun JavaScript ei säilytä käyttökelpoista
+// 30 päivän kirjautumistunnusta.
+function clearLegacyFeedToken(){
+  try { localStorage.removeItem('ff_session_token'); } catch(e) {}
 }
-let feedTokenFallback = '';
-function setFeedToken(token){
-  feedTokenFallback = token || '';
-  try {
-    if (token) localStorage.setItem(FEED_TOKEN_KEY, token);
-    else localStorage.removeItem(FEED_TOKEN_KEY);
-  } catch(e) { /* private mode - istunto elää vain tämän sivulatauksen ajan */ }
-}
+clearLegacyFeedToken();
+function getFeedToken(){ return ''; }
+function setFeedToken(){ clearLegacyFeedToken(); }
 
 function feedOfflineError(){
   const err = new Error(FEED_API_BASE
@@ -6035,11 +6038,7 @@ function feedOfflineError(){
 
 async function feedApi(path, options){
   const opts = Object.assign({}, options);
-  opts.credentials = 'include'; // samasta osoitteesta tarjoiltaessa istunto kulkee evästeessä
-  const token = getFeedToken();
-  if (token) {
-    opts.headers = Object.assign({}, opts.headers, { 'Authorization': 'Bearer ' + token });
-  }
+  opts.credentials = 'include'; // api.fastfishin.com käyttää HttpOnly SameSite=Lax -istuntoevästettä
 
   let res;
   try {
@@ -6164,6 +6163,7 @@ function renderFeedAuth(){
           <div class="feed-field feed-catch-wide">
             <label for="feedPostLocation">Saantipaikka</label>
             <input type="text" id="feedPostLocation" maxlength="100" placeholder="esim. Päijänne, Asikkala">
+            <label class="feed-location-share"><input type="checkbox" id="feedPostShareLocation"> Näytä saantipaikka julkisesti postauksessa</label>
           </div>
           <div class="feed-field feed-catch-wide">
             <label for="feedPostLure">Viehe tai syötti</label>
@@ -6362,6 +6362,7 @@ async function handleFeedNewPost(){
   const weightEl = document.getElementById('feedPostWeight');
   const lengthEl = document.getElementById('feedPostLength');
   const locationEl = document.getElementById('feedPostLocation');
+  const shareLocationEl = document.getElementById('feedPostShareLocation');
   const lureEl = document.getElementById('feedPostLure');
   const errorEl = document.getElementById('feedPostError');
   const submitBtn = document.getElementById('feedPostSubmitBtn');
@@ -6386,7 +6387,10 @@ async function handleFeedNewPost(){
  if (speciesEl.value) formData.append('species', speciesEl.value);
  if (weightEl.value) formData.append('weightKg', weightEl.value);
  if (lengthEl.value) formData.append('lengthCm', lengthEl.value);
- if (locationEl.value.trim()) formData.append('catchLocation', locationEl.value.trim());
+ if (locationEl.value.trim() && shareLocationEl.checked) {
+   formData.append('catchLocation', locationEl.value.trim());
+   formData.append('shareLocation', '1');
+ }
  if (lureEl.value.trim()) formData.append('lure', lureEl.value.trim());
 
   submitBtn.disabled = true;
@@ -6399,6 +6403,7 @@ async function handleFeedNewPost(){
     weightEl.value = '';
     lengthEl.value = '';
     locationEl.value = '';
+    shareLocationEl.checked = false;
     lureEl.value = '';
     document.getElementById('feedPostPreview').style.display = 'none';
     const composerForm = document.getElementById('feedComposerForm');
@@ -6970,18 +6975,18 @@ function moonPhaseInfo(date){
   else if(phase<.78){name=currentLang === 'fi' ? "Puolikuu vähenevä" : "Third quarter";icon="◑"}
   return {phase,minDays,name,icon};
 }
+function calibrateCoreScore(rawScore){
+  const raw=Math.max(0,Math.min(100,Number(rawScore)||0));
+  const calibrated=raw<=50?50-(50-raw)*.90:50+(raw-50)*.82;
+  return Math.max(0,Math.min(94,Math.round(calibrated)));
+}
 function scoreLabel(score){
-  if (currentLang === 'fi') {
-    if(score>=75) return {text:"Erinomainen", color:"#426f33"};
-    if(score>=55) return {text:"Hyvä", color:"#2e656b"};
-    if(score>=35) return {text:"Kohtalainen", color:"#d97725"};
-    return {text:"Heikko", color:"#a94635"};
-  } else {
-    if(score>=75) return {text:"Excellent", color:"#426f33"};
-    if(score>=55) return {text:"Good", color:"#2e656b"};
-    if(score>=35) return {text:"Fair", color:"#d97725"};
-    return {text:"Poor", color:"#a94635"};
-  }
+  const english=currentLang!=='fi';
+  if(score>=86) return {text:english?'Exceptional':'Poikkeuksellisen hyvä', color:'#426f33'};
+  if(score>=72) return {text:english?'Very good':'Erittäin hyvä', color:'#4f7d42'};
+  if(score>=56) return {text:english?'Good':'Hyvä', color:'#2e656b'};
+  if(score>=40) return {text:english?'Fair':'Kohtalainen', color:'#d97725'};
+  return {text:english?'Poor':'Heikko', color:'#a94635'};
 }
 function setGauge(score){
   score=Math.max(0,Math.min(100,Math.round(score)));
@@ -7075,7 +7080,7 @@ function computeCoreScore({delta,wind,cloud,temp,isPrimeTime,species,isSeaSummer
   const speciesBonus=Math.round((SPECIES_MODIFIERS[species]||(()=>0))({temp,cloud,wind,isPrimeTime,isSeaSummer})*.6);
   score=score+speciesBonus;
   if(species==="taimen"&&isSeaSummer) score=Math.min(score,32);
-  return {score:Math.max(0,Math.min(100,Math.round(score))),speciesBonus,moon,isSeaSummer:!!isSeaSummer};
+  return {score:calibrateCoreScore(score),speciesBonus,moon,isSeaSummer:!!isSeaSummer};
 }
 function computeScore(data,idx,species,loc){
   const h=data.hourly;

@@ -1,5 +1,3 @@
-import { calibrateFishingScore, fishingScoreBand } from './score-calibration.js';
-
 const PRIMARY_PAGES = ['kelimittari', 'merikartta', 'feedi', 'oppaat'];
 const SECONDARY_GROUPS = [
   { titleFi: 'Vieheet & kalat', titleEn: 'Lures & fish', pages: ['uistimet', 'kalalajit'] },
@@ -12,35 +10,6 @@ const PAGE_LABELS = {
 
 function currentLang() {
   return document.querySelector('.lang-btn.active')?.dataset.lang === 'en' ? 'en' : 'fi';
-}
-
-function patchScoreModel() {
-  const originalCompute = window.computeCoreScore;
-  if (typeof originalCompute === 'function' && !originalCompute.__ffCalibrated) {
-    const calibratedCompute = function (...args) {
-      const result = originalCompute.apply(this, args);
-      if (!result || typeof result.score !== 'number') return result;
-      return { ...result, score: calibrateFishingScore(result.score) };
-    };
-    calibratedCompute.__ffCalibrated = true;
-    window.computeCoreScore = calibratedCompute;
-  }
-
-  if (typeof window.scoreLabel === 'function') {
-    const calibratedLabel = function (score) {
-      const band = fishingScoreBand(score, currentLang());
-      return { text: band.text, color: band.color };
-    };
-    calibratedLabel.__ffCalibrated = true;
-    window.scoreLabel = calibratedLabel;
-  }
-
-  // Pääsivu ehtii yleensä laskea ensimmäisen arvon ennen moduulin latausta. Lasketaan
-  // näkymä kerran uudelleen kalibroidulla mallilla, jotta myös 7 päivän kortit päivittyvät.
-  const scoreEl = document.getElementById('scoreNum');
-  if (scoreEl && /^\d+$/.test(scoreEl.textContent.trim())) {
-    setTimeout(() => document.getElementById('refreshBtn')?.click(), 0);
-  }
 }
 
 function relabelPrimaryButtons(nav) {
@@ -68,50 +37,25 @@ function updateMoreActive(nav) {
 function simplifyDesktopNav() {
   const nav = document.getElementById('navTabs');
   if (!nav || nav.dataset.ffSimplified === '1') return;
+  const moreWrap = nav.querySelector('.ff-more-wrap');
+  const moreBtn = moreWrap?.querySelector('.ff-more-btn');
+  const menu = moreWrap?.querySelector('.ff-more-menu');
+  if (!moreBtn || !menu) return;
   nav.dataset.ffSimplified = '1';
 
-  const buttons = new Map(
-    [...nav.querySelectorAll('.tab-btn[data-page]')].map(btn => [btn.dataset.page, btn])
-  );
-
-  PRIMARY_PAGES.forEach(page => {
-    const btn = buttons.get(page);
-    if (btn) nav.appendChild(btn);
-  });
-
-  const moreWrap = document.createElement('div');
-  moreWrap.className = 'ff-more-wrap';
-  moreWrap.innerHTML = '<button type="button" class="tab-btn ff-more-btn" aria-haspopup="true" aria-expanded="false">Lisää</button><div class="ff-more-menu" hidden></div>';
-  const moreBtn = moreWrap.querySelector('.ff-more-btn');
-  const menu = moreWrap.querySelector('.ff-more-menu');
-
-  SECONDARY_GROUPS.forEach(group => {
-    const title = document.createElement('div');
-    title.className = 'ff-more-title';
-    menu.appendChild(title);
-    group.pages.forEach(page => {
-      const btn = buttons.get(page);
-      if (!btn) return;
-      btn.classList.add('ff-more-item');
-      menu.appendChild(btn);
-      btn.addEventListener('click', () => {
-        menu.hidden = true;
-        moreBtn.setAttribute('aria-expanded', 'false');
-        setTimeout(() => updateMoreActive(nav), 0);
-      });
-    });
-  });
-
-  nav.appendChild(moreWrap);
   relabelPrimaryButtons(nav);
   updateMoreActive(nav);
-
   moreBtn.addEventListener('click', event => {
     event.stopPropagation();
     menu.hidden = !menu.hidden;
     moreBtn.setAttribute('aria-expanded', String(!menu.hidden));
   });
   menu.addEventListener('click', event => event.stopPropagation());
+  menu.querySelectorAll('.tab-btn[data-page]').forEach(btn => btn.addEventListener('click', () => {
+    menu.hidden = true;
+    moreBtn.setAttribute('aria-expanded', 'false');
+    setTimeout(() => updateMoreActive(nav), 0);
+  }));
   document.addEventListener('click', () => {
     menu.hidden = true;
     moreBtn.setAttribute('aria-expanded', 'false');
@@ -124,7 +68,7 @@ function simplifyDesktopNav() {
   });
 
   const activeObserver = new MutationObserver(() => updateMoreActive(nav));
-  buttons.forEach(btn => activeObserver.observe(btn, { attributes:true, attributeFilter:['class'] }));
+  nav.querySelectorAll('.tab-btn[data-page]').forEach(btn => activeObserver.observe(btn, { attributes:true, attributeFilter:['class'] }));
 }
 
 function secondaryButton(page) {
@@ -257,7 +201,6 @@ function refreshLanguageDependentUi() {
 }
 
 function init() {
-  patchScoreModel();
   simplifyDesktopNav();
   cleanScoreCopy();
   simplifyMobileNav();

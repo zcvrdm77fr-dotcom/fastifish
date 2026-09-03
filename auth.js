@@ -8,7 +8,6 @@ import { asyncHandler } from './async-handler.js';
 
 const SESSION_COOKIE = 'ff_session';
 const SESSION_DAYS = 30;
-const CROSS_SITE = process.env.CROSS_SITE_COOKIES === '1';
 const USERNAME_RE = /^[a-zA-Z0-9äöåÄÖÅ_-]{3,20}$/;
 const SESSION_TOKEN_RE = /^[a-f0-9]{64}$/i;
 
@@ -55,8 +54,8 @@ function createSession(userId){
 function setSessionCookie(res, token, expiresAt){
   res.cookie(SESSION_COOKIE, token, {
     httpOnly: true,
-    sameSite: CROSS_SITE ? 'none' : 'lax',
-    secure: CROSS_SITE || process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
     expires: new Date(expiresAt),
     path: '/'
   });
@@ -65,17 +64,12 @@ function setSessionCookie(res, token, expiresAt){
 function clearSessionCookie(res){
   res.clearCookie(SESSION_COOKIE, {
     path: '/',
-    sameSite: CROSS_SITE ? 'none' : 'lax',
-    secure: CROSS_SITE || process.env.NODE_ENV === 'production'
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production'
   });
 }
 
 function readSessionToken(req){
-  const header = req.headers.authorization;
-  if (header && header.startsWith('Bearer ')) {
-    const token = header.slice(7).trim();
-    if (SESSION_TOKEN_RE.test(token)) return token;
-  }
   const cookieToken = req.cookies && req.cookies[SESSION_COOKIE];
   return typeof cookieToken === 'string' && SESSION_TOKEN_RE.test(cookieToken) ? cookieToken : null;
 }
@@ -142,7 +136,7 @@ router.post('/signup', signupLimiter, asyncHandler(async (req, res) => {
   const info = db.prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)').run(username, passwordHash);
   const { token, expiresAt } = createSession(info.lastInsertRowid);
   setSessionCookie(res, token, expiresAt);
-  res.json({ username, token: CROSS_SITE ? token : null, expiresAt });
+  res.json({ username, expiresAt });
 }));
 
 router.post('/login', loginLimiter, asyncHandler(async (req, res) => {
@@ -156,7 +150,7 @@ router.post('/login', loginLimiter, asyncHandler(async (req, res) => {
   if (!ok) return res.status(401).json({ error: 'Väärä käyttäjänimi tai salasana.' });
   const { token, expiresAt } = createSession(user.id);
   setSessionCookie(res, token, expiresAt);
-  res.json({ username: user.username, token: CROSS_SITE ? token : null, expiresAt });
+  res.json({ username: user.username, expiresAt });
 }));
 
 router.post('/logout', (req, res) => {

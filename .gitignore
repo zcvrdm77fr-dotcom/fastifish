@@ -1,6 +1,10 @@
 node_modules/
 data/
 uploads/
+backups/
+coverage/
+playwright-report/
+test-results/
 .env
 .gcp-service-account.json
 finland-strong-osm.json

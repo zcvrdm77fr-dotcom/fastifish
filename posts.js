@@ -11,11 +11,19 @@ import { UPLOADS_DIR } from './paths.js';
 import { findBlockedTerm } from './wordlist.js';
 import { asyncHandler } from './async-handler.js';
 import { logError, logWarn } from './logger.js';
+import { createRateLimiter } from './security.js';
+import { queueUploadCleanup } from './upload-cleanup.js';
 
 const MAX_CAPTION_LEN = 280;
 const MAX_COMMENT_LEN = 300;
 const POST_COOLDOWN_MS = 60 * 1000;
 const COMMENT_COOLDOWN_MS = 5 * 1000;
+const uploadLimiter = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  max: 30,
+  keyPrefix: 'upload',
+  message: 'Liikaa kuvanlähetyksiä. Yritä myöhemmin uudelleen.'
+});
 const ALLOWED_SPECIES = new Set([
   'Ahven', 'Hauki', 'Kuha', 'Toutain',
   'Lohi', 'Taimen', 'Kirjolohi', 'Siika', 'Muikku', 'Harjus',
@@ -36,7 +44,15 @@ function optionalNumber(value){
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 8 * 1024 * 1024 },
+  limits: {
+    fileSize: 8 * 1024 * 1024,
+    files: 1,
+    fields: 7,
+    parts: 8,
+    fieldNameSize: 80,
+    fieldSize: 4096,
+    fieldArrayIndexLimit: 0
+  },
   fileFilter: (req, file, cb) => {
     if (!['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'].includes(file.mimetype)) {
       const err = new Error('Vain JPEG-, PNG-, WebP-, HEIC- tai HEIF-kuvat ovat sallittuja.');
@@ -91,14 +107,15 @@ router.get('/', (req, res) => {
   res.json({ posts: rows.map(r => serializePost(r, req.user && req.user.id, req.user && req.user.isAdmin)) });
 });
 
-router.post('/', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
+router.post('/', requireAuth, uploadLimiter, upload.single('image'), asyncHandler(async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Liitä saaliskuva.' });
 
   const caption = typeof req.body.caption === 'string' ? req.body.caption.trim().slice(0, MAX_CAPTION_LEN) : '';
   const species = optionalText(req.body.species, 40);
   const weightKg = optionalNumber(req.body.weightKg);
   const lengthCm = optionalNumber(req.body.lengthCm);
-  const catchLocation = optionalText(req.body.catchLocation, 100);
+  const shareLocation = req.body.shareLocation === '1' || req.body.shareLocation === 'true';
+  const catchLocation = shareLocation ? optionalText(req.body.catchLocation, 100) : null;
   const lure = optionalText(req.body.lure, 100);
 
   if (species && !ALLOWED_SPECIES.has(species)) return res.status(400).json({ error: 'Valitse kalalaji valikosta.' });
@@ -116,7 +133,7 @@ router.post('/', requireAuth, upload.single('image'), asyncHandler(async (req, r
 
   let processedBuffer;
   try {
-    processedBuffer = await sharp(req.file.buffer)
+    processedBuffer = await sharp(req.file.buffer, { limitInputPixels: 40_000_000 })
       .rotate()
       .resize({ width: 1920, height: 1920, fit: 'inside', withoutEnlargement: true })
       .jpeg({ quality: 82 })
@@ -151,6 +168,7 @@ router.post('/', requireAuth, upload.single('image'), asyncHandler(async (req, r
   } catch (error) {
     try { await fs.promises.unlink(imagePath); } catch (cleanupError) {
       logError('orphan_image_cleanup_failed', { imagePath: filename, message: cleanupError.message });
+      queueUploadCleanup(filename, cleanupError.message);
     }
     throw error;
   }
@@ -259,7 +277,10 @@ async function removePostImage(post) {
   } catch (error) {
     const fields = { postId: post.id, imagePath: post.image_path, code: error.code, message: error.message };
     if (error.code === 'ENOENT') logWarn('post_image_already_missing', fields);
-    else logError('post_image_delete_failed', fields);
+    else {
+      logError('post_image_delete_failed', fields);
+      queueUploadCleanup(post.image_path, error.message);
+    }
   }
 }
 

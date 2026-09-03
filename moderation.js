@@ -59,6 +59,7 @@ export async function moderateUsername(username){
 export async function moderatePost(imageBuffer, mimeType, caption){
   const capTerm = findBlockedTerm(caption);
   if (capTerm) return { allowed: false, reason: 'Kuvateksti sisältää asiattomaksi tulkittavaa sisältöä.' };
+  if (process.env.NODE_ENV === 'test') return { allowed: true, reason: '' };
 
   let scores;
   try {
