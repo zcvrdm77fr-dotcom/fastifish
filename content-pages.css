@@ -1,7 +1,7 @@
 :root {
   --ink: #17342f;
   --ink-soft: #45645e;
-  --lake: #2f6f73;
+  --lake: #59a3a7;
   --lake-deep: #24585c;
   --mist: #d9e8e4;
   --paper: #f4f0e5;
@@ -70,15 +70,6 @@ code { background: var(--mist); border-radius: 5px; padding: 2px 6px; }
 .source-list li, .check-list li { margin: 8px 0; }
 footer { padding: 34px 0; background: var(--paper-bright); border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .9rem; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; }
-.consent-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999; background: #17342f; color: #fff; padding: 18px 20px; box-shadow: 0 -6px 20px rgba(0,0,0,.2); }
-.consent-banner[hidden] { display: none; }
-.consent-inner { width: min(1000px, 100%); margin: auto; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
-.consent-inner p { flex: 1 1 360px; margin: 0; }
-.consent-inner a { color: #9fd8d1; }
-.consent-actions { display: flex; gap: 10px; }
-.consent-actions button { padding: 10px 15px; border-radius: 8px; cursor: pointer; }
-.consent-decline { border: 1px solid #fff; background: transparent; color: #fff; }
-.consent-accept { border: 0; background: #d5752c; color: #fff; font-weight: 800; }
 
 @media (max-width: 700px) {
   .topbar-inner { align-items: flex-start; padding: 14px 0; }
