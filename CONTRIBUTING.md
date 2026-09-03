@@ -2,9 +2,18 @@
 
 Kiitos kiinnostuksesta FastFishingin kehitykseen.
 
-## Kehityshaara
+## Branch-strategia: GitHub Flow
 
-Tee muutokset omassa branchissa ja avaa pull request `main`-branchiin. Pidä yksi PR mahdollisimman selkeästi yhden kokonaisuuden ympärillä.
+`main` on julkaistava ja tarkoituksella vakaa branch. Normaali muutoskulku on:
+
+1. tee lyhyt feature/fix/chore-branch `main`ista
+2. tee yksi selkeä kokonaisuus
+3. avaa pull request `main`iin
+4. odota **Quality**-workflow vihreäksi
+5. squash-mergeä lyhyellä commit-otsikolla
+6. älä pushaa tarkoituksella keskeneräistä ominaisuutta suoraan `main`iin
+
+Pitkäikäisiä `develop`/release-brancheja ei käytetä. Pienelle projektille GitHub Flow pitää tuotantopolun yksinkertaisena.
 
 ## Ennen pull requestia
 
@@ -14,7 +23,7 @@ Aja:
 npm run check
 ```
 
-PR:n pitää läpäistä GitHub Actionsin **Quality**-workflow.
+PR:n pitää läpäistä GitHub Actionsin **Quality**-workflow. Workflow tarkistaa JavaScript-syntaksin, testit, coverage-raportin sekä sivuston build/SEO/linkkivalidoinnin.
 
 ## Commit-viestit
 
@@ -58,6 +67,8 @@ Improve repository docs
 - älä lisää salaisuuksia tai tuotannon `.env`-arvoja repoon
 - huomioi kalapaikkoihin ja käyttäjien kuviin liittyvä yksityisyys
 - viralliset lupa-, rajoitus- ja turvallisuusväitteet pitää pystyä jäljittämään ensisijaiseen lähteeseen
+- tee skeemamuutokset versionoidulla `schema_migrations`-migraatiolla
+- async Express -reitit pitää kääriä `asyncHandler`iin, jotta virheet päätyvät keskitettyyn error handleriin
 
 ## Frontend
 

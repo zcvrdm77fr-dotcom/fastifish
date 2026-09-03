@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { attachUser } from './auth.js';
@@ -9,27 +8,27 @@ import authRouter from './auth.js';
 import postsRouter from './posts.js';
 import profilesRouter from './profiles.js';
 import insightsRouter from './insights.js';
-import { securityHeaders } from './security.js';
+import { createRateLimiter, securityHeaders } from './security.js';
 import { UPLOADS_DIR } from './paths.js';
+import { db } from './db.js';
+import { readRuntimeConfig } from './config.js';
+import { requestLogger, logInfo } from './logger.js';
+import { apiNotFound, errorHandler } from './error-handler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+const config = readRuntimeConfig(process.env);
 const app = express();
-const PORT = parseInt(process.env.PORT, 10) || 3000;
 
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(securityHeaders);
-
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
-  .split(',')
-  .map(o => o.trim().replace(/\/+$/, ''))
-  .filter(Boolean);
+app.use(requestLogger);
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && ALLOWED_ORIGINS.includes(origin.replace(/\/+$/, ''))) {
+  const normalizedOrigin = origin ? origin.replace(/\/+$/, '') : null;
+  if (normalizedOrigin && config.allowedOrigins.includes(normalizedOrigin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -46,52 +45,81 @@ app.use(express.json({ limit: '64kb' }));
 app.use(attachUser);
 
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true, feed: true, profiles: true, insights: true });
+  let database = true;
+  try {
+    db.prepare('SELECT 1 AS ok').get();
+  } catch {
+    database = false;
+  }
+  const ok = database;
+  res.status(ok ? 200 : 503).json({
+    ok,
+    database,
+    feed: true,
+    profiles: true,
+    insights: true,
+    uptimeSeconds: Math.round(process.uptime())
+  });
 });
+
+const apiLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 600,
+  keyPrefix: 'api',
+  message: 'Liikaa API-pyyntöjä. Yritä hetken kuluttua uudelleen.'
+});
+app.use('/api', apiLimiter);
 
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
 app.use('/api/profiles', profilesRouter);
 app.use('/api/insights', insightsRouter);
-app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d', index: false, immutable: true }));
+app.use('/uploads', express.static(UPLOADS_DIR, {
+  maxAge: '30d',
+  index: false,
+  immutable: true,
+  dotfiles: 'deny'
+}));
 
-const BLOCKED_STATIC_PREFIXES = ['/data', '/node_modules', '/tests', '/scripts'];
-const BLOCKED_STATIC_FILES = new Set([
-  '/server.js', '/db.js', '/auth.js', '/posts.js', '/profiles.js', '/insights.js', '/security.js',
-  '/paths.js', '/wordlist.js', '/moderation.js', '/package.json', '/package-lock.json',
-  '/Dockerfile', '/render.yaml', '/DEPLOY.md'
-]);
-app.use((req, res, next) => {
-  if (BLOCKED_STATIC_FILES.has(req.path) || BLOCKED_STATIC_PREFIXES.some(p => req.path.startsWith(p))) {
-    return res.status(404).end();
-  }
-  next();
+if (config.serveFrontend) {
+  // Tuotannossa API-palvelin ei oletuksena tarjoa repositorion juurta lainkaan. Tämä paikallisen
+  // kehityksen suoja estää myös vahingossa lisätyt backend-/config-tiedostot ja dotfilet.
+  const privatePrefixes = ['/data', '/node_modules', '/tests', '/scripts', '/.github'];
+  const privateRootFiles = /\/(?:server|db|auth|posts|profiles|insights|security|paths|wordlist|moderation|config|logger|error-handler|async-handler|session-token)\.js$/i;
+  const privateExtensions = /\.(?:env|db|sqlite|sqlite3|log|pem|key|crt|bak|ya?ml)$/i;
+
+  app.use((req, res, next) => {
+    const pathName = req.path;
+    if (
+      pathName.split('/').some(part => part.startsWith('.')) ||
+      privatePrefixes.some(prefix => pathName === prefix || pathName.startsWith(prefix + '/')) ||
+      privateRootFiles.test(pathName) ||
+      privateExtensions.test(pathName) ||
+      ['/package.json', '/package-lock.json', '/Dockerfile', '/DEPLOY.md', '/README.md', '/CONTRIBUTING.md'].includes(pathName)
+    ) {
+      return res.status(404).end();
+    }
+    next();
+  });
+
+  app.use(express.static(__dirname, { dotfiles: 'deny', index: false }));
+  app.get('/tietosuoja', (req, res) => res.sendFile(path.join(__dirname, 'tietosuoja.html')));
+  app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+}
+
+app.use((req, res) => {
+  if (req.path.startsWith('/api/')) return apiNotFound(req, res);
+  if (config.serveFrontend) return res.sendFile(path.join(__dirname, 'index.html'));
+  return res.status(404).json({ service: 'FastFishing API', error: 'Ei löytynyt.' });
 });
 
-app.use(express.static(__dirname));
+app.use(errorHandler);
 
-app.get('/tietosuoja', (req, res) => {
-  res.sendFile(path.join(__dirname, 'tietosuoja.html'));
-});
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'Ei löytynyt.' });
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.use((err, req, res, next) => {
-  if (err instanceof multer.MulterError || err) {
-    const status = err instanceof multer.MulterError ? 400 : (err.status || 500);
-    if (status >= 500) console.error('Palvelinvirhe:', err);
-    return res.status(status).json({ error: status >= 500 ? 'Palvelinvirhe.' : (err.message || 'Pyyntö epäonnistui.') });
-  }
-  next();
-});
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on http://0.0.0.0:${PORT}`);
+app.listen(config.port, '0.0.0.0', () => {
+  logInfo('server_started', {
+    port: config.port,
+    production: config.production,
+    serveFrontend: config.serveFrontend,
+    allowedOrigins: config.allowedOrigins
+  });
 });

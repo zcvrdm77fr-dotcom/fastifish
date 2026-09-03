@@ -1,0 +1,23 @@
+name: Production health
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check API
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESPONSE="$(curl --fail --silent --show-error --retry 2 --max-time 15 https://api.fastfishin.com/api/health)"
+          node -e 'const x=JSON.parse(process.argv[1]); if (x.ok !== true) { console.error(x); process.exit(1); }' "$RESPONSE"
+
+      - name: Check frontend
+        run: curl --fail --silent --show-error --retry 2 --max-time 15 https://fastfishin.com/ -o /dev/null

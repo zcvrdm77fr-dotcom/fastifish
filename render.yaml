@@ -1,13 +1,10 @@
-# Render Blueprint: luo saalisfeedin palvelimen valmiiksi oikeilla asetuksilla.
-# Käyttö: Render -> New -> Blueprint -> valitse tämä repo. Ks. DEPLOY.md.
+# Render Blueprint: FastFishingin API-palvelin.
 services:
   - type: web
     name: fastfishing-api
     runtime: docker
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
-    # Pysyvä levy: ilman tätä tietokanta ja kaikki saaliskuvat katoaisivat jokaisessa
-    # uudelleenkäynnistyksessä ja julkaisussa.
     disk:
       name: fastfishing-data
       mountPath: /var/data
@@ -17,15 +14,13 @@ services:
         value: /var/data
       - key: NODE_ENV
         value: production
-      # Sivuston osoite, josta selain saa kutsua tätä APIa. Pilkulla erotettuna useampi.
-      # Muuta tämä omaksi osoitteeksesi, jos sivustosi on muualla kuin fastfishin.comissa.
       - key: ALLOWED_ORIGINS
         value: https://fastfishin.com,https://www.fastfishin.com
-      # 1 = sivusto ja API ovat eri osoitteissa (GitHub Pages + erillinen palvelin).
       - key: CROSS_SITE_COOKIES
         value: "1"
-      # Pilkulla erotetut käyttäjänimet, joilla on oikeus poistaa KENEN TAHANSA saalisjulkaisu
-      # ja -kommentti. sync: false = ei tallenneta arvoa tähän tiedostoon (julkinen repo) - aseta
-      # oma käyttäjänimesi Renderin Environment-välilehdellä blueprintin luonnin jälkeen.
+      # Frontend on GitHub Pagesissa. API-palvelin ei tarjoa repositorion juuritiedostoja,
+      # jolloin uusi backend/config-tiedosto ei voi vahingossa muuttua julkiseksi HTTP:n kautta.
+      - key: SERVE_FRONTEND
+        value: "0"
       - key: ADMIN_USERNAMES
         sync: false
