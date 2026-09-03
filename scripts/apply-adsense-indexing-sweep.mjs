@@ -28,16 +28,13 @@ function addPublisherMeta(html, file) {
   return html.replace(viewport, `$1\n${publisherMeta}`);
 }
 
-function removeLegacyBanner(html) {
-  let out = html;
-  while (out.includes('id="cookieConsentBanner"')) {
-    const start = out.lastIndexOf('<div', out.indexOf('id="cookieConsentBanner"'));
-    const scriptStart = out.indexOf('<script', start);
-    const scriptEnd = out.indexOf('</script>', scriptStart);
-    if (start < 0 || scriptStart < 0 || scriptEnd < 0) {
-      throw new Error('Could not delimit legacy cookieConsentBanner block');
-    }
-    out = out.slice(0, start) + out.slice(scriptEnd + '</script>'.length);
+function removeLegacyBanner(html, file) {
+  const out = html.replace(
+    /<div\s+id=["']cookieConsentBanner["'][\s\S]*?<\/div>\s*<script>\s*\(function\(\)\{[\s\S]*?cookie_consent[\s\S]*?<\/script>/g,
+    ''
+  );
+  if (/id=["']cookieConsentBanner["']/.test(out)) {
+    throw new Error(`${file}: legacy cookieConsentBanner markup remains`);
   }
   return out;
 }
@@ -70,7 +67,7 @@ for (const file of htmlFiles) {
   let html = fs.readFileSync(file, 'utf8');
   html = addPublisherMeta(html, file);
   if (file !== 'index.html' && file !== 'tietosuoja.html') {
-    html = removeLegacyBanner(html);
+    html = removeLegacyBanner(html, file);
     html = standardizeGoogleConsent(html, file);
   }
   html = canonicalizeHomeLinks(html);
