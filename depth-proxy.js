@@ -8,6 +8,7 @@ const cache = new Map();
 export const depthRouter = express.Router();
 
 function finite(value) {
+  if (value == null || value === '') return null;
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
 }
@@ -30,7 +31,7 @@ export function buildDepthProfiles(bounds, rows = 5) {
   const safeRows = Math.max(3, Math.min(6, Math.round(Number(rows) || 5)));
   const lines = [];
   for (let i = 0; i < safeRows; i++) {
-    const fraction = safeRows === 1 ? 0.5 : 0.08 + (0.84 * i) / (safeRows - 1);
+    const fraction = 0.08 + (0.84 * i) / Math.max(1, safeRows - 1);
     const lat = bounds.south + (bounds.north - bounds.south) * fraction;
     lines.push({
       id: `h${i}`,
