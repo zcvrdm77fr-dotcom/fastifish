@@ -1,45 +1,47 @@
-name: Inject map analysis scripts
+name: Verify map analysis scripts
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     paths:
+      - 'index.html'
       - 'scripts/inject-map-analysis-tags.mjs'
+      - 'fishing-structures.js'
+      - 'depth-structures.js'
+      - 'gtk-substrate.js'
+      - 'gtk-habitats.js'
+      - 'velmu-fish.js'
+      - '.github/workflows/inject-map-analysis.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'scripts/inject-map-analysis-tags.mjs'
+      - 'fishing-structures.js'
+      - 'depth-structures.js'
+      - 'gtk-substrate.js'
+      - 'gtk-habitats.js'
+      - 'velmu-fish.js'
       - '.github/workflows/inject-map-analysis.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  inject:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Inject analysis script tags
+      - name: Regenerate map script tags
         run: node scripts/inject-map-analysis-tags.mjs index.html
-      - name: Verify resulting HTML
-        run: |
-          grep -F '<script src="/fishing-structures.js?v=9"></script>' index.html
-          grep -F '<script src="/depth-structures.js?v=9"></script>' index.html
-          grep -F '<script src="/gtk-substrate.js?v=9"></script>' index.html
-          grep -F '<script src="/gtk-habitats.js?v=9"></script>' index.html
-          grep -F '<script src="/velmu-fish.js?v=9"></script>' index.html
-      - name: Commit index update
+      - name: Require committed index to be current
         shell: bash
         run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html
-          if git diff --cached --quiet; then
-            echo 'index.html already contains current map-analysis tags.'
-            exit 0
+          if ! git diff --exit-code -- index.html; then
+            echo 'index.html map-analysis tags are stale. Run:' >&2
+            echo '  node scripts/inject-map-analysis-tags.mjs index.html' >&2
+            exit 1
           fi
-          git commit -m 'Load fishing map analysis layers directly'
-          git pull --rebase origin main
-          git push origin HEAD:main
