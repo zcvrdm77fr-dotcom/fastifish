@@ -1,3 +1,5 @@
+import { calibrateFishingScore } from './score-calibration.js';
+
 const SPECIES = {
   kuha: {
     name: 'Kuha',
@@ -32,21 +34,21 @@ function clamp(value, min, max) {
 export function scoreFishingHour({ temp, pressure, pressure6hAgo, wind, cloud, hour, species = 'kuha' }) {
   const prime = hour <= 8 || hour >= 18;
   const pressureDelta = Number.isFinite(pressure6hAgo) ? pressure - pressure6hAgo : 0;
-  let score = 48;
+  let rawScore = 48;
 
-  if (prime) score += 10;
-  if (wind >= 1.5 && wind <= 6.5) score += 10;
-  else if (wind > 10) score -= 12;
-  if (cloud >= 35 && cloud <= 90) score += 7;
-  if (pressureDelta <= -0.5 && pressureDelta >= -4) score += 8;
-  else if (pressureDelta > 2.5) score -= 5;
-  if (temp >= 6 && temp <= 22) score += 5;
-  else if (temp > 27 || temp < -2) score -= 10;
+  if (prime) rawScore += 10;
+  if (wind >= 1.5 && wind <= 6.5) rawScore += 10;
+  else if (wind > 10) rawScore -= 12;
+  if (cloud >= 35 && cloud <= 90) rawScore += 7;
+  if (pressureDelta <= -0.5 && pressureDelta >= -4) rawScore += 8;
+  else if (pressureDelta > 2.5) rawScore -= 5;
+  if (temp >= 6 && temp <= 22) rawScore += 5;
+  else if (temp > 27 || temp < -2) rawScore -= 10;
 
   const config = SPECIES[species] || SPECIES.kuha;
-  score += config.bonus({ temp, pressure, pressureDelta, wind, cloud, hour, prime });
+  rawScore += config.bonus({ temp, pressure, pressureDelta, wind, cloud, hour, prime });
 
-  return clamp(Math.round(score), 0, 100);
+  return calibrateFishingScore(clamp(Math.round(rawScore), 0, 100));
 }
 
 export function recommendForSpecies(species, conditions) {
