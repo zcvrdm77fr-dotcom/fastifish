@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v11';
+const CACHE_VERSION = 'v12';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/index.html',
@@ -24,6 +24,7 @@ const STATIC_ASSETS = [
   '/kalapaikat.json',
   '/fishing-structures.js',
   '/depth-structures.js',
+  '/depth-wfs-utils.js',
   '/gtk-substrate.js',
   '/gtk-habitats.js',
   '/velmu-fish.js',
