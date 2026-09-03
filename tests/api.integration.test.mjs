@@ -5,6 +5,7 @@ import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import sharp from 'sharp';
 
 function getFreePort() {
   return new Promise((resolve, reject) => {
@@ -82,7 +83,14 @@ test('feed metadata survives create -> database -> feed roundtrip', { timeout: 3
     assert.equal(signup.username, 'feedtest');
     assert.equal(Object.hasOwn(signup, 'token'), false, 'bearer token must not be exposed to JavaScript');
 
-    const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6Z5sAAAAASUVORK5CYII=', 'base64');
+    const png = await sharp({
+      create: {
+        width: 2,
+        height: 2,
+        channels: 3,
+        background: { r: 20, g: 90, b: 120 }
+      }
+    }).png().toBuffer();
     const form = new FormData();
     form.append('image', new Blob([png], { type: 'image/png' }), 'catch.png');
     form.append('caption', 'Integraatiotestin saalis');
