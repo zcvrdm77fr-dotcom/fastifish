@@ -30,8 +30,12 @@ test('fishing map is usable inline before fullscreen', async ({ page }, testInfo
   expect(overlayBox.width).toBeLessThan(mapBox.width * 0.65);
   expect(overlayBox.height).toBeLessThan(mapBox.height * 0.25);
 
-  const draggingEnabled = await page.evaluate(() => Boolean(window.seaChartMap?.dragging?.enabled?.()));
-  const touchEnabled = await page.evaluate(() => Boolean(window.seaChartMap?.touchZoom?.enabled?.()));
+  const draggingEnabled = await page.evaluate(() =>
+    typeof seaChartMap !== 'undefined' && Boolean(seaChartMap?.dragging?.enabled?.())
+  );
+  const touchEnabled = await page.evaluate(() =>
+    typeof seaChartMap !== 'undefined' && Boolean(seaChartMap?.touchZoom?.enabled?.())
+  );
   expect(draggingEnabled).toBe(true);
   expect(touchEnabled).toBe(true);
 });
