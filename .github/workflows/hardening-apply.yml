@@ -1,0 +1,39 @@
+name: Apply hardening branch patch
+
+on:
+  push:
+    branches: [fix/final-hardening-feed]
+    paths:
+      - 'scripts/apply-hardening-patch.mjs'
+      - '.github/workflows/hardening-apply.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/final-hardening-feed
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Patch source files
+        run: node scripts/apply-hardening-patch.mjs
+      - name: Refresh secured dependencies
+        run: |
+          npm install --save-exact multer@2.3.0
+          npm install --save-dev eslint@latest @playwright/test@latest
+      - name: Commit generated patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Apply hardening changes'
+          git push origin HEAD:fix/final-hardening-feed
