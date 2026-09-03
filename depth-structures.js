@@ -34,11 +34,19 @@ async function responseText(url,accept,ms=10000){
  }finally{clearTimeout(t)}
 }
 
+function localElements(root,names){
+ const wanted=new Set(Array.isArray(names)?names:[names]);
+ return[...root.getElementsByTagName('*')].filter(el=>wanted.has(el.localName||String(el.nodeName||'').split(':').pop()));
+}
+function firstLocal(root,names){return localElements(root,names)[0]||null;}
+function localText(root,name){return(firstLocal(root,name)?.textContent||'').trim();}
+
 function parseCapsLocal(s){
  const x=new DOMParser().parseFromString(s,'application/xml');
- const e=[...x.querySelectorAll('FeatureType')].map(f=>{const n=(f.querySelector('Name')?.textContent||'').trim(),t=(f.querySelector('Title')?.textContent||'').trim();return{name:n,hay:(n+' '+t).toLowerCase()}}).filter(x=>x.name);
+ if(localElements(x,'parsererror').length)throw Error('GetCapabilities XML parse failed');
+ const e=localElements(x,'FeatureType').map(f=>{const n=localText(f,'Name'),t=localText(f,'Title');return{name:n,hay:(n+' '+t).toLowerCase()}}).filter(x=>x.name);
  const pick=(exact,keys)=>{for(const q of exact){const z=e.find(v=>v.name===q||v.name.endsWith(':'+q));if(z)return z.name;}return e.find(v=>keys.some(k=>v.hay.includes(k)))?.name||null};
- const formats=[...x.querySelectorAll('Format, Value')].map(n=>(n.textContent||'').trim()).filter(v=>/json|gml|xml/i.test(v));
+ const formats=localElements(x,['Format','Value']).map(n=>(n.textContent||'').trim()).filter(v=>/json|gml|xml/i.test(v));
  return{layers:{contour:pick(['DepthContour_L'],['depthcontour','syvyyskäyr','syvyyskayr','depcont']),area:pick(['DepthArea_A'],['deptharea','syvyysalue','depare']),sounding:pick(['Sounding_P'],['sounding','syvyyspiste','soundg'])},formats:[...new Set(formats)]};
 }
 
@@ -79,8 +87,8 @@ function coordinatePairs(text){
 
 function gmlFeatures(xml){
  const doc=new DOMParser().parseFromString(xml,'application/xml');
- if(doc.querySelector('parsererror'))throw Error('GML/XML parse failed');
- const members=[...doc.querySelectorAll('member, featureMember')];
+ if(localElements(doc,'parsererror').length)throw Error('GML/XML parse failed');
+ const members=localElements(doc,['member','featureMember']);
  const out=[];
  for(const member of members){
   const feature=[...member.children][0];
@@ -89,16 +97,16 @@ function gmlFeatures(xml){
   for(const child of feature.children){
    const local=(child.localName||child.nodeName||'').toLowerCase();
    if(/geom|shape|position|location|point|curve|surface/.test(local))continue;
-   if(!child.querySelector('pos,posList,coordinates,Point,LineString,Polygon,Curve,Surface')){
+   if(!firstLocal(child,['pos','posList','coordinates','Point','LineString','Polygon','Curve','Surface','MultiPoint','MultiLineString','MultiCurve','MultiSurface','MultiPolygon'])){
     const value=(child.textContent||'').trim();
     if(value&&value.length<500)props[child.localName||child.nodeName]=value;
    }
   }
-  const geomRoot=feature.querySelector('Point, LineString, Curve, Polygon, Surface, MultiPoint, MultiLineString, MultiCurve, MultiSurface, MultiPolygon');
+  const geomRoot=firstLocal(feature,['Point','LineString','Curve','Polygon','Surface','MultiPoint','MultiLineString','MultiCurve','MultiSurface','MultiPolygon']);
   if(!geomRoot)continue;
   const name=(geomRoot.localName||geomRoot.nodeName||'').toLowerCase();
-  const posLists=[...geomRoot.querySelectorAll('posList, coordinates')].map(n=>coordinatePairs(n.textContent)).filter(a=>a.length);
-  const positions=[...geomRoot.querySelectorAll('pos')].map(n=>coordinatePairs(n.textContent)[0]).filter(Boolean);
+  const posLists=localElements(geomRoot,['posList','coordinates']).map(n=>coordinatePairs(n.textContent)).filter(a=>a.length);
+  const positions=localElements(geomRoot,'pos').map(n=>coordinatePairs(n.textContent)[0]).filter(Boolean);
   let geometry=null;
   if(name.includes('point')){
    const p=positions[0]||posLists[0]?.[0];if(p)geometry={type:'Point',coordinates:p};
@@ -107,7 +115,8 @@ function gmlFeatures(xml){
   }else{
    const line=posLists[0]||positions;if(line?.length)geometry={type:'LineString',coordinates:line};
   }
-  if(geometry)out.push({type:'Feature',id:feature.getAttribute('gml:id')||feature.getAttribute('id')||undefined,properties:props,geometry});
+  const gmlId=feature.getAttributeNS?.('http://www.opengis.net/gml/3.2','id')||feature.getAttributeNS?.('http://www.opengis.net/gml','id')||feature.getAttribute('gml:id')||feature.getAttribute('id')||undefined;
+  if(geometry)out.push({type:'Feature',id:gmlId,properties:props,geometry});
  }
  return out;
 }
