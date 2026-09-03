@@ -98,7 +98,7 @@ if ('serviceWorker' in navigator) {
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap"></noscript>
 <!-- Leaflet CSS/JS ladataan dynaamisesti vasta kun lähikartta oikeasti avataan (ks. ensureLeaflet-funktio) -->
 <!-- Google tag (gtag.js) -->
-<!-- Consent Mode v2: kaikki oletuksena "denied", jotta gtag.js ei aseta evästeitä ennen kuin käyttäjä hyväksyy ne banneri. -->
+<!-- Consent Mode v2: oletuksena denied. Google-certified CMP (Privacy & messaging / IAB TCF) hallitsee mainos- ja analytiikkasuostumuksen ETA:ssa, UK:ssa ja Sveitsissä. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -109,20 +109,10 @@ if ('serviceWorker' in navigator) {
     'analytics_storage': 'denied',
     'wait_for_update': 500
   });
-  // Jos käyttäjä on aiemmin jo hyväksynyt evästeet, palautetaan suostumus heti sivun latautuessa.
-  (function(){
-    try {
-      var m = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);
-      var stored = m ? decodeURIComponent(m[1]) : (window.localStorage ? localStorage.getItem('cookie_consent') : null);
-      if (stored === 'all') {
-        gtag('consent', 'update', {
-          'ad_storage': 'granted',
-          'ad_user_data': 'granted',
-          'ad_personalization': 'granted',
-          'analytics_storage': 'granted'
-        });
-      }
-    } catch(e) {}
+  // Vanha FastFishingin oma mainossuostumus ei saa ohittaa Google-certified CMP:n TCF-valintaa.
+  (function clearLegacyFastFishingConsent(){
+    try { localStorage.removeItem('cookie_consent'); } catch(e) {}
+    try { document.cookie = 'cookie_consent=; Max-Age=0; path=/; SameSite=Lax'; } catch(e) {}
   })();
   gtag('js', new Date());
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
@@ -131,7 +121,7 @@ if ('serviceWorker' in navigator) {
      Tämä on pakollista, jotta Google löytää ja hyväksyy mainoskoodin sivustotarkistuksessa.
      Yllä olevat Consent Mode v2 -oletukset (ad_storage/ad_user_data/ad_personalization = denied)
      varmistavat silti, että mainokset ovat ei-personoituja niin kauan kuin käyttäjä ei ole
-     hyväksynyt mainosevästeitä evästebannerista. -->
+     antanut suostumusta Google-certified CMP:n kautta. -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
 <script>
   // Ladataan GTM vasta kun pääsäie on vapaa tai käyttäjä alkaa olla vuorovaikutuksessa,
@@ -1592,14 +1582,11 @@ body.device-phone .columns {
   gap: 12px !important;
 }
 </style>
-<!-- AdSense-skripti EI lataudu tässä automaattisesti. Se injektoidaan dynaamisesti loadAdSense()-funktiolla
-     vasta kun käyttäjä on hyväksynyt evästeet ("cookie_consent" = "all"), ks. sivun lopun <script>. -->
 <!-- Saalisfeedin palvelimen osoite. Muokkaa feed-config.js:ää, älä tätä riviä. -->
 <script src="feed-config.js"></script>
 </head>
 <body>
 
-<div id="consentBanner" class="consent-banner hidden"></div>
 
 <div class="topbar">
   <div class="shell nav">
@@ -3470,55 +3457,28 @@ function loadAdSense() {
   // yhteensopivuuden vuoksi, jotta muu koodi voi turvallisesti kutsua sitä.
 }
 
-function renderConsentBanner(lang = currentLang) {
-  const banner = document.getElementById("consentBanner");
-  const consentVal = storage.getItem('cookie_consent');
-  if (consentVal) {
-    if (banner) banner.classList.add("hidden");
-    if (consentVal === 'all') loadAdSense();
-    return;
-  }
-  if (!banner) return;
-  banner.classList.remove("hidden");
-  
-  const trans = CONSENT_TRANS[lang];
-  banner.innerHTML = `
-    <div class="consent-content">
-      <p class="consent-text">${trans.text}</p>
-      <div class="consent-actions">
-        <button class="consent-btn" id="consentDecline">${trans.decline}</button>
-        <button class="consent-btn primary" id="consentAccept">${trans.accept}</button>
-      </div>
-    </div>
-  `;
-  
-  document.getElementById("consentDecline").addEventListener("click", () => {
-    storage.setItem('cookie_consent', 'min');
-    if (typeof gtag === "function") {
-      gtag('consent', 'update', {
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied',
-        'analytics_storage': 'denied'
-      });
-    }
-    banner.classList.add("hidden");
-  });
-  
-  document.getElementById("consentAccept").addEventListener("click", () => {
-    storage.setItem('cookie_consent', 'all');
-    if (typeof gtag === "function") {
-      gtag('consent', 'update', {
-        'ad_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted',
-        'analytics_storage': 'granted'
-      });
-    }
-    loadAdSense();
-    banner.classList.add("hidden");
-    initGeoLocation();
-  });
+function clearLegacyConsentState() {
+  try { storage.removeItem('cookie_consent'); } catch(e) {}
+  try { document.cookie = 'cookie_consent=; Max-Age=0; path=/; SameSite=Lax'; } catch(e) {}
+}
+
+function renderConsentBanner() {
+  // Mainos- ja analytiikkasuostumus kuuluu nyt Google-certified CMP:lle. Vanha FastFishing-banneri
+  // poistetaan myös DOM:sta, jotta Googlen European regulations -viestin päälle ei tule toista dialogia.
+  document.getElementById("consentBanner")?.remove();
+  clearLegacyConsentState();
+}
+
+function openGooglePrivacyChoices() {
+  window.googlefc = window.googlefc || {};
+  window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+  const showChoices = () => {
+    if (typeof window.googlefc.showRevocationMessage !== 'function') return false;
+    window.googlefc.showRevocationMessage();
+    return true;
+  };
+  if (showChoices()) return;
+  window.googlefc.callbackQueue.push({ CONSENT_API_READY: showChoices });
 }
 
 function setLanguage(lang, saveToLocalStorage = true) {
@@ -3662,13 +3622,14 @@ function setLanguage(lang, saveToLocalStorage = true) {
   }
   // Päivitetään jo renderöityjen korttien vesistötiedot uudelle kielelle
   renderNearbySpots.lastSpots && renderNearbySpots(renderNearbySpots.lastSpots, renderNearbySpots.lastLat, renderNearbySpots.lastLon);
+  if (!renderNearbySpots.lastSpots && document.getElementById('nearbyLocationBtn')) renderGeoLocationOptIn();
   updatePotentialSpotLanguage();
   
   // Footer
   const footerShell = document.querySelector("footer .shell");
   if (footerShell) {
     const changeViewLabel = lang === 'fi' ? 'Vaihda laitenäkymää' : 'Switch device view';
-    const changeConsentLabel = lang === 'fi' ? 'Muuta evästeasetuksia' : 'Change cookie settings';
+    const changeConsentLabel = lang === 'fi' ? 'Tietosuoja- ja evästeasetukset' : 'Privacy & cookie settings';
     footerShell.innerHTML = `${trans.footer_text} <a href="tietosuoja.html" style="color:inherit; text-decoration:underline;">${trans.footer_privacy}</a> · <a href="tietoa-meista.html" style="color:inherit; text-decoration:underline;">${trans.footer_about}</a> · <button id="switchDeviceViewBtn" style="background:none; border:none; color:inherit; text-decoration:underline; font-weight:bold; cursor:pointer; padding:0; font-size:inherit; font-family:inherit;">${changeViewLabel}</button> · <button id="changeConsentBtn" style="background:none; border:none; color:inherit; text-decoration:underline; font-weight:bold; cursor:pointer; padding:0; font-size:inherit; font-family:inherit;">${changeConsentLabel}</button>`;
     
     const btnSwitch = document.getElementById("switchDeviceViewBtn");
@@ -3684,18 +3645,7 @@ function setLanguage(lang, saveToLocalStorage = true) {
     if (btnConsent) {
       btnConsent.addEventListener("click", (e) => {
         e.preventDefault();
-        // Peruminen yhtä helppoa kuin hyväksyminen: poistetaan aiempi valinta ja
-        // näytetään banneri uudelleen niin että käyttäjä voi vaihtaa valintaansa.
-        storage.removeItem('cookie_consent');
-        if (typeof gtag === "function") {
-          gtag('consent', 'update', {
-            'ad_storage': 'denied',
-            'ad_user_data': 'denied',
-            'ad_personalization': 'denied',
-            'analytics_storage': 'denied'
-          });
-        }
-        renderConsentBanner();
+        openGooglePrivacyChoices();
       });
     }
   }
@@ -4410,7 +4360,7 @@ function toggleSeaChartSeamarks(show){
   else { if (seaChartMap.hasLayer(seaChartSeamarkLayer)) seaChartMap.removeLayer(seaChartSeamarkLayer); }
 }
 function locateSeaChart(){
-  if (storage.getItem('cookie_consent') !== 'all' || !("geolocation" in navigator)) return;
+  if (!("geolocation" in navigator)) return;
   navigator.geolocation.getCurrentPosition(
     pos => { if (seaChartMap) seaChartMap.setView([pos.coords.latitude, pos.coords.longitude], 12); },
     () => {},
@@ -4422,7 +4372,7 @@ function locateSeaChart(){
 let seaSpeedWatchId=null, seaMeMarker=null;
 function startSeaSpeedWatch(){
   if (seaSpeedWatchId !== null) return;
-  if (storage.getItem('cookie_consent') !== 'all' || !("geolocation" in navigator)) return;
+  if (!("geolocation" in navigator)) return;
   seaSpeedWatchId = navigator.geolocation.watchPosition(
     pos => {
       const el = document.getElementById("seaSpeedValue");
@@ -5912,24 +5862,52 @@ async function loadNearbySpots(userLat,userLon){
       : "Could not calculate bite index for your local area right now. You can still select a spot manually above.");
   }
 }
-function initGeoLocation(){
+let nearbyGeoLoading = false;
+function renderGeoLocationOptIn(){
+  const section = document.getElementById("nearbySection");
+  const statusEl = document.getElementById("nearbyStatus");
+  if (!section || !("geolocation" in navigator)) {
+    if (section) section.hidden = true;
+    return;
+  }
+  const isKelimittariActive = document.getElementById("kelimittari")?.classList.contains("active");
+  section.hidden = !isKelimittariActive;
+  if (!statusEl || renderNearbySpots.lastSpots) return;
+  const label = currentLang === 'fi' ? 'Käytä sijaintiani' : 'Use my location';
+  const copy = currentLang === 'fi'
+    ? 'Lähikalapaikat tarvitsevat erillisen selaimen sijaintiluvan. Mainos- tai evästesuostumus ei anna FastFishingille sijaintilupaa.'
+    : 'Nearby fishing spots need a separate browser location permission. Ad or cookie consent does not grant FastFishing location access.';
+  statusEl.innerHTML = `${copy} <button type="button" class="btn" id="nearbyLocationBtn" style="margin-left:8px;min-height:38px;padding:7px 13px;">${label}</button>`;
+  document.getElementById("nearbyLocationBtn")?.addEventListener("click", () => initGeoLocation(true), { once:true });
+}
+
+async function initGeoLocation(requestPermission = false){
   try {
-    const consent = storage.getItem('cookie_consent');
     const section = document.getElementById("nearbySection");
-    if (consent !== 'all') {
+    if (!("geolocation" in navigator) || !navigator.geolocation) {
       if (section) section.hidden = true;
       return;
     }
 
-    if(!("geolocation" in navigator) || !navigator.geolocation) return;
-    
     const isKelimittariActive = document.getElementById("kelimittari")?.classList.contains("active");
-    if (!isKelimittariActive) {
-      if (section) section.hidden = true;
-    } else {
-      if (section) section.hidden = false;
+    if (section) section.hidden = !isKelimittariActive;
+
+    if (!requestPermission) {
+      let permissionState = 'prompt';
+      try {
+        if (navigator.permissions?.query) {
+          const permission = await navigator.permissions.query({ name: 'geolocation' });
+          permissionState = permission.state;
+        }
+      } catch(e) {}
+      if (permissionState !== 'granted') {
+        renderGeoLocationOptIn();
+        return;
+      }
     }
 
+    if (nearbyGeoLoading) return;
+    nearbyGeoLoading = true;
     const statusEl = document.getElementById("nearbyStatus");
     if (statusEl) {
       statusEl.textContent = currentLang === 'fi'
@@ -5939,6 +5917,7 @@ function initGeoLocation(){
 
     navigator.geolocation.getCurrentPosition(
       pos => {
+        nearbyGeoLoading = false;
         try {
           loadNearbySpots(pos.coords.latitude, pos.coords.longitude);
         } catch (err) {
@@ -5946,11 +5925,12 @@ function initGeoLocation(){
         }
       },
       () => {
+        nearbyGeoLoading = false;
         const statusEl2 = document.getElementById("nearbyStatus");
         if (statusEl2) {
           statusEl2.textContent = currentLang === 'fi'
-            ? "Sijaintia ei saatu käyttöön. Voit silti valita paikan yllä olevasta listasta."
-            : "Location could not be acquired. You can still select a spot from the list above.";
+            ? "Sijaintia ei saatu käyttöön. Salli sijainti selaimen sivustoasetuksista tai valitse paikka käsin yllä olevasta listasta."
+            : "Location could not be acquired. Allow location in your browser site settings or choose a place manually above.";
         }
         const gridEl = document.getElementById("nearbyGrid");
         if (gridEl) gridEl.innerHTML = "";
@@ -5958,6 +5938,7 @@ function initGeoLocation(){
       {enableHighAccuracy:false, timeout:8000, maximumAge:600000}
     );
   } catch (err) {
+    nearbyGeoLoading = false;
     console.error("initGeoLocation exception:", err);
   }
 }
@@ -5973,9 +5954,9 @@ function showPage(id){
 
   const section = document.getElementById("nearbySection");
   if (section) {
-    const consent = storage.getItem('cookie_consent');
-    if (id === 'kelimittari' && consent === 'all' && ("geolocation" in navigator)) {
+    if (id === 'kelimittari' && ("geolocation" in navigator)) {
       section.hidden = false;
+      if (!renderNearbySpots.lastSpots) initGeoLocation(false);
       if (nearbyMap) setTimeout(()=>nearbyMap.invalidateSize(), 50);
     } else {
       section.hidden = true;
