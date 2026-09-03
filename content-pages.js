@@ -50,6 +50,20 @@
     if (banner) banner.hidden = true;
   });
 
+  // Sisältösivuilta oppaisiin johtavat linkit viedään nyt oikealle opaskeskukselle
+  // eikä takaisin suuren etusivun yksittäiseen SPA-osioon.
+  document.querySelectorAll('a[href="index.html#oppaat"], a[href="/index.html#oppaat"]').forEach(link => {
+    link.setAttribute('href', 'kalastusoppaat.html');
+  });
+
+  const footerLinks = document.querySelector('.footer-links');
+  if (footerLinks && !footerLinks.querySelector('a[href="kalastusoppaat.html"]')) {
+    const guides = document.createElement('a');
+    guides.href = 'kalastusoppaat.html';
+    guides.textContent = 'Kalastusoppaat';
+    footerLinks.prepend(guides);
+  }
+
   // 3.9.2026 alkaen käyttäjälle näytettävä asteikko puristaa heuristiikan ääripäitä.
   // Raakalaskenta säilyy dokumentoituna, jotta vertailu ja lajipainot ovat läpinäkyviä.
   if (location.pathname.endsWith('/metodologia.html') || location.pathname.endsWith('metodologia.html')) {
@@ -74,4 +88,3 @@
     });
   }
 })();
-
