@@ -8,6 +8,7 @@ import authRouter from './auth.js';
 import postsRouter from './posts.js';
 import profilesRouter from './profiles.js';
 import insightsRouter from './insights.js';
+import { depthRouter } from './depth-proxy.js';
 import { createRateLimiter, securityHeaders } from './security.js';
 import { UPLOADS_DIR } from './paths.js';
 import { db } from './db.js';
@@ -73,6 +74,7 @@ app.get('/api/health', (req, res) => {
     feed: true,
     profiles: true,
     insights: true,
+    depthFallback: true,
     uptimeSeconds: Math.round(process.uptime())
   });
 });
@@ -89,6 +91,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
 app.use('/api/profiles', profilesRouter);
 app.use('/api/insights', insightsRouter);
+app.use('/api/depth', depthRouter);
 app.use('/uploads', express.static(UPLOADS_DIR, {
   maxAge: '30d',
   index: false,
@@ -100,7 +103,7 @@ if (config.serveFrontend) {
   // Tuotannossa API-palvelin ei oletuksena tarjoa repositorion juurta lainkaan. Tämä paikallisen
   // kehityksen suoja estää myös vahingossa lisätyt backend-/config-tiedostot ja dotfilet.
   const privatePrefixes = ['/data', '/node_modules', '/tests', '/scripts', '/.github'];
-  const privateRootFiles = /\/(?:server|db|auth|posts|profiles|insights|security|paths|wordlist|moderation|config|logger|error-handler|async-handler|session-token)\.js$/i;
+  const privateRootFiles = /\/(?:server|db|auth|posts|profiles|insights|depth-proxy|security|paths|wordlist|moderation|config|logger|error-handler|async-handler|session-token)\.js$/i;
   const privateExtensions = /\.(?:env|db|sqlite|sqlite3|log|pem|key|crt|bak|ya?ml)$/i;
 
   app.use((req, res, next) => {
