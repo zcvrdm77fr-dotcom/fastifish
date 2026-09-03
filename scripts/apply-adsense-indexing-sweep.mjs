@@ -13,12 +13,18 @@ function addPublisherMeta(html, file) {
 }
 
 function removeLegacyConsentGrant(html) {
-  // Vanhoilla opassivuilla oli oma cookie_consent=all -> gtag(consent, update, granted)
-  // -silta. Google-certified CMP:n käyttöönoton jälkeen sitä ei saa enää käyttää.
-  return html.replace(
-    /\n?\s*\(function\(\)\{\s*try\s*\{\s*var m = document\.cookie\.match\(\/\(\?:\^\|; \)cookie_consent=\(\[\^;\]\*\)\/\);[\s\S]*?gtag\('consent', 'update', \{[\s\S]*?'analytics_storage': 'granted'[\s\S]*?\}\);[\s\S]*?\}\s*catch\(e\)\s*\{\}\s*\}\)\(\);\s*/g,
-    '\n'
-  );
+  // Vanhoilla sisältösivuilla oli oma cookie_consent=all -> granted -silta.
+  // Poistetaan koko IIFE täsmällisten alku- ja loppumerkkien avulla.
+  const startMarker = "  (function(){\n    try {\n      var m = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);";
+  const endMarker = '  })();';
+  let out = html;
+  while (out.includes(startMarker)) {
+    const start = out.indexOf(startMarker);
+    const end = out.indexOf(endMarker, start);
+    if (end < 0) throw new Error('Legacy consent block start found without end marker');
+    out = out.slice(0, start) + out.slice(end + endMarker.length);
+  }
+  return out;
 }
 
 function canonicalizeHomeLinks(html) {
