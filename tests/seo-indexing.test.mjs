@@ -30,5 +30,12 @@ test('sitemap covers every canonical HTML page without a duplicate index.html ho
     assert.match(html, /<title>[^<]{8,}<\/title>/i, `${file}: useful title missing`);
     assert.match(html, /<meta\s+name=["']description["']\s+content=["'][^"']{40,}["'][^>]*>/i, `${file}: useful meta description missing`);
     assert.doesNotMatch(html, /href=["'](?:\.\/)?index\.html(?:[#?][^"']*)?["']/i, `${file}: internal link still splits homepage signals to index.html`);
+
+    if (/id=["']themeToggle(?:Fab)?["']/.test(html)) {
+      const hasThemeHandler = html.includes('content-pages.js') ||
+        html.includes('static-theme.js') ||
+        /getElementById\(['"]themeToggle(?:Fab)?['"]\)/.test(html);
+      assert.ok(hasThemeHandler, `${file}: theme toggle has no JavaScript handler`);
+    }
   }
 });
