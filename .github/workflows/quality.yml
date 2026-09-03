@@ -23,6 +23,56 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run security:audit
       - run: npm run lint
       - run: npm run test:coverage
       - run: npm run build
+
+  e2e:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production image
+        run: docker build -t fastfishing:test .
+      - name: Start production image
+        run: |
+          docker run -d --name fastfishing-test -p 3000:3000 \
+            -e NODE_ENV=production \
+            -e ALLOWED_ORIGINS=https://fastfishin.com \
+            -e SERVE_FRONTEND=0 \
+            -e DATA_DIR=/var/data \
+            fastfishing:test
+      - name: Verify health and non-root Node process
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/api/health -o /tmp/health.json; then
+              break
+            fi
+            sleep 1
+          done
+          cat /tmp/health.json
+          node -e 'const x=require("/tmp/health.json"); if (!x.ok || !x.postMetadata || Number(x.schemaVersion)<4) process.exit(1)'
+          UID_VALUE="$(docker exec fastfishing-test sh -c "awk '/^Uid:/{print \$2}' /proc/1/status")"
+          test "$UID_VALUE" != "0"
+      - name: Show container logs on failure
+        if: failure()
+        run: docker logs fastfishing-test || true
+      - name: Remove test container
+        if: always()
+        run: docker rm -f fastfishing-test || true

@@ -19,7 +19,6 @@ export function parseAllowedOrigins(value = '') {
 
 export function readRuntimeConfig(env = process.env) {
   const production = env.NODE_ENV === 'production';
-  const crossSiteCookies = env.CROSS_SITE_COOKIES === '1';
   const allowedOrigins = parseAllowedOrigins(env.ALLOWED_ORIGINS || '');
   const serveFrontend = env.SERVE_FRONTEND === '1' || (!production && env.SERVE_FRONTEND !== '0');
   const port = Number.parseInt(env.PORT || '3000', 10);
@@ -27,16 +26,15 @@ export function readRuntimeConfig(env = process.env) {
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new Error('PORT pitää olla kokonaisluku väliltä 1–65535.');
   }
-  if ((production || crossSiteCookies) && allowedOrigins.length === 0) {
-    throw new Error('ALLOWED_ORIGINS must be set for production/cross-site API use.');
+  if (production && allowedOrigins.length === 0) {
+    throw new Error('ALLOWED_ORIGINS must be set in production.');
   }
-  if (production && crossSiteCookies && allowedOrigins.some(origin => !origin.startsWith('https://'))) {
-    throw new Error('Production cross-site origins must use HTTPS.');
+  if (production && allowedOrigins.some(origin => !origin.startsWith('https://'))) {
+    throw new Error('Production browser origins must use HTTPS.');
   }
 
   return {
     production,
-    crossSiteCookies,
     allowedOrigins,
     serveFrontend,
     port

@@ -14,6 +14,8 @@ import { db } from './db.js';
 import { readRuntimeConfig } from './config.js';
 import { requestLogger, logInfo } from './logger.js';
 import { apiNotFound, errorHandler } from './error-handler.js';
+import { getBackupStatus, startBackupScheduler } from './backup.js';
+import { startUploadCleanupScheduler } from './upload-cleanup.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,15 +48,28 @@ app.use(attachUser);
 
 app.get('/api/health', (req, res) => {
   let database = true;
+  let schemaVersion = 0;
+  let postMetadata = false;
+  let cleanupQueued = 0;
   try {
     db.prepare('SELECT 1 AS ok').get();
+    schemaVersion = Number(db.prepare('SELECT COALESCE(MAX(version), 0) AS version FROM schema_migrations').get().version || 0);
+    const columns = new Set(db.prepare('PRAGMA table_info(posts)').all().map(column => column.name));
+    postMetadata = ['species', 'weight_g', 'length_cm', 'catch_location', 'lure'].every(name => columns.has(name));
+    cleanupQueued = Number(db.prepare('SELECT COUNT(*) AS n FROM upload_cleanup_queue').get().n || 0);
   } catch {
     database = false;
   }
-  const ok = database;
+  const backup = getBackupStatus();
+  const ok = database && postMetadata && schemaVersion >= 4;
   res.status(ok ? 200 : 503).json({
     ok,
     database,
+    schemaVersion,
+    postMetadata,
+    cookieOnlySessions: true,
+    cleanupQueued,
+    backup,
     feed: true,
     profiles: true,
     insights: true,
@@ -116,6 +131,8 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 app.listen(config.port, '0.0.0.0', () => {
+  startUploadCleanupScheduler();
+  startBackupScheduler();
   logInfo('server_started', {
     port: config.port,
     production: config.production,

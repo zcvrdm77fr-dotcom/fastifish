@@ -1,4 +1,5 @@
 import { findBestWindow, recommendForSpecies, supportedSpecies } from './fishing-advice.js';
+import { fishingScoreBand } from './score-calibration.js';
 
 const API_BASE = String(window.FASTFISH_API_BASE || '').trim().replace(/\/+$/, '');
 const SAVED_KEY = 'ff_saved_places_v1';
@@ -12,12 +13,7 @@ function readSaved(){ try { return JSON.parse(localStorage.getItem(SAVED_KEY) ||
 function writeSaved(items){ try { localStorage.setItem(SAVED_KEY, JSON.stringify(items.slice(0, 12))); } catch {} }
 
 async function api(path){
-  const headers = {};
-  try {
-    const token = localStorage.getItem('ff_session_token');
-    if (token) headers.Authorization = `Bearer ${token}`;
-  } catch {}
-  const response = await fetch(apiUrl(path), { credentials: 'include', headers });
+  const response = await fetch(apiUrl(path), { credentials: 'include' });
   if (!response.ok) throw new Error('Tietojen haku epäonnistui.');
   return response.json();
 }
@@ -83,7 +79,7 @@ async function runAdvice(location){
     const best = findBestWindow(hourly, species, 2);
     if (!best) throw new Error('Ennustetta ei löytynyt.');
     const advice = recommendForSpecies(species, best.conditions);
-    const label = best.score >= 75 ? 'erinomainen' : best.score >= 55 ? 'hyvä' : best.score >= 35 ? 'kohtalainen' : 'heikko';
+    const label = fishingScoreBand(best.score, 'fi').text.toLocaleLowerCase('fi-FI');
     result.innerHTML = `<div class="ff-next-score">${best.score}/100 <span style="font-size:1rem">${label}</span></div>
       <strong>${escapeHtml(advice.species)}: paras 2 h ikkuna ${formatHour(best.start)}–${formatHour(best.end)}</strong>
       <div class="ff-next-chips"><span class="ff-next-chip">🎯 ${escapeHtml(advice.depth)}</span><span class="ff-next-chip">🪝 ${escapeHtml(advice.lure)}</span><span class="ff-next-chip">🎨 ${escapeHtml(advice.color)}</span></div>
@@ -169,7 +165,7 @@ async function checkSavedPlaces(force=false){
   for (const place of saved.slice(0,4)) {
     try {
       const best = findBestWindow(await weatherFor(place.lat, place.lon), species, 2);
-      if (best && best.score >= 75) await showNotification(`Hyvä kalakeli: ${place.name}`, `${best.score}/100 · paras ikkuna ${formatHour(best.start)}–${formatHour(best.end)}`);
+      if (best && best.score >= 72) await showNotification(`Hyvä kalakeli: ${place.name}`, `${best.score}/100 · paras ikkuna ${formatHour(best.start)}–${formatHour(best.end)}`);
     } catch {}
   }
 }

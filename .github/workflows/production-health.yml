@@ -1,6 +1,8 @@
 name: Production health
 
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
@@ -12,12 +14,20 @@ jobs:
   health:
     runs-on: ubuntu-latest
     steps:
-      - name: Check API
+      - name: Check API deployment
         shell: bash
         run: |
           set -euo pipefail
-          RESPONSE="$(curl --fail --silent --show-error --retry 2 --max-time 15 https://api.fastfishin.com/api/health)"
-          node -e 'const x=JSON.parse(process.argv[1]); if (x.ok !== true) { console.error(x); process.exit(1); }' "$RESPONSE"
+          for attempt in $(seq 1 20); do
+            if RESPONSE="$(curl --fail --silent --show-error --max-time 15 https://api.fastfishin.com/api/health)" && \
+              node -e 'const x=JSON.parse(process.argv[1]); if (x.ok!==true || x.postMetadata!==true || x.cookieOnlySessions!==true || Number(x.schemaVersion)<4) process.exit(1)' "$RESPONSE"; then
+              echo "$RESPONSE"
+              exit 0
+            fi
+            echo "API not on the expected schema yet (attempt $attempt/20)"
+            sleep 15
+          done
+          exit 1
 
       - name: Check frontend
-        run: curl --fail --silent --show-error --retry 2 --max-time 15 https://fastfishin.com/ -o /dev/null
+        run: curl --fail --silent --show-error --retry 4 --retry-delay 5 --max-time 15 https://fastfishin.com/ -o /dev/null

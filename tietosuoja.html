@@ -619,7 +619,7 @@
                     <li><strong>Selaintiedot</strong> (esim. käyttäjäagentti) – sivuston tekniseen optimointiin.</li>
                     <li><strong>Suostumus- ja käyttöliittymävalinnat</strong> – esimerkiksi evästesuostumus, kieli, teema ja laitenäkymä tallennetaan evästeeseen tai selaimen paikalliseen tallennustilaan.</li>
                     <li><strong>Käyttäjätili</strong> – käyttäjänimi, yksisuuntaisesti tiivistetty salasana, tilin luontiaika ja 30 päivää voimassa oleva satunnainen istuntotunnus. Selväkielistä salasanaa ei tallenneta.</li>
-                    <li><strong>Saalisvirran sisältö</strong> – kuva, kuvateksti, kommentit, tykkäykset sekä vapaaehtoiset kalalaji-, paino-, pituus-, saantipaikka- ja viehetiedot.</li>
+                    <li><strong>Saalisvirran sisältö</strong> – kuva, kuvateksti, kommentit, tykkäykset sekä vapaaehtoiset kalalaji-, paino-, pituus-, saantipaikka- ja viehetiedot. Saantipaikka tallennetaan vain, jos käyttäjä valitsee sen erikseen julkiseksi.</li>
                     <li><strong>Sivuston käyttötiedot</strong> – Google Analyticsin suostumustilan mukaiset sivu- ja laitetiedot, kun Google-tagit ovat käytössä.</li>
                 </ul>
             </article>
@@ -681,7 +681,7 @@
                     <li><strong>Palvelinlokit</strong> säilyvät palveluntarjoajan teknisten ja tietoturva-asetusten mukaisen ajan.</li>
                     <li><strong>Google-tiedot ja evästeet</strong> säilyvät Googlen palveluasetusten ja tietosuojakäytäntöjen mukaisesti.</li>
                 </ul>
-                <p style="margin-top:12px;">Staattinen sivusto toimitetaan GitHub Pagesin kautta. Käyttäjätilit ja Saalisvirran sisältö säilytetään FastFishingin erillisellä API-palvelimella. Istuntoeväste on HTTP-only, Secure- ja SameSite-suojattu; eri verkkotunnuksessa toimittaessa istuntotunnus voidaan tallentaa käyttäjän selaimeen API-kutsuja varten. Tietoja ei luovuteta ulkopuolisille suoramarkkinointiin.</p>
+                <p style="margin-top:12px;">Staattinen sivusto toimitetaan GitHub Pagesin kautta. Käyttäjätilit ja Saalisvirran sisältö säilytetään FastFishingin erillisellä API-palvelimella. Istuntoeväste on HttpOnly-, Secure- ja SameSite=Lax-suojattu. FastFishing ei tallenna kirjautumisen istuntotunnusta localStorageen eikä palauta sitä JavaScriptille; selain lähettää evästeen API-kutsuihin credentials: include -asetuksella. Tietoja ei luovuteta ulkopuolisille suoramarkkinointiin.</p>
             </article>
 
             <!-- 7 -->
@@ -718,7 +718,7 @@
         <p style="margin-top:40px;color:var(--ink-soft);font-size:.92rem;border-top:1px solid var(--line);padding-top:24px;">
             Tätä tietosuojaselostetta päivitetään tarvittaessa. Viimeisin versio on aina nähtävillä tällä sivulla.
             <br />
-            <strong>Viimeksi päivitetty:</strong> 2.9.2026
+            <strong>Viimeksi päivitetty:</strong> 3.9.2026
         </p>
     </main>
 

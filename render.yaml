@@ -16,11 +16,16 @@ services:
         value: production
       - key: ALLOWED_ORIGINS
         value: https://fastfishin.com,https://www.fastfishin.com
-      - key: CROSS_SITE_COOKIES
-        value: "1"
-      # Frontend on GitHub Pagesissa. API-palvelin ei tarjoa repositorion juuritiedostoja,
-      # jolloin uusi backend/config-tiedosto ei voi vahingossa muuttua julkiseksi HTTP:n kautta.
+      # Frontend on GitHub Pagesissa. API-palvelin ei tarjoa repositorion juuritiedostoja.
       - key: SERVE_FRONTEND
         value: "0"
       - key: ADMIN_USERNAMES
         sync: false
+      # SQLite Online Backup API:lla tehtävä paikallinen snapshot otetaan kerran vuorokaudessa.
+      - key: BACKUP_INTERVAL_HOURS
+        value: "24"
+      - key: BACKUP_LOCAL_RETENTION
+        value: "7"
+      # Offsite-varmistus on valinnainen ja konfiguroidaan Render Dashboardissa S3/R2-secreteillä.
+      # Katso .env.example / DEPLOY.md. Niitä ei laiteta blueprintiin sync:false-arvoiksi,
+      # jotta olemassa oleva palvelu ei ala vaatia uusia secretejä tavallisessa deployssa.

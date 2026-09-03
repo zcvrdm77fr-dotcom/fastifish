@@ -7,7 +7,7 @@ const files = fs.readdirSync(root)
   .filter(file => file.endsWith('.js'))
   .map(file => path.join(root, file));
 
-for (const dir of ['scripts', 'tests']) {
+for (const dir of ['scripts', 'tests', 'e2e']) {
   const full = path.join(root, dir);
   if (!fs.existsSync(full)) continue;
   for (const file of fs.readdirSync(full)) {

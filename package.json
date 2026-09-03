@@ -8,11 +8,16 @@
     "dev": "node server.js",
     "syntax": "node scripts/check-js.mjs",
     "build": "node scripts/check-js.mjs && node scripts/validate-site.mjs",
-    "lint": "node scripts/check-js.mjs",
+    "lint": "npm run lint:syntax && npm run lint:eslint",
     "test": "node --test tests/*.test.mjs",
     "test:coverage": "node --test --experimental-test-coverage tests/*.test.mjs",
     "check": "npm run lint && npm test && npm run build",
-    "start": "node server.js"
+    "start": "node server.js",
+    "lint:syntax": "node scripts/check-js.mjs",
+    "lint:eslint": "eslint .",
+    "test:api": "node --test tests/api.integration.test.mjs",
+    "test:e2e": "playwright test",
+    "security:audit": "npm audit --omit=dev --audit-level=moderate"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.22.0",
@@ -21,8 +26,18 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "express": "^4.19.2",
-    "multer": "^2.2.0",
+    "multer": "2.3.0",
     "nsfwjs": "^4.3.0",
     "sharp": "^0.35.3"
+  },
+  "overrides": {
+    "qs": "6.16.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "eslint": "^10.9.1"
   }
 }

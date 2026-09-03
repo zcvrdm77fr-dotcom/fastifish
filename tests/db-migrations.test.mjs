@@ -39,7 +39,7 @@ test('legacy plaintext session is migrated to a digest', async () => {
   assert.notEqual(stored.token, rawToken);
   assert.deepEqual(
     db.prepare('SELECT version FROM schema_migrations ORDER BY version').all().map(row => row.version),
-    [1, 2, 3]
+    [1, 2, 3, 4]
   );
   assert.equal(db.pragma('busy_timeout', { simple: true }), 5000);
 

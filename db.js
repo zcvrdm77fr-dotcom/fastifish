@@ -109,3 +109,15 @@ applyMigration(2, 'hash session tokens at rest', () => {
 applyMigration(3, 'optimize published feed pagination', () => {
   db.exec('CREATE INDEX IF NOT EXISTS idx_posts_status_id ON posts(status, id DESC)');
 });
+
+applyMigration(4, 'retry failed upload cleanup', () => {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS upload_cleanup_queue (
+      image_path TEXT PRIMARY KEY,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      last_error TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )
+  `);
+});

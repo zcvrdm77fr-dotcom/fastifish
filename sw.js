@@ -1,6 +1,14 @@
-const CACHE_VERSION = 'v10';
+const CACHE_VERSION = 'v11';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
+  '/index.html',
+  '/feed-config.js',
+  '/site-cleanup.js',
+  '/site-cleanup.css',
+  '/next-features.js',
+  '/next-features.css',
+  '/score-calibration.js',
+  '/fishing-advice.js',
   '/manifest.json',
   '/favicon.ico',
   '/icon-192.png',
@@ -82,11 +90,11 @@ async function injectFishingStructures(response) {
       .replace(/\s*<script\s+src=["']\/velmu-fish\.js(?:\?[^"']*)?["']><\/script>/gi, '');
 
     const injection = [
-      '<script src="/fishing-structures.js?v=9"></script>',
-      '<script src="/depth-structures.js?v=9"></script>',
-      '<script src="/gtk-substrate.js?v=9"></script>',
-      '<script src="/gtk-habitats.js?v=9"></script>',
-      '<script src="/velmu-fish.js?v=9"></script>'
+      '<script src="/fishing-structures.js"></script>',
+      '<script src="/depth-structures.js"></script>',
+      '<script src="/gtk-substrate.js"></script>',
+      '<script src="/gtk-habitats.js"></script>',
+      '<script src="/velmu-fish.js"></script>'
     ].join('\n');
     html = html.includes('</body>') ? html.replace('</body>', `${injection}\n</body>`) : `${html}\n${injection}`;
 
@@ -143,11 +151,15 @@ self.addEventListener('fetch', (event) => {
 
   if (STATIC_ASSETS.includes(url.pathname)) {
     event.respondWith(
-      caches.match(request).then((cached) => cached || fetch(request).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-        return response;
-      }))
+      fetch(request)
+        .then(response => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
     );
     return;
   }
@@ -176,7 +188,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => caches.match(request).then(async (cached) => {
-          const fallback = cached || await caches.match('/index.html');
+          const fallback = cached || await caches.match('/index.html') || await caches.match('/');
           if (!fallback) return fallback;
           return (url.pathname === '/' || url.pathname === '/index.html') ? injectFishingStructures(fallback) : fallback;
         }))
