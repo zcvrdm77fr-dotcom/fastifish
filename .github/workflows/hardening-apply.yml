@@ -1,43 +1,24 @@
-name: Apply hardening branch patch
+name: Inspect dependency advisories
 
 on:
   push:
     branches: [fix/final-hardening-feed]
     paths:
-      - 'scripts/apply-hardening-patch.mjs'
       - '.github/workflows/hardening-apply.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  apply:
+  audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: fix/final-hardening-feed
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - name: Patch source files
-        run: node scripts/apply-hardening-patch.mjs
-      - name: Refresh secured dependencies
-        run: |
-          npm install --save-exact multer@2.3.0
-          npm install --save-dev eslint@latest @playwright/test@latest
-      - name: Commit generated source patch
+      - run: npm ci
+      - name: Show production audit details
         shell: bash
-        run: |
-          set -euo pipefail
-          # GitHub's workflow token may edit ordinary source files but cannot update workflow
-          # definitions. Restore those files here; they are updated separately through the
-          # authenticated repository connector after this generated source commit lands.
-          git restore --source=HEAD --worktree --staged .github/workflows
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Apply hardening changes'
-          git push origin HEAD:fix/final-hardening-feed
+        run: npm audit --omit=dev || true
