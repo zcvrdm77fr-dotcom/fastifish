@@ -1,125 +1,107 @@
-# Saalisfeedin käyttöönotto
+# FastFishing API:n käyttöönotto
 
-## Miksi feedi ei toiminut
+FastFishingin frontend on GitHub Pagesissa (`https://fastfishin.com`) ja API erillisessä palvelussa (`https://api.fastfishin.com`). GitHub Pages ei aja Node-palvelinta eikä tallenna käyttäjiä, joten kirjautuminen, saaliskuvat, kommentit ja profiilit tarvitsevat `server.js`:n sekä pysyvän levyn.
 
-Sivusto `fastfishin.com` on GitHub Pagesissa. GitHub Pages osaa tarjoilla vain valmiita
-tiedostoja — HTML:ää, CSS:ää ja kuvia. Se **ei voi ajaa `server.js`:ää**, tallentaa
-käyttäjätilejä eikä ottaa vastaan lähetettyjä kuvia.
+## Render
 
-Kirjautumislomake näkyi sivulla, koska se on tavallista HTML:ää. Kun sitä painoi, selain
-lähetti pyynnön osoitteeseen `fastfishin.com/api/auth/login`, jossa ei ole palvelinta —
-GitHub Pages vastasi 404-sivullaan, ja lomake näytti virheen "Jokin meni pieleen".
-Sama koski kuvien julkaisua ja saaliiden listausta.
+Repo sisältää `render.yaml`:n ja `Dockerfile`:n.
 
-Koodissa ei siis ollut vikaa. Palvelinosa täytyy vain ajaa jossain, ja sivustolle pitää
-kertoa sen osoite. Se tehdään näin.
+1. Render → **New → Blueprint** → valitse tämä repo.
+2. Liitä palvelulle pysyvä levy polkuun `/var/data`.
+3. Lisää `ADMIN_USERNAMES` Renderin Environment-näkymässä tarvittaessa.
+4. Osoita `api.fastfishin.com` Render-palveluun ja pidä `feed-config.js`:n API-base samana.
+5. Tarkista deployn jälkeen `https://api.fastfishin.com/api/health`.
 
----
+Tuotantokontti käynnistyy rootina vain persistent diskin oikeuksien varmistamiseksi ja pudottaa sen jälkeen prosessin `node`-käyttäjälle `gosu`:lla. API ei tuotannossa tarjoa repositorion juuritiedostoja staattisina tiedostoina.
 
-## Vaihe 1: julkaise palvelin
+## Ympäristömuuttujat
 
-Palvelin tarvitsee **pysyvän levyn**, koska käyttäjätilit (SQLite-tietokanta) ja saaliskuvat
-tallennetaan tiedostoina. Ilman levyä kaikki katoaisi aina kun palvelu käynnistyy uudelleen.
-
-### Renderillä (helpoin — `render.yaml` on valmiina)
-
-1. Luo tili osoitteessa <https://render.com> ja yhdistä GitHub-tilisi.
-2. **New → Blueprint** → valitse tämä repo. Render lukee `render.yaml`:n ja luo palvelun,
-   1 Gt pysyvän levyn ja ympäristömuuttujat automaattisesti.
-3. Odota että ensimmäinen julkaisu valmistuu (natiivipakettien kääntäminen kestää ~5–10 min).
-4. Kopioi palvelun osoite, esim. `https://fastfishing-api.onrender.com`.
-
-Huom: pysyvä levy on Renderin maksullinen ominaisuus (muutama euro/kk). Ilmaisella tasolla
-levyä ei voi liittää, jolloin tilit ja kuvat häviäisivät — feediä ei kannata ajaa niin.
-
-### Muut vaihtoehdot
-
-Mukana on tavallinen `Dockerfile`, joten palvelin toimii myös Fly.io:ssa, Railwayssä,
-Hetznerillä tai omalla VPS:llä. Liitä pysyvä levy polkuun `/var/data` ja aseta samat
-ympäristömuuttujat kuin alla.
-
-### Ympäristömuuttujat
-
-| Muuttuja | Arvo | Selitys |
+| Muuttuja | Esimerkki | Selitys |
 |---|---|---|
-| `DATA_DIR` | `/var/data` | Mihin tietokanta ja kuvat tallennetaan (pysyvä levy). |
-| `ALLOWED_ORIGINS` | `https://fastfishin.com,https://www.fastfishin.com` | Osoitteet, joista selain saa kutsua APIa. Ilman tätä selain estää kaikki pyynnöt. |
-| `CROSS_SITE_COOKIES` | `1` | Aseta kun sivusto ja API ovat eri osoitteissa. |
-| `NODE_ENV` | `production` | |
-| `PORT` | (alusta asettaa) | Älä aseta itse pilvipalvelussa. |
-| `ADMIN_USERNAMES` | esim. `oma-kayttajanimi` | Valinnainen. Pilkulla erotetut käyttäjänimet, joilla on oikeus poistaa KENEN TAHANSA saalisjulkaisu ja -kommentti (ei vain omiaan). Ilman tätä kukaan ei voi siivota muiden julkaisemaa asiatonta sisältöä paitsi julkaisijat itse. |
+| `DATA_DIR` | `/var/data` | SQLite, kuvat ja paikalliset backupit. |
+| `ALLOWED_ORIGINS` | `https://fastfishin.com,https://www.fastfishin.com` | Sallitut selain-origin-osoitteet. Tuotannossa pakollinen ja HTTPS. |
+| `SERVE_FRONTEND` | `0` | API-palvelin ei tarjoile GitHub Pages -fronttia. |
+| `NODE_ENV` | `production` | Ottaa tuotannon cookie- ja config-suojaukset käyttöön. |
+| `ADMIN_USERNAMES` | `oma-kayttajanimi` | Valinnainen ylläpitäjälista pilkulla erotettuna. |
+| `BACKUP_INTERVAL_HOURS` | `24` | Paikallisen SQLite-snapshotin väli. |
+| `BACKUP_LOCAL_RETENTION` | `7` | Kuinka monta paikallista DB-snapshotia säilytetään. |
 
-Tarkista lopuksi selaimella, että `https://<palvelimesi-osoite>/api/health` vastaa
-`{"ok":true,"feed":true}`.
+## Istunnot
 
-### Ylläpitäjän oikeudet (ADMIN_USERNAMES)
+Selain saa kirjautuessa vain `HttpOnly`, `Secure` (tuotannossa), `SameSite=Lax` -session cookien API-hostilta. Sessio-tokenia ei palauteta JSONissa eikä tallenneta `localStorage`en. Tietokantaan tallennetaan vain tokenin SHA-256-digest.
 
-`ADMIN_USERNAMES` ei ole tietokantaan tallennettu rooli, vaan pelkkä ympäristömuuttuja, joka
-luetaan palvelimen käynnistyessä. Näin otat sen käyttöön Renderissä (muilla alustoilla vastaava
-"Environment"-välilehti):
+`fastfishin.com` ja `api.fastfishin.com` ovat saman site-kokonaisuuden HTTPS-alidomaineja. Frontend käyttää API-kutsuissa `credentials: 'include'`, ja CORS sallii vain määritellyt originit.
 
-1. Luo itsellesi tavallinen käyttäjätili saalisfeediin (jos ei jo ole).
-2. Render → palvelusi → **Environment** → **Add Environment Variable**.
-3. Key: `ADMIN_USERNAMES`, Value: käyttäjänimesi (esim. `jake82`). Useampi ylläpitäjä pilkulla
-   erotettuna: `jake82,toinennimi`.
-4. Tallenna — Render käynnistää palvelun uudelleen automaattisesti.
-5. Kirjaudu sisään samalla käyttäjänimellä. Näet nyt "Poista"-napin kaikkien käyttäjien
-   julkaisuissa ja kommenteissa, et vain omissasi.
+Vanha `ff_session_token` poistetaan selaimen localStoragesta uuden frontendin latautuessa. Käyttäjä, jolla ei ole enää kelvollista API-cookiea, joutuu kirjautumaan kerran uudelleen.
 
----
+## Saalisfeedin metadata
 
-## Vaihe 2: kerro osoite sivustolle
+Postauksen valinnaiset kentät kulkevat koko ketjun läpi:
 
-Avaa `feed-config.js` ja kirjoita palvelimen osoite:
+- kalalaji
+- paino
+- pituus
+- viehe / syötti
+- saantipaikka
 
-```js
-window.FASTFISH_API_BASE = "https://fastfishing-api.onrender.com";
+Saantipaikka tallennetaan vain, jos käyttäjä valitsee erikseen **Näytä saantipaikka julkisesti postauksessa**. Muut kentät näkyvät postauksen metadatassa, kun ne on täytetty.
+
+CI:n HTTP-integraatiotesti luo oikean testipostauksen ja varmistaa, että nämä kentät säilyvät POST → SQLite → GET feed -kierroksen yli. `/api/health` palauttaa lisäksi `postMetadata: true` vain kun tuotannon skeemassa ovat kaikki tarvittavat sarakkeet.
+
+## Backupit
+
+Palvelin ottaa SQLite Online Backup API:lla paikallisen snapshotin oletuksena kerran vuorokaudessa ja säilyttää seitsemän uusinta tiedostoa `/var/data/backups`-hakemistossa.
+
+Offsite-varmistus voidaan ottaa käyttöön S3-yhteensopivaan object storageen, kuten Cloudflare R2:een, asettamalla Renderin secretteinä:
+
+```text
+BACKUP_S3_ENDPOINT=https://ACCOUNT_ID.r2.cloudflarestorage.com
+BACKUP_S3_BUCKET=fastfishing-backups
+BACKUP_S3_REGION=auto
+BACKUP_S3_ACCESS_KEY_ID=...
+BACKUP_S3_SECRET_ACCESS_KEY=...
+BACKUP_S3_PREFIX=fastfishing
 ```
 
-Ei kauttaviivaa loppuun. Committaa ja pushaa — GitHub Pages julkaisee muutoksen
-noin minuutissa, ja saalisfeedi alkaa toimia.
+Kun nämä ovat käytössä, jokainen backup-kierros lähettää DB-snapshotin, uudet/muuttuneet saaliskuvat sekä `latest.json`-manifestin offsite-kohteeseen. `/api/health` näyttää backupin tilan ja viimeisimmän onnistumisajan ilman salaisuuksia.
 
-Jos kenttä jätetään tyhjäksi, sivusto näyttää saaliit-osiossa selkeän viestin siitä, ettei
-palvelinta ole vielä otettu käyttöön, kirjautumislomakkeen sijaan.
+Offsite-backup kannattaa testata käytännössä palauttamalla snapshot erilliseen testiympäristöön. Pelkkä backupin olemassaolo ei ole palautustesti.
 
----
+## Health check
 
-## Suositus: käytä omaa alidomainia
+`GET /api/health` tarkistaa ainakin:
 
-Paras vaihtoehto on osoittaa esim. `api.fastfishin.com` palvelimelle ja käyttää sitä:
+- SQLite-yhteyden
+- versionoidun migration-skeeman
+- feedin metadata-sarakkeet
+- cookie-only-istuntomallin version
+- failed-upload-cleanup-jonon määrän
+- backupin tilan ja iän
 
-```js
-window.FASTFISH_API_BASE = "https://api.fastfishin.com";
-```
-
-Silloin sivusto ja API ovat saman verkkotunnuksen alla, jolloin selaimet käsittelevät
-istuntoa normaalina evästeenä. Renderissä alidomain lisätään kohdassa *Settings → Custom
-Domains*, ja verkkotunnuksen DNS-asetuksiin tulee Renderin antama CNAME-tietue.
-
-Kirjautuminen toimii kuitenkin myös eri verkkotunnuksesta: palvelin palauttaa istuntotunnuksen
-myös vastauksen rungossa, ja sivusto lähettää sen `Authorization`-otsakkeessa. Näin kirjautuminen
-säilyy myös Safarissa ja Firefoxissa, jotka estävät kolmannen osapuolen evästeet oletuksena.
-
----
+Health palauttaa HTTP 503:n, jos DB tai feedin vaadittu skeema ei ole kunnossa. GitHub Actions tarkistaa production-healthin myös jokaisen `main`-pushin jälkeen sekä tunnin välein.
 
 ## Paikallinen ajo
 
 ```bash
-npm install
+npm ci
 npm start
 ```
 
-Avaa <http://localhost:3000>. Paikallisesti `feed-config.js` saa jäädä tyhjäksi, koska sivusto
-ja API ovat samassa osoitteessa. Tietokanta ja kuvat menevät `data/`-kansioon (git-ignoroitu).
+Avaa `http://localhost:3000`. Paikallisesti frontend tarjotaan oletuksena samasta palvelimesta ja data menee `data/`-hakemistoon.
 
----
+## Sisällöntarkistus ja upload-suojaus
 
-## Sisällöntarkistus
+Kuvat tarkistetaan `nsfwjs`-mallilla ja tekstit sanalistalla. Jos moderointimalli ei ole tuotannossa käytettävissä, julkaisu hylätään fail-closed-periaatteella.
 
-Kuvat tarkistetaan `nsfwjs`-mallilla ja tekstit sanalistalla (`wordlist.js`). Malli ladataan
-verkosta ensimmäisellä julkaisukerralla, joten palvelimella pitää olla ulospäin toimiva
-verkkoyhteys. Jos tarkistus ei onnistu, julkaisu **hylätään** eikä päästetä läpi
-tarkistamattomana — käyttäjä saa viestin "Sisällöntarkistus ei ole juuri nyt käytettävissä".
+Uploadissa on lisäksi:
 
-Ensimmäinen julkaisu kestää tavallista pidempään (~10–20 s), koska malli ladataan silloin
-kerran muistiin.
+- Multer 2.3.0 tai uudempi lukittu versio
+- tiukat multipart parts/fields/files -rajat
+- 8 Mt tiedostoraja
+- Sharpin 40 megapikselin input-raja
+- upload-kohtainen rate limit
+- epäonnistuneiden kuvanpoistojen retry-jono
+
+## Julkaisupolku
+
+Normaali muutos tehdään branchiin → pull request → Quality → squash merge `main`iin. Syvyysdatan automaatio tekee jatkossa oman PR:n eikä pushaa generoituja tiedostoja suoraan `main`iin.
