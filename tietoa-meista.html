@@ -19,6 +19,7 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-7506133239289138">
 <title>Tietoa meistä - FastFishing</title>
 <meta name="description" content="Kuka FastFishingin takana on ja miksi sivusto tehtiin - lyhyt esittely harrastusprojektin taustoista.">
 <meta name="author" content="FastFishingin ylläpitäjä">
@@ -124,6 +125,8 @@ p { margin: 0 0 16px; color: var(--ink-soft); }
 footer { margin-top: 60px; padding: 36px 0 44px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .82rem; }
 </style>
 <!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
+
+
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -134,20 +137,6 @@ footer { margin-top: 60px; padding: 36px 0 44px; border-top: 1px solid var(--lin
     'analytics_storage': 'denied',
     'wait_for_update': 500
   });
-  (function(){
-    try {
-      var m = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);
-      var stored = m ? decodeURIComponent(m[1]) : (window.localStorage ? localStorage.getItem('cookie_consent') : null);
-      if (stored === 'all') {
-        gtag('consent', 'update', {
-          'ad_storage': 'granted',
-          'ad_user_data': 'granted',
-          'ad_personalization': 'granted',
-          'analytics_storage': 'granted'
-        });
-      }
-    } catch(e) {}
-  })();
   gtag('js', new Date());
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
 </script>
@@ -159,13 +148,13 @@ footer { margin-top: 60px; padding: 36px 0 44px; border-top: 1px solid var(--lin
 
 <div class="topbar">
   <div class="nav">
-    <a class="brand" href="index.html">
+    <a class="brand" href="/">
       <span class="brand-mark" aria-hidden="true">
         <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M4 16c5.5-6.4 13.2-7.2 22-1-8.8 6.2-16.5 5.4-22 1Z" fill="#ffffff"/><path d="M24 15l4-4v10l-4-4" fill="#ffffff"/><circle cx="10.2" cy="15.2" r="1.8" fill="#d97725"/></svg>
       </span>
       <span>FastFishing</span>
     </a>
-    <a class="back-link" href="index.html">← Takaisin kelimittariin</a>
+    <a class="back-link" href="/">← Takaisin kelimittariin</a>
     <button class="theme-toggle" id="themeToggle" type="button" aria-label="Vaihda tumma/vaalea tila" title="Tumma/vaalea tila">
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
@@ -236,49 +225,5 @@ footer { margin-top: 60px; padding: 36px 0 44px; border-top: 1px solid var(--lin
   </div>
 </footer>
 
-<div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
-  <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
-    <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
-    </div>
-  </div>
-</div>
-<script>
-(function(){
-  function setConsentCookie(value){
-    try {
-      localStorage.setItem('cookie_consent', value);
-      document.cookie = 'cookie_consent=' + encodeURIComponent(value) + ';path=/;max-age=' + (60*60*24*365) + ';SameSite=Lax';
-    } catch(e){}
-  }
-  function getConsentCookie(){
-    try {
-      var m = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);
-      return m ? decodeURIComponent(m[1]) : (window.localStorage ? localStorage.getItem('cookie_consent') : null);
-    } catch(e){ return null; }
-  }
-  var banner = document.getElementById('cookieConsentBanner');
-  var existing = getConsentCookie();
-  if (!existing && banner) { banner.style.display = 'block'; }
-  var acceptBtn = document.getElementById('cookieAcceptBtn');
-  var declineBtn = document.getElementById('cookieDeclineBtn');
-  if (acceptBtn) acceptBtn.addEventListener('click', function(){
-    setConsentCookie('all');
-    if (typeof gtag === 'function') {
-      gtag('consent', 'update', {
-        'ad_storage': 'granted', 'ad_user_data': 'granted',
-        'ad_personalization': 'granted', 'analytics_storage': 'granted'
-      });
-    }
-    if (banner) banner.style.display = 'none';
-  });
-  if (declineBtn) declineBtn.addEventListener('click', function(){
-    setConsentCookie('min');
-    if (banner) banner.style.display = 'none';
-  });
-})();
-</script>
 </body>
 </html>

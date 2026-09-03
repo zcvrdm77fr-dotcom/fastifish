@@ -15,40 +15,8 @@
     });
   }
 
-  function getConsent() {
-    try {
-      const match = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);
-      return match ? decodeURIComponent(match[1]) : localStorage.getItem('cookie_consent');
-    } catch (error) {
-      return null;
-    }
-  }
-
-  function storeConsent(value) {
-    try { localStorage.setItem('cookie_consent', value); } catch (error) {}
-    document.cookie = `cookie_consent=${encodeURIComponent(value)};path=/;max-age=31536000;SameSite=Lax`;
-  }
-
-  const banner = document.getElementById('cookieConsentBanner');
-  if (banner && !getConsent()) banner.hidden = false;
-
-  document.getElementById('cookieAcceptBtn')?.addEventListener('click', () => {
-    storeConsent('all');
-    if (typeof window.gtag === 'function') {
-      window.gtag('consent', 'update', {
-        ad_storage: 'granted',
-        ad_user_data: 'granted',
-        ad_personalization: 'granted',
-        analytics_storage: 'granted'
-      });
-    }
-    if (banner) banner.hidden = true;
-  });
-
-  document.getElementById('cookieDeclineBtn')?.addEventListener('click', () => {
-    storeConsent('min');
-    if (banner) banner.hidden = true;
-  });
+  // Mainos- ja analytiikkasuostumus kuuluu Google-certified CMP:lle.
+  // Sisältösivut eivät enää lue, kirjoita tai näytä FastFishingin vanhaa suostumustilaa.
 
   // Sisältösivuilta oppaisiin johtavat linkit viedään nyt oikealle opaskeskukselle
   // eikä takaisin suuren etusivun yksittäiseen SPA-osioon.
