@@ -22,7 +22,6 @@ async function requestText(url, accept = '*/*') {
       ok: response.ok,
       status: response.status,
       contentType: response.headers.get('content-type') || '',
-      cors: response.headers.get('access-control-allow-origin') || '',
       body: await response.text()
     };
   } finally {
@@ -59,7 +58,7 @@ function gmlFeatureCount(xml) {
 async function smokeTraficom(capabilities) {
   const layer = capabilities.layers?.contour || capabilities.layers?.area || capabilities.layers?.sounding;
   if (!layer) {
-    console.log('Traficom open WFS: depth layers are currently not advertised; switching smoke test to the open EMODnet fallback.');
+    console.log('Traficom open WFS: depth layers are currently not advertised; switching smoke test to the server-side EMODnet fallback.');
     for (const line of capabilities.errors || []) console.log(line);
     return false;
   }
@@ -129,6 +128,9 @@ async function smokeTraficom(capabilities) {
 }
 
 async function smokeEmodnet() {
+  // EMODnet ei tarjoa selaimelle CORS-headeria. FastFishing käyttää sitä tarkoituksella
+  // Oracle API:n /api/depth/emodnet-proxyn kautta. Tässä smoke-testissä varmistetaan siis
+  // upstream-palvelun saatavuus ja vastausmuoto samalla tavalla kuin backend-proxy tekee.
   const point = `POINT(${HELSINKI_SAMPLE.lon} ${HELSINKI_SAMPLE.lat})`;
   const sampleUrl = `${EMODNET_REST}/depth_sample?${new URLSearchParams({ geom: point })}`;
   const response = await requestText(sampleUrl, 'application/json');
@@ -136,21 +138,20 @@ async function smokeEmodnet() {
   const sample = JSON.parse(response.body);
   const depths = [sample.min, sample.max, sample.avg, sample.smoothed].map(Number).filter(Number.isFinite);
   if (!depths.length) throw new Error(`EMODnet depth_sample returned no finite depth: ${response.body.slice(0, 220)}`);
-  if (!response.cors || !(response.cors === '*' || response.cors.includes('fastfishin.com'))) {
-    throw new Error(`EMODnet REST is not browser-CORS compatible for FastFishing (Access-Control-Allow-Origin=${response.cors || '(missing)'}).`);
-  }
 
   const profileGeom = `LINESTRING(${HELSINKI_SEA.west} 60.08,${HELSINKI_SEA.east} 60.08)`;
   const profileUrl = `${EMODNET_REST}/depth_profile?${new URLSearchParams({ geom: profileGeom })}`;
   const profileResponse = await requestText(profileUrl, 'application/json');
   if (!profileResponse.ok) throw new Error(`EMODnet depth_profile HTTP ${profileResponse.status}: ${profileResponse.body.slice(0, 180)}`);
   const profile = JSON.parse(profileResponse.body);
-  const finiteProfile = Array.isArray(profile) ? profile.map(Number).filter(Number.isFinite) : [];
+  const finiteProfile = Array.isArray(profile)
+    ? profile.filter(value => value !== null && value !== '').map(Number).filter(Number.isFinite)
+    : [];
   if (finiteProfile.length < 2) throw new Error(`EMODnet depth_profile returned too few samples: ${profileResponse.body.slice(0, 220)}`);
 
-  console.log(`EMODnet depth_sample OK: avg=${sample.avg}, min=${sample.min}, max=${sample.max}, CORS=${response.cors}`);
+  console.log(`EMODnet depth_sample OK: avg=${sample.avg}, min=${sample.min}, max=${sample.max}`);
   console.log(`EMODnet depth_profile OK: ${finiteProfile.length} finite samples.`);
-  console.log('Open marine fallback smoke OK.');
+  console.log('Server-side EMODnet fallback upstream smoke OK.');
 }
 
 async function main() {
