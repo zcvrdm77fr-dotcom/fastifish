@@ -25,10 +25,10 @@ test('buildDepthProfiles creates bounded horizontal transects', () => {
   assert.ok(profiles.at(-1).start.lat < 61);
 });
 
-test('profileToSamples maps depth values to coordinates and drops invalid depths', () => {
+test('profileToSamples maps depth values to coordinates and drops missing or invalid depths', () => {
   const line = { id: 'h0', start: { lon: 24, lat: 60 }, end: { lon: 25, lat: 60 } };
   const samples = profileToSamples([2, null, 8, 999, 12], line);
-  assert.deepEqual(samples.map(item => item.depth), [2, 0, 8, 12]);
+  assert.deepEqual(samples.map(item => item.depth), [2, 8, 12]);
   assert.equal(samples[0].lon, 24);
   assert.equal(samples.at(-1).lon, 25);
   assert.equal(samples.every(item => item.lat === 60), true);
