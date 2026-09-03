@@ -511,7 +511,7 @@
             }
         }
     </style>
-<!-- Google tag (gtag.js) - Consent Mode v2: oletuksena "denied", kunnes kayttaja hyvaksyy evasteet. -->
+<!-- Google tag (gtag.js) - Consent Mode v2 alkaa denied-tilasta; Google-certified CMP / IAB TCF hallitsee ETA/UK/CH-suostumukset. -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -522,19 +522,9 @@
     'analytics_storage': 'denied',
     'wait_for_update': 500
   });
-  (function(){
-    try {
-      var m = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);
-      var stored = m ? decodeURIComponent(m[1]) : (window.localStorage ? localStorage.getItem('cookie_consent') : null);
-      if (stored === 'all') {
-        gtag('consent', 'update', {
-          'ad_storage': 'granted',
-          'ad_user_data': 'granted',
-          'ad_personalization': 'granted',
-          'analytics_storage': 'granted'
-        });
-      }
-    } catch(e) {}
+  (function clearLegacyFastFishingConsent(){
+    try { localStorage.removeItem('cookie_consent'); } catch(e) {}
+    try { document.cookie = 'cookie_consent=; Max-Age=0; path=/; SameSite=Lax'; } catch(e) {}
   })();
   gtag('js', new Date());
   gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
@@ -583,8 +573,8 @@
         <aside class="hero-panel" aria-label="Yhteenveto">
             <div class="panel-title"><strong>Lyhyesti</strong><span class="pill">tietosuoja</span></div>
             <p style="margin:0;color:var(--ink-soft);font-size:1.05rem;">
-                Ilman käyttäjätiliä keräämme lähinnä teknisiä lokitietoja ja suostumusvalintasi. Jos käytät Saalisvirtaa, tallennamme käyttäjänimen, suojatun salasanatiivisteen sekä itse julkaisemasi kuvat, tekstit ja saalistiedot.
-                Emme myy tietoja. Google-tagit toimivat ennen suostumusta rajoitetussa, evästeettömässä Consent Mode -tilassa; mainos- ja analytiikkaevästeitä käytetään vasta hyväksynnän jälkeen.
+                Ilman käyttäjätiliä keräämme lähinnä teknisiä lokitietoja ja käyttöliittymävalintoja. Jos käytät Saalisvirtaa, tallennamme käyttäjänimen, suojatun salasanatiivisteen sekä itse julkaisemasi kuvat, tekstit ja saalistiedot.
+                Emme myy tietoja. ETA-alueella, UK:ssa ja Sveitsissä mainos- ja analytiikkasuostumusta hallitaan Googlen sertifioidulla Privacy &amp; messaging -CMP:llä IAB TCF -kehyksen mukaisesti; Google-tagien Consent Mode alkaa denied-tilasta.
             </p>
         </aside>
     </header>
@@ -617,7 +607,7 @@
                 <ul>
                     <li><strong>IP-osoite</strong> – tietoturvan varmistamiseen ja palvelun tekniseen toimintaan.</li>
                     <li><strong>Selaintiedot</strong> (esim. käyttäjäagentti) – sivuston tekniseen optimointiin.</li>
-                    <li><strong>Suostumus- ja käyttöliittymävalinnat</strong> – esimerkiksi evästesuostumus, kieli, teema ja laitenäkymä tallennetaan evästeeseen tai selaimen paikalliseen tallennustilaan.</li>
+                    <li><strong>Suostumus- ja käyttöliittymävalinnat</strong> – Google-certified CMP hallitsee mainos- ja analytiikkasuostumusta sekä TCF-signaalia. FastFishing tallentaa selaimeen erikseen vain tarpeellisia käyttöliittymävalintoja, kuten kielen, teeman ja laitenäkymän.</li>
                     <li><strong>Käyttäjätili</strong> – käyttäjänimi, yksisuuntaisesti tiivistetty salasana, tilin luontiaika ja 30 päivää voimassa oleva satunnainen istuntotunnus. Selväkielistä salasanaa ei tallenneta.</li>
                     <li><strong>Saalisvirran sisältö</strong> – kuva, kuvateksti, kommentit, tykkäykset sekä vapaaehtoiset kalalaji-, paino-, pituus-, saantipaikka- ja viehetiedot. Saantipaikka tallennetaan vain, jos käyttäjä valitsee sen erikseen julkiseksi.</li>
                     <li><strong>Sivuston käyttötiedot</strong> – Google Analyticsin suostumustilan mukaiset sivu- ja laitetiedot, kun Google-tagit ovat käytössä.</li>
@@ -654,19 +644,19 @@
             </article>
 
             <!-- 5 -->
-            <article class="privacy-card full">
+            <article class="privacy-card full" id="google-cmp">
                 <span class="tag">5</span>
-                <h2>Google AdSense, Google Analytics &amp; kolmannen osapuolen evästeet</h2>
-                <p>Tällä sivustolla käytetään Google AdSense -mainontaa sekä Google Analytics -kävijäseurantaa. Sivusto käyttää Googlen edistynyttä Consent Mode -tilaa: tagit voivat latautua oletusarvolla "denied", mutta mainos- tai analytiikkaevästeitä ei silloin lueta eikä kirjoiteta. Google voi silti vastaanottaa evästeettömän suostumus- ja mittaussignaalin.</p>
+                <h2>Google-certified CMP, AdSense, Analytics &amp; Consent Mode</h2>
+                <p>FastFishing käyttää Google AdSense -mainontaa ja Google Analytics -kävijämittausta. ETA-alueella, Yhdistyneessä kuningaskunnassa ja Sveitsissä suostumus pyydetään Googlen <strong>Privacy &amp; messaging</strong> -palvelun sertifioidulla CMP:llä, joka toimii IAB Europe Transparency &amp; Consent Framework (TCF) -kehyksen mukaisesti. FastFishingin oma erillinen mainossuostumusbanneri ei ole enää käytössä.</p>
                 <ul>
-                    <li>Googlen mainosevästeiden avulla Google ja sen kumppanit voivat näyttää käyttäjille mainoksia, jotka perustuvat heidän vierailuihinsa tällä ja/tai muilla verkkosivustoilla.</li>
-                    <li><strong>Google Analytics</strong> käsittelee suostumustilan mukaisia tietoja sivuston käytöstä, kuten vierailtuja sivuja, laitetyyppiä ja likimääräistä sijaintia.</li>
-                    <li>Jos hyväksyt valinnaiset evästeet, <code>ad_storage</code>, <code>ad_user_data</code>, <code>ad_personalization</code> ja <code>analytics_storage</code> päivitetään sallituiksi. Jos hylkäät, ne jäävät estetyiksi.</li>
-                    <li>Käyttäjät voivat poistaa <strong>personoidun mainonnan</strong> käytöstä käymällä osoitteessa <a href="https://www.aboutads.info" target="_blank" rel="noopener">www.aboutads.info</a> tai <a href="https://adssettings.google.com" target="_blank" rel="noopener">Google Ads Settings</a>.</li>
-                    <li>Käyttäjät voivat estää Google Analyticsin seurannan kokonaan asentamalla <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analyticsin selainlisäosan</a>.</li>
+                    <li>Google CMP tarjoaa käyttäjälle vaihtoehdot <strong>Suostun</strong>, <strong>En suostu</strong> ja <strong>Hallinnoi valintoja</strong> julkaistun European regulations -viestin mukaisesti.</li>
+                    <li>Google-tagien Consent Mode v2 alustetaan FastFishingissä arvoihin <code>ad_storage=denied</code>, <code>ad_user_data=denied</code>, <code>ad_personalization=denied</code> ja <code>analytics_storage=denied</code>. Googlen CMP:n ja Google-palveluiden asetukset välittävät käyttäjän lopullisen valinnan mainonta- ja mittaustageille.</li>
+                    <li>Google AdSense ja sen kumppanit voivat käsitellä suostumuksen mukaisia tietoja mainosten toimittamiseen, mittaamiseen ja mahdolliseen personointiin. Google Analytics käsittelee suostumustilan mukaisia sivu- ja laitetietoja.</li>
+                    <li>Selaimen sijaintilupa on tästä erillinen: lähikalapaikat pyytävät sijainnin selaimen omalla luvalla vasta käyttäjän pyynnöstä. Mainos- tai evästesuostumus ei anna FastFishingille sijaintilupaa.</li>
                 </ul>
-                <p>Lisätietoa evästeettömistä mittaussignaaleista on <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode" target="_blank" rel="noopener">Googlen Consent Mode -kuvauksessa</a>.</p>
-                <p style="margin-top:12px;"><strong>Tietojen siirto EU/ETA-alueen ulkopuolelle:</strong> Google Analytics ja Google AdSense voivat siirtää käsittelemäänsä dataa EU/ETA-alueen ulkopuolelle, muun muassa Yhdysvaltoihin, osana Googlen globaalia infrastruktuuria. Siirrot perustuvat Googlen käyttämiin EU:n komission hyväksymiin vakiosopimuslausekkeisiin (Standard Contractual Clauses) sekä Google Ads Data Processing Termsiin. Lisätietoa Googlen tietosuojakäytännöistä: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</p>
+                <p><button type="button" class="btn" id="googlePrivacyChoicesBtn">Muuta tietosuoja- ja evästeasetuksia</button></p>
+                <p>Google CMP:n asetukset voi avata uudelleen yllä olevasta painikkeesta silloin, kun European regulations -viesti on käyttäjän alueella käytettävissä. Lisätietoa Googlen tietosuojakäytännöistä: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>. Consent Modesta: <a href="https://developers.google.com/tag-platform/security/concepts/consent-mode" target="_blank" rel="noopener">Google Consent Mode</a>.</p>
+                <p style="margin-top:12px;"><strong>Tietojen siirto EU/ETA-alueen ulkopuolelle:</strong> Google Analytics ja Google AdSense voivat käsitellä dataa osana Googlen globaalia infrastruktuuria myös EU/ETA-alueen ulkopuolella. Google kuvaa käyttämänsä siirtomekanismit, sopimusehdot ja tietosuojatoimet omissa tietosuoja- ja palveluehdoissaan.</p>
             </article>
 
             <!-- 6 -->
@@ -696,7 +686,7 @@
                     <li><strong>Rajoittaa</strong> tietojen käsittelyä soveltuvissa tilanteissa.</li>
                     <li><strong>Vastustaa</strong> henkilötietojesi käsittelyä tietyissä tilanteissa, esimerkiksi suoramarkkinointiin liittyen.</li>
                     <li><strong>Pyytää</strong> tietojen siirtämistä järjestelmästä toiseen (tiedon siirrettävyys), siltä osin kuin se on sovellettavissa.</li>
-                    <li><strong>Peruuttaa</strong> evästeisiin liittyvä suostumus poistamalla <code>cookie_consent</code>-evästeen ja sivuston paikallisen tallennustiedon tai selaimen asetuksista.</li>
+                    <li><strong>Peruuttaa tai muuttaa</strong> Google CMP:llä antamasi mainos- ja analytiikkasuostumuksen tämän sivun “Muuta tietosuoja- ja evästeasetuksia” -painikkeesta tai Googlen viestin tarjoamasta tietosuoja-asetusten linkistä.</li>
                     <li><strong>Tehdä valitus valvontaviranomaiselle</strong>, jos koet, että henkilötietojesi käsittely rikkoo tietosuojalainsäädäntöä. Suomessa toimivaltainen valvontaviranomainen on Tietosuojavaltuutetun toimisto (<a href="https://tietosuoja.fi" target="_blank" rel="noopener">tietosuoja.fi</a>).</li>
                 </ul>
             </article>
@@ -732,47 +722,19 @@
         </div>
     </footer>
 
-<div id="cookieConsentBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; z-index:999; background:#17342f; color:#fff; padding:18px 20px; box-shadow:0 -6px 20px rgba(0,0,0,.2); font-family:Arial,Helvetica,sans-serif;">
-  <div style="max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.92rem; line-height:1.5;">
-    <p style="margin:0; flex:1 1 320px;">Sivusto käyttää evästeitä (mainosten personointiin Google AdSense) ja kävijätilastointiin (Google Analytics). Lue lisää <a href="tietosuoja.html" style="color:#9fd8d1;">tietosuojaselosteesta</a>.</p>
-    <div style="display:flex; gap:10px; flex:0 0 auto;">
-      <button id="cookieDeclineBtn" style="padding:10px 16px; border-radius:8px; border:1px solid #fff; background:transparent; color:#fff; cursor:pointer; font-size:.85rem;">Hylkää valinnaiset</button>
-      <button id="cookieAcceptBtn" style="padding:10px 16px; border-radius:8px; border:none; background:#d97706; color:#fff; cursor:pointer; font-weight:bold; font-size:.85rem;">Hyväksy kaikki</button>
-    </div>
-  </div>
-</div>
 <script>
 (function(){
-  function setConsentCookie(value){
-    try {
-      localStorage.setItem('cookie_consent', value);
-      document.cookie = 'cookie_consent=' + encodeURIComponent(value) + ';path=/;max-age=' + (60*60*24*365) + ';SameSite=Lax';
-    } catch(e){}
-  }
-  function getConsentCookie(){
-    try {
-      var m = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);
-      return m ? decodeURIComponent(m[1]) : (window.localStorage ? localStorage.getItem('cookie_consent') : null);
-    } catch(e){ return null; }
-  }
-  var banner = document.getElementById('cookieConsentBanner');
-  var existing = getConsentCookie();
-  if (!existing && banner) { banner.style.display = 'block'; }
-  var acceptBtn = document.getElementById('cookieAcceptBtn');
-  var declineBtn = document.getElementById('cookieDeclineBtn');
-  if (acceptBtn) acceptBtn.addEventListener('click', function(){
-    setConsentCookie('all');
-    if (typeof gtag === 'function') {
-      gtag('consent', 'update', {
-        'ad_storage': 'granted', 'ad_user_data': 'granted',
-        'ad_personalization': 'granted', 'analytics_storage': 'granted'
-      });
+  var btn = document.getElementById('googlePrivacyChoicesBtn');
+  if (!btn) return;
+  btn.addEventListener('click', function(){
+    window.googlefc = window.googlefc || {};
+    window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+    function showChoices(){
+      if (typeof window.googlefc.showRevocationMessage !== 'function') return false;
+      window.googlefc.showRevocationMessage();
+      return true;
     }
-    if (banner) banner.style.display = 'none';
-  });
-  if (declineBtn) declineBtn.addEventListener('click', function(){
-    setConsentCookie('min');
-    if (banner) banner.style.display = 'none';
+    if (!showChoices()) window.googlefc.callbackQueue.push({ CONSENT_API_READY: showChoices });
   });
 })();
 </script>
