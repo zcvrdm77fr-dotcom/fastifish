@@ -55,10 +55,11 @@ app.use('/api/profiles', profilesRouter);
 app.use('/api/insights', insightsRouter);
 app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d', index: false, immutable: true }));
 
-const BLOCKED_STATIC_PREFIXES = ['/data', '/node_modules', '/tests'];
+const BLOCKED_STATIC_PREFIXES = ['/data', '/node_modules', '/tests', '/scripts'];
 const BLOCKED_STATIC_FILES = new Set([
   '/server.js', '/db.js', '/auth.js', '/posts.js', '/profiles.js', '/insights.js', '/security.js',
-  '/paths.js', '/wordlist.js', '/moderation.js', '/package.json', '/package-lock.json'
+  '/paths.js', '/wordlist.js', '/moderation.js', '/package.json', '/package-lock.json',
+  '/Dockerfile', '/render.yaml', '/DEPLOY.md'
 ]);
 app.use((req, res, next) => {
   if (BLOCKED_STATIC_FILES.has(req.path) || BLOCKED_STATIC_PREFIXES.some(p => req.path.startsWith(p))) {
