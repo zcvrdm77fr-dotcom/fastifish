@@ -21,7 +21,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh pr list --repo "$REPO" --state merged --limit 100 --json headRefName,headRepositoryOwner --jq '.[] | select(.headRepositoryOwner.login == env.GITHUB_REPOSITORY_OWNER) | .headRefName' |
+          gh pr list --repo "$REPO" --state merged --limit 100 --json headRefName,isCrossRepository \
+            --jq '.[] | select(.isCrossRepository == false) | .headRefName' |
           sort -u |
           while IFS= read -r branch; do
             [ -n "$branch" ] || continue
