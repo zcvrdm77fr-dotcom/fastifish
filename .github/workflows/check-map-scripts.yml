@@ -12,6 +12,7 @@ on:
       - 'velmu-fish.js'
       - 'index.html'
       - 'scripts/check-index-inline.mjs'
+      - 'scripts/check-traficom-wfs.mjs'
       - 'sw.js'
       - 'vendor/leaflet/**'
       - '.github/workflows/check-map-scripts.yml'
@@ -25,6 +26,7 @@ on:
       - 'velmu-fish.js'
       - 'index.html'
       - 'scripts/check-index-inline.mjs'
+      - 'scripts/check-traficom-wfs.mjs'
       - 'sw.js'
       - 'vendor/leaflet/**'
       - '.github/workflows/check-map-scripts.yml'
@@ -49,5 +51,8 @@ jobs:
           node --check gtk-habitats.js
           node --check velmu-fish.js
           node --check sw.js
+          node --check scripts/check-traficom-wfs.mjs
       - name: Check inline JavaScript syntax
         run: node scripts/check-index-inline.mjs index.html
+      - name: Smoke test Traficom WFS depth data
+        run: node scripts/check-traficom-wfs.mjs
