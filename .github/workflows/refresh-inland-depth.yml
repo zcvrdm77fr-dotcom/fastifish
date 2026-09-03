@@ -5,12 +5,15 @@ on:
   schedule:
     - cron: '23 4 1 */2 *'
   push:
+    branches: [main]
     paths:
       - 'scripts/build-inland-depth.py'
+      - 'requirements-inland-depth.txt'
       - '.github/workflows/refresh-inland-depth.yml'
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   build-depth-data:
@@ -18,13 +21,16 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
 
-      - name: Install geospatial tooling
-        run: python -m pip install --disable-pip-version-check geopandas pyogrio shapely pyproj
+      - name: Install pinned geospatial tooling
+        run: python -m pip install --disable-pip-version-check -r requirements-inland-depth.txt
 
       - name: Download SYKE depth areas
         shell: bash
@@ -33,29 +39,32 @@ jobs:
           mkdir -p /tmp/syke-depth/areas
           URL1='https://wwwd3.ymparisto.fi/d3/gis_data/spesific/syvyysalue.zip'
           URL2='https://wwwd3.ymparisto.fi/d3/gis_data/specific/syvyysalue.zip'
-          curl -fL --retry 3 "$URL1" -o /tmp/syke-depth/syvyysalue.zip || curl -fL --retry 3 "$URL2" -o /tmp/syke-depth/syvyysalue.zip
+          curl -fL --retry 3 --proto '=https' --tlsv1.2 "$URL1" -o /tmp/syke-depth/syvyysalue.zip || \
+            curl -fL --retry 3 --proto '=https' --tlsv1.2 "$URL2" -o /tmp/syke-depth/syvyysalue.zip
           unzip -q /tmp/syke-depth/syvyysalue.zip -d /tmp/syke-depth/areas
-          find /tmp/syke-depth/areas -maxdepth 3 -type f | head -40
 
       - name: Build compact fishing-depth tiles
         run: python scripts/build-inland-depth.py --area-dir /tmp/syke-depth/areas --output-dir inland-depth
 
-      - name: Show output size
-        run: |
-          cat inland-depth/manifest.json
-          du -sh inland-depth
-          find inland-depth/tiles -type f | wc -l
-
-      - name: Commit refreshed depth data
+      - name: Create or update refresh PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: automation/inland-depth-refresh
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -B "$BRANCH"
           git add inland-depth
           if git diff --cached --quiet; then
             echo 'Depth data unchanged.'
             exit 0
           fi
-          git commit -m 'Refresh SYKE inland depth fishing spots'
-          git push
+          git commit -m 'Refresh inland depth data'
+          git push --force-with-lease origin "$BRANCH" || git push --force origin "$BRANCH"
+          if [ "$(gh pr list --head "$BRANCH" --base main --state open --json number --jq 'length')" -eq 0 ]; then
+            gh pr create --base main --head "$BRANCH" \
+              --title 'Refresh inland depth data' \
+              --body 'Automated SYKE inland-depth refresh. Merge only after Quality is green.'
+          fi
