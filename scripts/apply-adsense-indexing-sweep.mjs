@@ -38,8 +38,6 @@ function removeLegacyBanner(html, file) {
     if (start < 0 || bodyClose < 0 || footerClose < 0 || start < footerClose) {
       throw new Error(`${file}: legacy banner is not safely isolated after footer`);
     }
-    // Kaikissa vanhoissa toteutuksissa banneri ja sen mahdollinen inline-scripti ovat sivun
-    // viimeiset elementit ennen </body>-tagia, joten koko loppulohko voidaan poistaa turvallisesti.
     out = out.slice(0, start) + out.slice(bodyClose);
   }
   return out;
@@ -69,6 +67,14 @@ function canonicalizeHomeLinks(html) {
     .replace(/href=(['"])\.\/index\.html([^'"]*)\1/g, (_m, quote, suffix) => `href=${quote}/${suffix}${quote}`);
 }
 
+function ensureThemeHandler(html, file) {
+  if (file === 'index.html' || file === 'tietosuoja.html') return html;
+  if (!/id=["']themeToggle(?:Fab)?["']/.test(html)) return html;
+  if (html.includes('content-pages.js') || html.includes('static-theme.js')) return html;
+  if (/getElementById\(['"]themeToggle(?:Fab)?['"]\)/.test(html)) return html;
+  return html.replace('</body>', '<script defer src="/static-theme.js"></script>\n</body>');
+}
+
 for (const file of htmlFiles) {
   let html = fs.readFileSync(file, 'utf8');
   html = addPublisherMeta(html, file);
@@ -77,6 +83,7 @@ for (const file of htmlFiles) {
     html = standardizeGoogleConsent(html, file);
   }
   html = canonicalizeHomeLinks(html);
+  html = ensureThemeHandler(html, file);
 
   if (/gtag\(['"]consent['"],\s*['"]update['"]/.test(html)) {
     throw new Error(`${file}: legacy direct consent update remains`);
