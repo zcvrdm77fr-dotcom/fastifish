@@ -6,6 +6,20 @@ on:
     paths:
       - 'fishing-structures.js'
       - 'depth-structures.js'
+      - 'depth-wfs-utils.js'
+      - 'gtk-substrate.js'
+      - 'gtk-habitats.js'
+      - 'velmu-fish.js'
+      - 'index.html'
+      - 'scripts/check-index-inline.mjs'
+      - 'sw.js'
+      - 'vendor/leaflet/**'
+      - '.github/workflows/check-map-scripts.yml'
+  pull_request:
+    paths:
+      - 'fishing-structures.js'
+      - 'depth-structures.js'
+      - 'depth-wfs-utils.js'
       - 'gtk-substrate.js'
       - 'gtk-habitats.js'
       - 'velmu-fish.js'
@@ -30,6 +44,7 @@ jobs:
         run: |
           node --check fishing-structures.js
           node --check depth-structures.js
+          node --check depth-wfs-utils.js
           node --check gtk-substrate.js
           node --check gtk-habitats.js
           node --check velmu-fish.js
