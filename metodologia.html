@@ -8,155 +8,66 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-adsense-account" content="ca-pub-7506133239289138">
 <title>Näin FastFishingin kalakelipisteet lasketaan | Metodologia</title>
-<meta name="description" content="FastFishingin kalakelimittarin avoin metodologia: käytetyt säämuuttujat, painotukset, lajikohtaiset korjaukset, esimerkkilasku ja mallin rajoitukset.">
+<meta name="description" content="FastFishingin kalakelimittarin avoin metodologia: säämuuttujat, painotukset, lajikorjaukset, pistekalibrointi, esimerkkilasku ja mallin rajoitukset.">
 <meta name="author" content="FastFishingin ylläpitäjä">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://fastfishin.com/metodologia.html">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="FastFishing">
-<meta property="og:locale" content="fi_FI">
-<meta property="og:title" content="Näin FastFishingin kalakelipisteet lasketaan">
-<meta property="og:description" content="Avoin kuvaus kelimittarin muuttujista, painoista, lajikorjauksista ja rajoituksista.">
-<meta property="og:url" content="https://fastfishin.com/metodologia.html">
+<meta property="og:type" content="article"><meta property="og:site_name" content="FastFishing"><meta property="og:locale" content="fi_FI">
+<meta property="og:title" content="Näin FastFishingin kalakelipisteet lasketaan"><meta property="og:description" content="Avoin kuvaus kelimittarin muuttujista, painoista, lajikorjauksista, kalibroinnista ja rajoituksista."><meta property="og:url" content="https://fastfishin.com/metodologia.html">
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "TechArticle",
-  "headline": "Näin FastFishingin kalakelipisteet lasketaan",
-  "description": "FastFishingin kalakelimittarin avoin metodologia, painotukset ja rajoitukset.",
-  "inLanguage": "fi",
-  "datePublished": "2026-09-02",
-  "dateModified": "2026-09-02",
-  "mainEntityOfPage": "https://fastfishin.com/metodologia.html",
-  "author": {"@type":"Person","name":"FastFishingin ylläpitäjä","url":"https://fastfishin.com/tietoa-meista.html"},
-  "publisher": {"@type":"Organization","name":"FastFishing","url":"https://fastfishin.com/"}
+  "@context":"https://schema.org",
+  "@type":"TechArticle",
+  "headline":"Näin FastFishingin kalakelipisteet lasketaan",
+  "description":"FastFishingin kalakelimittarin avoin metodologia, painotukset, kalibrointi ja rajoitukset.",
+  "inLanguage":"fi",
+  "datePublished":"2026-09-02",
+  "dateModified":"2026-09-03",
+  "mainEntityOfPage":"https://fastfishin.com/metodologia.html",
+  "author":{"@type":"Person","name":"FastFishingin ylläpitäjä","url":"https://fastfishin.com/tietoa-meista.html"},
+  "publisher":{"@type":"Organization","name":"FastFishing","url":"https://fastfishin.com/"}
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <link rel="stylesheet" href="content-pages.css">
-
-
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('consent', 'default', {
-    'ad_storage': 'denied',
-    'ad_user_data': 'denied',
-    'ad_personalization': 'denied',
-    'analytics_storage': 'denied',
-    'wait_for_update': 500
+    'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','analytics_storage':'denied','wait_for_update':500
   });
   gtag('js', new Date());
-  gtag('config', 'G-WENSSGS6RJ', { 'anonymize_ip': true });
+  gtag('config','G-WENSSGS6RJ',{'anonymize_ip':true});
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
 <script defer src="content-pages.js"></script>
 </head>
 <body>
-<div class="topbar"><div class="shell topbar-inner">
-  <a class="brand" href="/">FastFishing</a>
-  <nav class="nav" aria-label="Päänavigaatio">
-    <a href="/">Kelimittari</a><a href="/#oppaat">Oppaat</a><a href="tietoa-meista.html">Tietoa meistä</a><a href="toimitusperiaatteet.html">Toimitusperiaatteet</a>
-    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Vaihda tumma tai vaalea tila">◐</button>
-  </nav>
-</div></div>
+<div class="topbar"><div class="shell topbar-inner"><a class="brand" href="/">FastFishing</a><nav class="nav" aria-label="Päänavigaatio"><a href="/">Kelimittari</a><a href="kalastusoppaat.html">Oppaat</a><a href="kalareissun-suunnittelu.html">Reissusuunnittelu</a><a href="tietoa-meista.html">Tietoa meistä</a><a href="toimitusperiaatteet.html">Toimitusperiaatteet</a><button class="theme-toggle" id="themeToggle" type="button" aria-label="Vaihda tumma tai vaalea tila">◐</button></nav></div></div>
 
-<header class="hero"><div class="shell">
-  <div class="crumb"><a href="/">Etusivu</a> → Kelimittarin metodologia</div>
-  <span class="eyebrow">Avoin laskentamalli</span>
-  <h1>Näin kalakelipisteet lasketaan</h1>
-  <p class="lead">FastFishing ei esitä pisteitä tieteellisenä ennusteena eikä saalistakuuna. Mittari on läpinäkyvä heuristiikka: säästä johdetut osapisteet painotetaan, niihin lisätään maltillinen lajikorjaus ja lopputulos rajataan välille 0–100.</p>
-  <div class="article-meta"><span>Laatinut <a href="tietoa-meista.html" rel="author">FastFishingin ylläpitäjä</a></span><span>Versio 2.9.2026</span><span>Päivitetty <time datetime="2026-09-02">2.9.2026</time></span></div>
-</div></header>
+<header class="hero"><div class="shell"><div class="crumb"><a href="/">Etusivu</a> → Kelimittarin metodologia</div><span class="eyebrow">Avoin laskentamalli</span><h1>Näin kalakelipisteet lasketaan</h1><p class="lead">FastFishing ei esitä pisteitä tieteellisenä ennusteena eikä saalistakuuna. Säästä lasketaan ensin avoimesti dokumentoitu raakapiste, minkä jälkeen näytettävän asteikon ääripäitä kalibroidaan maltillisesti. Teoreettinen raakapiste 100 näkyy nykyisessä näkymässä noin 91/100 pisteenä.</p><div class="article-meta"><span>Laatinut <a href="tietoa-meista.html" rel="author">FastFishingin ylläpitäjä</a></span><span>Versio 3.9.2026</span><span>Päivitetty <time datetime="2026-09-03">3.9.2026</time></span></div></div></header>
 
 <main class="shell">
-  <nav class="toc" aria-label="Sisällys"><strong>Sisällys</strong><ul>
-    <li><a href="#data">Mistä data tulee</a></li><li><a href="#painot">Muuttujat ja painot</a></li><li><a href="#rajat">Osapisteiden rajat</a></li><li><a href="#lajit">Lajikohtaiset korjaukset</a></li><li><a href="#esimerkki">Esimerkkilasku</a></li><li><a href="#rajoitukset">Mallin rajoitukset</a></li><li><a href="#muutokset">Muutokset ja palaute</a></li>
-  </ul></nav>
+<nav class="toc" aria-label="Sisällys"><strong>Sisällys</strong><ul><li><a href="#data">Mistä data tulee</a></li><li><a href="#painot">Muuttujat ja painot</a></li><li><a href="#rajat">Osapisteiden rajat</a></li><li><a href="#lajit">Lajikohtaiset korjaukset</a></li><li><a href="#kalibrointi">Näyttöasteikon kalibrointi</a></li><li><a href="#esimerkki">Esimerkkilasku</a></li><li><a href="#rajoitukset">Mallin rajoitukset</a></li><li><a href="#muutokset">Muutokset ja palaute</a></li></ul></nav>
 
-  <article class="card" id="data">
-    <h2>Mistä data tulee</h2>
-    <p>Automaattinen ennuste hakee valitun paikan tuntikohtaisen ilman lämpötilan, merenpintapaineen, tuulen nopeuden, tuulen suunnan ja pilvisyyden <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteon</a> rajapinnasta. Samasta rajapinnasta tulevat auringonnousun ja -laskun ajat. Kuun vaihe lasketaan käyttäjän selaimessa päivämäärän perusteella.</p>
-    <p>Ilmanpaineen muutos on nykyisen tuntiarvon ja kuusi tuntia aiemman arvon erotus. Hämäräikkuna on ±90 minuuttia auringonnoususta tai -laskusta. Ennuste lasketaan jokaiselle näytettävälle tunnille samalla kaavalla.</p>
-    <div class="note"><strong>Veden lämpötila ei tule säärajapinnasta.</strong> Mittarin lämpötilamuuttuja on ilman lämpötila. Siksi kelimittari ei voi tunnistaa esimerkiksi syvän järven termokliiniä tai paikallista pintaveden lämpöä.</div>
-  </article>
+<article class="card" id="data"><h2>Mistä data tulee</h2><p>Automaattinen ennuste hakee valitun paikan tuntikohtaisen ilman lämpötilan, merenpintapaineen, tuulen nopeuden, tuulen suunnan ja pilvisyyden <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteon</a> rajapinnasta. Samasta rajapinnasta tulevat auringonnousun ja -laskun ajat. Kuun vaihe lasketaan käyttäjän selaimessa päivämäärän perusteella.</p><p>Ilmanpaineen muutos on nykyisen tuntiarvon ja kuusi tuntia aiemman arvon erotus. Hämäräikkuna on ±90 minuuttia auringonnoususta tai -laskusta. Ennuste lasketaan jokaiselle näytettävälle tunnille samalla kaavalla.</p><div class="note"><strong>Veden lämpötila ei tule säärajapinnasta.</strong> Mittarin lämpötilamuuttuja on ilman lämpötila. Siksi kelimittari ei voi tunnistaa esimerkiksi syvän järven termokliiniä tai paikallista pintaveden lämpöä.</div></article>
 
-  <article class="card" id="painot">
-    <h2>Muuttujat ja painot</h2>
-    <p>Jokainen muuttuja muunnetaan ensin omaksi osapisteekseen. Peruspiste on näiden painotettu summa:</p>
-    <p class="formula">peruspiste = paine × 0,26 + tuuli × 0,20 + pilvisyys × 0,20 + kuun vaihe × 0,12 + hämärä × 0,17 + lämpötila × 0,05</p>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Muuttuja</th><th>Paino</th><th>Mitä se kuvaa</th></tr></thead>
-      <tbody>
-        <tr><td>Ilmanpaineen 6 h muutos</td><td>26 %</td><td>Laskeva, vakaa tai nouseva paine.</td></tr>
-        <tr><td>Tuulen nopeus</td><td>20 %</td><td>Tyyni, kohtalainen tai kalastusta vaikeuttava tuuli.</td></tr>
-        <tr><td>Pilvisyys</td><td>20 %</td><td>Valon määrä; kirkkaalla säällä hämärä lieventää vähennystä.</td></tr>
-        <tr><td>Aamu- tai iltahämärä</td><td>17 %</td><td>Onko tunti 90 minuutin sisällä noususta tai laskusta.</td></tr>
-        <tr><td>Kuun vaihe</td><td>12 %</td><td>Etäisyys uudesta- tai täysikuusta; vaikutus pidetään tarkoituksella pienenä.</td></tr>
-        <tr><td>Ilman lämpötila</td><td>5 %</td><td>Yleinen kausisignaali, ei veden lämpötilan korvike.</td></tr>
-      </tbody>
-    </table></div>
-  </article>
+<article class="card" id="painot"><h2>Muuttujat ja painot</h2><p>Jokainen muuttuja muunnetaan ensin omaksi osapisteekseen. Peruspiste on näiden painotettu summa:</p><p class="formula">peruspiste = paine × 0,26 + tuuli × 0,20 + pilvisyys × 0,20 + kuun vaihe × 0,12 + hämärä × 0,17 + lämpötila × 0,05</p><div class="table-wrap"><table><thead><tr><th>Muuttuja</th><th>Paino</th><th>Mitä se kuvaa</th></tr></thead><tbody><tr><td>Ilmanpaineen 6 h muutos</td><td>26 %</td><td>Laskeva, vakaa tai nouseva paine.</td></tr><tr><td>Tuulen nopeus</td><td>20 %</td><td>Tyyni, kohtalainen tai kalastusta vaikeuttava tuuli.</td></tr><tr><td>Pilvisyys</td><td>20 %</td><td>Valon määrä; kirkkaalla säällä hämärä lieventää vähennystä.</td></tr><tr><td>Aamu- tai iltahämärä</td><td>17 %</td><td>Onko tunti 90 minuutin sisällä noususta tai laskusta.</td></tr><tr><td>Kuun vaihe</td><td>12 %</td><td>Etäisyys uudesta- tai täysikuusta; vaikutus pidetään tarkoituksella pienenä.</td></tr><tr><td>Ilman lämpötila</td><td>5 %</td><td>Yleinen kausisignaali, ei veden lämpötilan korvike.</td></tr></tbody></table></div><div class="note" id="scoreCalibrationNote"><strong>Näytettävä piste ei ole sama kuin raakapiste.</strong> Painotettu laskenta ja lajikorjaus tuottavat ensin raakapisteen. Käyttäjälle näkyvä luku kalibroidaan vielä erikseen, jotta asteikon ääripäät eivät näytä saalistodennäköisyyksiltä.</div></article>
 
-  <article class="card" id="rajat">
-    <h2>Osapisteiden rajat</h2>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Muuttuja</th><th>Ehto</th><th>Osapiste</th></tr></thead>
-      <tbody>
-        <tr><td rowspan="5">Paineen muutos</td><td>≤ −3 hPa / 6 h</td><td>95</td></tr><tr><td>−3…−1</td><td>78</td></tr><tr><td>−1…+1</td><td>58</td></tr><tr><td>+1…+3</td><td>35</td></tr><tr><td>≥ +3</td><td>12</td></tr>
-        <tr><td rowspan="5">Tuuli</td><td>&lt; 1 m/s</td><td>38</td></tr><tr><td>1–4 m/s</td><td>92</td></tr><tr><td>4–7 m/s</td><td>68</td></tr><tr><td>7–10 m/s</td><td>35</td></tr><tr><td>&gt; 10 m/s</td><td>10</td></tr>
-        <tr><td rowspan="3">Pilvisyys</td><td>&lt; 20 %, ei hämärä</td><td>32</td></tr><tr><td>&lt; 20 %, hämärä</td><td>65</td></tr><tr><td>20–70 % / ≥ 70 %</td><td>62 / 82</td></tr>
-        <tr><td>Hämärä</td><td>Kyllä / ei</td><td>88 / 45</td></tr>
-        <tr><td>Kuun vaihe</td><td>0–1 / 2–3 / yli 3 päivää uuden- tai täydenkuun hetkestä</td><td>78 / 60 / 45</td></tr>
-        <tr><td>Lämpötila</td><td>5–20 °C / alle −5 tai yli 27 °C / muu</td><td>68 / 25 / 48</td></tr>
-      </tbody>
-    </table></div>
-  </article>
+<article class="card" id="rajat"><h2>Osapisteiden rajat</h2><div class="table-wrap"><table><thead><tr><th>Muuttuja</th><th>Ehto</th><th>Osapiste</th></tr></thead><tbody><tr><td rowspan="5">Paineen muutos</td><td>≤ −3 hPa / 6 h</td><td>95</td></tr><tr><td>−3…−1</td><td>78</td></tr><tr><td>−1…+1</td><td>58</td></tr><tr><td>+1…+3</td><td>35</td></tr><tr><td>≥ +3</td><td>12</td></tr><tr><td rowspan="5">Tuuli</td><td>&lt; 1 m/s</td><td>38</td></tr><tr><td>1–4 m/s</td><td>92</td></tr><tr><td>4–7 m/s</td><td>68</td></tr><tr><td>7–10 m/s</td><td>35</td></tr><tr><td>&gt; 10 m/s</td><td>10</td></tr><tr><td rowspan="3">Pilvisyys</td><td>&lt; 20 %, ei hämärä</td><td>32</td></tr><tr><td>&lt; 20 %, hämärä</td><td>65</td></tr><tr><td>20–70 % / ≥ 70 %</td><td>62 / 82</td></tr><tr><td>Hämärä</td><td>Kyllä / ei</td><td>88 / 45</td></tr><tr><td>Kuun vaihe</td><td>0–1 / 2–3 / yli 3 päivää uuden- tai täydenkuun hetkestä</td><td>78 / 60 / 45</td></tr><tr><td>Lämpötila</td><td>5–20 °C / alle −5 tai yli 27 °C / muu</td><td>68 / 25 / 48</td></tr></tbody></table></div></article>
 
-  <article class="card" id="lajit">
-    <h2>Lajikohtaiset korjaukset</h2>
-    <p>Peruspisteen jälkeen kohdekalalle lasketaan pieni korjaus lämpötilan, pilvisyyden, tuulen ja hämärän perusteella. Korjauksesta käytetään 60 %, jotta yksittäinen oletus ei hallitse koko tulosta. Esimerkiksi ahven saa plussaa 1–5 m/s tuulesta, vähintään 30 prosentin pilvisyydestä ja 8–20 asteen lämpötilasta. Kuha saa plussaa pilvisyydestä ja hämärästä; hauen pisteitä leikataan kovalla tuulella ja yli 22 asteen lämmössä.</p>
-    <p>Meritaimenella on lisäksi turvallisuutta ja lajille tyypillistä kylmän veden aktiivisuutta heijastava rajoitus: Suomen rannikon kesäkuukausina tulos rajataan enintään 32 pisteeseen. Rannikko tunnistetaan valitun paikan nimestä tai läheisistä tunnetuista rannikkopisteistä.</p>
-    <p>Kaikki lajisäännöt ovat nähtävissä myös sivuston julkisessa lähdekoodissa. Niitä muutetaan vain, jos käyttäjäpalaute tai oma testaus osoittaa selkeän ongelman.</p>
-  </article>
+<article class="card" id="lajit"><h2>Lajikohtaiset korjaukset</h2><p>Peruspisteen jälkeen kohdekalalle lasketaan pieni korjaus lämpötilan, pilvisyyden, tuulen ja hämärän perusteella. Korjauksesta käytetään 60 %, jotta yksittäinen oletus ei hallitse koko tulosta. Esimerkiksi ahven saa plussaa 1–5 m/s tuulesta, vähintään 30 prosentin pilvisyydestä ja 8–20 asteen lämpötilasta. Kuha saa plussaa pilvisyydestä ja hämärästä; hauen pisteitä leikataan kovalla tuulella ja yli 22 asteen lämmössä.</p><p>Meritaimenella on lisäksi turvallisuutta ja lajille tyypillistä kylmän veden aktiivisuutta heijastava rajoitus: Suomen rannikon kesäkuukausina tulos rajataan enintään 32 pisteeseen. Rannikko tunnistetaan valitun paikan nimestä tai läheisistä tunnetuista rannikkopisteistä.</p><p>Kaikki lajisäännöt ovat nähtävissä sivuston julkisessa lähdekoodissa. Niitä muutetaan vain, jos testaus, palautteet tai myöhemmin kerättävä oikea saalisdata antaa siihen perusteen.</p></article>
 
-  <article class="card" id="esimerkki">
-    <h2>Esimerkkilasku: ahven pilvisenä hämäräiltana</h2>
-    <p>Oletetaan, että paine laskee 1,5 hPa kuudessa tunnissa, tuuli on 3 m/s, pilvisyys 75 %, lämpötila 14 °C, ajankohta osuu iltahämärään ja kuun vaihe on vuorokauden sisällä uudesta- tai täysikuusta.</p>
-    <p class="formula">78×0,26 + 92×0,20 + 82×0,20 + 78×0,12 + 88×0,17 + 68×0,05 = 82,8</p>
-    <p>Ahvenen ehdot täyttyvät tuulen (+6), pilvisyyden (+5) ja lämpötilan (+4) osalta. Lajikorjaus on <code>pyöristys((6+5+4)×0,60) = 9</code>. Lopputulos on siis <strong>92 pistettä</strong>.</p>
-    <p>Sama sää voi antaa toiselle lajille eri tuloksen. Pisteet kertovat mallin arvion olosuhteista – eivät sitä, onko valitussa kohdassa kalaa.</p>
-  </article>
+<article class="card" id="kalibrointi"><h2>Näyttöasteikon kalibrointi</h2><p>Raakapiste säilyttää säämuuttujien ja lajikorjausten keskinäisen järjestyksen, mutta sellaisenaan asteikon 90–100-lukemat näyttivät liian helposti “90–100 prosentin mahdollisuudelta”. Siksi 3.9.2026 alkaen käyttöliittymä puristaa asteikon ääripäitä.</p><p class="formula">jos raaka ≤ 50: näytettävä = 50 − (50 − raaka) × 0,90<br>jos raaka &gt; 50: näytettävä = 50 + (raaka − 50) × 0,82</p><p>Lopuksi tulos pyöristetään kokonaisluvuksi. Tämä muunnos on monotoninen: parempi raakapiste pysyy aina parempana myös näytettävällä asteikolla. Kalibrointi ei siis vaihda tuntien keskinäistä järjestystä, vaan tekee lukeman tulkinnasta varovaisemman.</p><div class="table-wrap"><table><thead><tr><th>Raakapiste</th><th>Näytettävä piste noin</th><th>Luenta</th></tr></thead><tbody><tr><td>25</td><td>28</td><td>Heikko</td></tr><tr><td>50</td><td>50</td><td>Kohtalainen</td></tr><tr><td>75</td><td>71</td><td>Hyvän ja erittäin hyvän rajalla</td></tr><tr><td>90</td><td>83</td><td>Erittäin hyvä</td></tr><tr><td>100</td><td>91</td><td>Poikkeuksellisen hyvä</td></tr></tbody></table></div></article>
 
-  <article class="card" id="rajoitukset">
-    <h2>Mallin rajoitukset</h2>
-    <ul class="check-list">
-      <li>Malli ei tunne paikallista veden lämpötilaa, happitilannetta, virtaamaa tai termokliiniä.</li>
-      <li>Sääruudun ennuste voi poiketa yksittäisen lahden tai saaren oloista.</li>
-      <li>Kuun vaiheen vaikutuksesta saaliiseen ei tehdä vahvaa tieteellistä väitettä; siksi sen paino on vain 12 %.</li>
-      <li>Kalastuspaine, ravintokalaparvet, pohjanmuodot ja oma tekniikka voivat ratkaista enemmän kuin sää.</li>
-      <li>Pisteitä ei pidä käyttää veneilyturvallisuuden, jäätilanteen tai kalastusrajoitusten arviointiin.</li>
-    </ul>
-    <div class="note"><strong>Käytä tulosta vertailuun.</strong> Mittari toimii parhaiten, kun vertailet saman paikan seuraavia tunteja tai päiviä ja valitset niistä itsellesi sopivan lähtöikkunan.</div>
-  </article>
+<article class="card" id="esimerkki"><h2>Esimerkkilasku: ahven pilvisenä hämäräiltana</h2><p>Oletetaan, että paine laskee 1,5 hPa kuudessa tunnissa, tuuli on 3 m/s, pilvisyys 75 %, lämpötila 14 °C, ajankohta osuu iltahämärään ja kuun vaihe on vuorokauden sisällä uudesta- tai täysikuusta.</p><p class="formula">78×0,26 + 92×0,20 + 82×0,20 + 78×0,12 + 88×0,17 + 68×0,05 = 82,8</p><p>Ahvenen ehdot täyttyvät tuulen (+6), pilvisyyden (+5) ja lämpötilan (+4) osalta. Lajikorjaus on <code>pyöristys((6+5+4)×0,60) = 9</code>. Raakapiste on siis <strong>92</strong>, joka näkyy kalibroidulla asteikolla noin <strong>84/100</strong>.</p><p>Sama sää voi antaa toiselle lajille eri tuloksen. Pisteet kertovat mallin arvion olosuhteista – eivät sitä, onko valitussa kohdassa kalaa.</p></article>
 
-  <article class="card" id="muutokset">
-    <h2>Muutokset, lähteet ja palaute</h2>
-    <p>Tämä sivu vastaa tuotannossa olevaa laskentaa 2.9.2026. Kun painoja tai rajoja muutetaan, myös metodologia ja version päivämäärä päivitetään.</p>
-    <ul class="source-list">
-      <li><a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener">Open-Meteo API -dokumentaatio</a></li>
-      <li><a href="toimitusperiaatteet.html">FastFishingin lähde- ja toimitusperiaatteet</a></li>
-      <li><a href="tietoa-meista.html">Ylläpitäjä, sidonnaisuudet ja yhteystiedot</a></li>
-    </ul>
-    <p>Virheestä, epäselvästä säännöstä tai omista havaintotiedoista voi ilmoittaa osoitteeseen <a href="mailto:fastfish.official@gmail.com">fastfish.official@gmail.com</a>.</p>
-  </article>
+<article class="card" id="rajoitukset"><h2>Mallin rajoitukset</h2><ul class="check-list"><li>Malli ei tunne paikallista veden lämpötilaa, happitilannetta, virtaamaa tai termokliiniä.</li><li>Sääruudun ennuste voi poiketa yksittäisen lahden tai saaren oloista.</li><li>Kuun vaiheen vaikutuksesta saaliiseen ei tehdä vahvaa tieteellistä väitettä; siksi sen paino on vain 12 %.</li><li>Kalastuspaine, ravintokalaparvet, pohjanmuodot ja oma tekniikka voivat ratkaista enemmän kuin sää.</li><li>Pisteitä ei pidä käyttää veneilyturvallisuuden, jäätilanteen tai kalastusrajoitusten arviointiin.</li></ul><div class="note"><strong>Käytä tulosta vertailuun.</strong> Mittari toimii parhaiten, kun vertailet saman paikan seuraavia tunteja tai päiviä ja valitset niistä itsellesi sopivan lähtöikkunan. <a href="kalareissun-suunnittelu.html">Reissusuunnitteluopas</a> näyttää miten tämä tehdään käytännössä.</div></article>
+
+<article class="card" id="muutokset"><h2>Muutokset, lähteet ja palaute</h2><p>Tämä sivu vastaa tuotannossa olevaa laskentaa 3.9.2026. Kun painoja, kalibrointia tai lajikohtaisia rajoja muutetaan, myös metodologia ja version päivämäärä päivitetään.</p><ul class="source-list"><li><a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener">Open-Meteo API -dokumentaatio</a></li><li><a href="toimitusperiaatteet.html">FastFishingin lähde- ja toimitusperiaatteet</a></li><li><a href="tietoa-meista.html">Ylläpitäjä, sidonnaisuudet ja yhteystiedot</a></li></ul><p>Virheestä, epäselvästä säännöstä tai omista havaintotiedoista voi ilmoittaa osoitteeseen <a href="mailto:fastfish.official@gmail.com">fastfish.official@gmail.com</a>.</p></article>
 </main>
-
-<footer><div class="shell">FastFishing on riippumaton harrastusprojekti. Kelimittari on suuntaa-antava apuväline, ei saalistakuu.<div class="footer-links"><a href="/">Etusivu</a><a href="tietoa-meista.html">Tietoa meistä</a><a href="toimitusperiaatteet.html">Toimitusperiaatteet</a><a href="tietosuoja.html">Tietosuojaseloste</a></div></div></footer>
-
+<footer><div class="shell">FastFishing on riippumaton harrastusprojekti. Kelimittari on suuntaa-antava apuväline, ei saalistakuu.<div class="footer-links"><a href="/">Etusivu</a><a href="kalareissun-suunnittelu.html">Reissusuunnittelu</a><a href="kalastusoppaat.html">Kalastusoppaat</a><a href="tietoa-meista.html">Tietoa meistä</a><a href="toimitusperiaatteet.html">Toimitusperiaatteet</a><a href="tietosuoja.html">Tietosuojaseloste</a></div></div></footer>
 </body>
 </html>
-

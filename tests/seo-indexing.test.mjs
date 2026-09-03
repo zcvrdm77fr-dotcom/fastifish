@@ -17,8 +17,9 @@ test('robots and ads.txt expose the expected discovery and publisher records', (
 });
 
 test('sitemap covers every canonical HTML page without a duplicate index.html homepage', () => {
-  assert.ok(sitemapUrls.size >= 15, `expected at least 15 sitemap URLs, found ${sitemapUrls.size}`);
+  assert.ok(sitemapUrls.size >= 16, `expected at least 16 sitemap URLs, found ${sitemapUrls.size}`);
   assert.ok(sitemapUrls.has('https://fastfishin.com/'));
+  assert.ok(sitemapUrls.has('https://fastfishin.com/kalareissun-suunnittelu.html'));
   assert.ok(!sitemapUrls.has('https://fastfishin.com/index.html'));
 
   for (const file of htmlFiles) {
