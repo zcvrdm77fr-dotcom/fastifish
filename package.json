@@ -17,7 +17,7 @@
     "lint:eslint": "eslint .",
     "test:api": "node --test tests/api.integration.test.mjs",
     "test:e2e": "playwright test",
-    "security:audit": "npm audit --omit=dev --audit-level=high"
+    "security:audit": "npm audit --omit=dev --audit-level=moderate"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.22.0",
@@ -29,6 +29,9 @@
     "multer": "2.3.0",
     "nsfwjs": "^4.3.0",
     "sharp": "^0.35.3"
+  },
+  "overrides": {
+    "qs": "6.16.0"
   },
   "engines": {
     "node": ">=22"
