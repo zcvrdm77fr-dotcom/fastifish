@@ -13,18 +13,11 @@ function addPublisherMeta(html, file) {
 }
 
 function removeLegacyConsentGrant(html) {
-  // Vanhoilla sisältösivuilla oli oma cookie_consent=all -> granted -silta.
-  // Poistetaan koko IIFE täsmällisten alku- ja loppumerkkien avulla.
-  const startMarker = "  (function(){\n    try {\n      var m = document.cookie.match(/(?:^|; )cookie_consent=([^;]*)/);";
-  const endMarker = '  })();';
-  let out = html;
-  while (out.includes(startMarker)) {
-    const start = out.indexOf(startMarker);
-    const end = out.indexOf(endMarker, start);
-    if (end < 0) throw new Error('Legacy consent block start found without end marker');
-    out = out.slice(0, start) + out.slice(end + endMarker.length);
-  }
-  return out;
+  // Poista vain vanha FastFishingin oma cookie_consent -> granted -silta.
+  return html.replace(
+    /\s*\(function\(\)\{\s*try\s*\{[\s\S]*?cookie_consent[\s\S]*?gtag\(['"]consent['"],\s*['"]update['"],[\s\S]*?analytics_storage[\s\S]*?granted[\s\S]*?catch\(e\)\s*\{\}\s*\}\)\(\);\s*/g,
+    '\n'
+  );
 }
 
 function canonicalizeHomeLinks(html) {
