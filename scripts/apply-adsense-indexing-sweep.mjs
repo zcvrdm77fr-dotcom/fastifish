@@ -29,12 +29,18 @@ function addPublisherMeta(html, file) {
 }
 
 function removeLegacyBanner(html, file) {
-  const out = html.replace(
-    /<div\s+id=["']cookieConsentBanner["'][\s\S]*?<\/div>\s*<script>\s*\(function\(\)\{[\s\S]*?cookie_consent[\s\S]*?<\/script>/g,
-    ''
-  );
-  if (/id=["']cookieConsentBanner["']/.test(out)) {
-    throw new Error(`${file}: legacy cookieConsentBanner markup remains`);
+  let out = html;
+  while (/id=["']cookieConsentBanner["']/.test(out)) {
+    const marker = out.search(/id=["']cookieConsentBanner["']/);
+    const start = out.lastIndexOf('<div', marker);
+    const bodyClose = out.indexOf('</body>', marker);
+    const footerClose = out.lastIndexOf('</footer>', marker);
+    if (start < 0 || bodyClose < 0 || footerClose < 0 || start < footerClose) {
+      throw new Error(`${file}: legacy banner is not safely isolated after footer`);
+    }
+    // Kaikissa vanhoissa toteutuksissa banneri ja sen mahdollinen inline-scripti ovat sivun
+    // viimeiset elementit ennen </body>-tagia, joten koko loppulohko voidaan poistaa turvallisesti.
+    out = out.slice(0, start) + out.slice(bodyClose);
   }
   return out;
 }
