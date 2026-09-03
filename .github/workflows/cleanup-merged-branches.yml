@@ -1,0 +1,33 @@
+name: Cleanup merged branches
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete merged same-repository branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr list --repo "$REPO" --state merged --limit 100 --json headRefName,headRepositoryOwner --jq '.[] | select(.headRepositoryOwner.login == env.GITHUB_REPOSITORY_OWNER) | .headRefName' |
+          sort -u |
+          while IFS= read -r branch; do
+            [ -n "$branch" ] || continue
+            [ "$branch" = "main" ] && continue
+            if gh api "/repos/$REPO/git/ref/heads/$branch" >/dev/null 2>&1; then
+              echo "Deleting merged branch: $branch"
+              gh api --method DELETE "/repos/$REPO/git/refs/heads/$branch"
+            fi
+          done
