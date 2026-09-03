@@ -8,6 +8,8 @@ const hub = fs.readFileSync(new URL('../kalastusoppaat.html', import.meta.url), 
 const qualityJs = fs.readFileSync(new URL('../adsense-quality.js', import.meta.url), 'utf8');
 const qualityCss = fs.readFileSync(new URL('../adsense-quality.css', import.meta.url), 'utf8');
 const about = fs.readFileSync(new URL('../tietoa-meista.html', import.meta.url), 'utf8');
+const methodology = fs.readFileSync(new URL('../metodologia.html', import.meta.url), 'utf8');
+const contentPagesJs = fs.readFileSync(new URL('../content-pages.js', import.meta.url), 'utf8');
 
 function visibleText(html) {
   return html
@@ -45,4 +47,12 @@ test('commercial affiliate promo is suspended while editorial content is being s
   assert.match(qualityCss, /#gearPromoGrid\{display:none!important\}/);
   assert.match(about, /affiliate-tuoteruudukko on tällä hetkellä pois käytöstä/i);
   assert.match(qualityJs, /kalareissun-suunnittelu\.html/);
+});
+
+test('methodology is accurate in static HTML without relying on a runtime correction', () => {
+  assert.match(methodology, /id=["']kalibrointi["']/i);
+  assert.match(methodology, /Raakapiste on siis <strong>92<\/strong>, joka näkyy kalibroidulla asteikolla noin <strong>84\/100<\/strong>/i);
+  assert.match(methodology, /Teoreettinen raakapiste 100 näkyy nykyisessä näkymässä noin 91\/100/i);
+  assert.match(methodology, /dateModified["']:\s*["']2026-09-03["']/i);
+  assert.doesNotMatch(contentPagesJs, /Lopputulos on siis|scoreCalibrationNote|metodologia\.html/);
 });
