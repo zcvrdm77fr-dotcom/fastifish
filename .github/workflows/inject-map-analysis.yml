@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'index.html'
+      - 'app.js'
       - 'scripts/inject-map-analysis-tags.mjs'
       - 'fishing-structures.js'
       - 'depth-structures.js'
@@ -15,7 +15,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'index.html'
+      - 'app.js'
       - 'scripts/inject-map-analysis-tags.mjs'
       - 'fishing-structures.js'
       - 'depth-structures.js'
@@ -35,13 +35,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Regenerate map script tags
-        run: node scripts/inject-map-analysis-tags.mjs index.html
-      - name: Require committed index to be current
+      - name: Regenerate lazy map module manifest
+        run: node scripts/inject-map-analysis-tags.mjs app.js
+      - name: Require committed manifest to be current
         shell: bash
         run: |
-          if ! git diff --exit-code -- index.html; then
-            echo 'index.html map-analysis tags are stale. Run:' >&2
-            echo '  node scripts/inject-map-analysis-tags.mjs index.html' >&2
+          if ! git diff --exit-code -- app.js; then
+            echo 'app.js map-analysis manifest is stale. Run:' >&2
+            echo '  node scripts/inject-map-analysis-tags.mjs app.js' >&2
             exit 1
           fi
