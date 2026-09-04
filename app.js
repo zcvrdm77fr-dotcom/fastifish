@@ -1910,7 +1910,7 @@ const MAP_ANALYSIS_SCRIPTS = [
   '/depth-structures.js?v=13',
   '/gtk-substrate.js?v=13',
   '/gtk-habitats.js?v=13',
-  '/velmu-fish.js?v=13'
+  '/velmu-fish.js?v=13',
 ];
 let mapAnalysisLoadPromise=null;
 
