@@ -24,7 +24,25 @@
     <meta name="description" content="FastFishingin tietosuojaseloste: mitä tietoja kerätään, mihin evästeitä käytetään (Google AdSense, Google Analytics) ja miten voit hallita suostumustasi." />
     <meta name="author" content="FastFishingin ylläpitäjä" />
     <meta name="robots" content="index,follow,max-image-preview:large" />
-    <link rel="canonical" href="https://fastfishin.com/tietosuoja.html" />
+    <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://fastfishin.com/tietosuoja.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="FastFishing" />
+    <meta property="og:locale" content="fi_FI" />
+    <meta property="og:title" content="FastFishing - Tietosuojaseloste" />
+    <meta property="og:description" content="FastFishingin tietosuojaseloste: henkilötiedot, evästeet, analytiikka ja mainossuostumus." />
+    <meta property="og:url" content="https://fastfishin.com/tietosuoja.html" />
+    <meta property="og:image" content="https://fastfishin.com/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="FastFishing – kalakeli, kalastusajat ja vieheopas Suomessa" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FastFishing - Tietosuojaseloste" />
+    <meta name="twitter:description" content="FastFishingin tietosuojaseloste: henkilötiedot, evästeet, analytiikka ja mainossuostumus." />
+    <meta name="twitter:image" content="https://fastfishin.com/og-image.png" />
+    <meta name="twitter:image:alt" content="FastFishing – kalakeli, kalastusajat ja vieheopas Suomessa" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
     <style>
@@ -66,6 +84,8 @@
         html[data-theme="dark"] .topbar { background: rgba(13, 26, 22, .88); }
         html[data-theme="dark"] .brand-mark { background: #17342f; }
         html[data-theme="dark"] .hero-panel { background: rgba(20, 37, 34, .82); }
+        .crumb { margin-bottom: 16px; color: var(--ink-soft); font-size: .9rem; }
+        .crumb a { color: inherit; }
         html[data-theme="dark"] .btn { background: rgba(20, 37, 34, .66); }
         html[data-theme="dark"] .privacy-card { background: rgba(20, 37, 34, .84); }
         .theme-toggle {
@@ -533,6 +553,26 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WENSSGS6RJ"></script>
 <!-- Google AdSense: ladataan AINA suoraan headissa, EI evastesuostumuksen taakse (vaaditaan sivuston hyvaksyntaa varten). -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Etusivu",
+      "item": "https://fastfishin.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tietosuojaseloste",
+      "item": "https://fastfishin.com/tietosuoja.html"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -566,6 +606,7 @@
     <!-- ===== HERO ===== -->
     <header class="shell hero">
         <div class="hero-copy">
+            <nav class="crumb" aria-label="Murupolku"><a href="/">Etusivu</a> → Tietosuojaseloste</nav>
             <div class="eyebrow">Yksityisyys</div>
             <h1>Tietosuoja</h1>
             <p class="lead">FastFishing kunnioittaa yksityisyyttäsi. Tällä sivulla kerromme läpinäkyvästi, mitä tietoja keräämme, mihin niitä käytämme ja mitä oikeuksia sinulla on.</p>

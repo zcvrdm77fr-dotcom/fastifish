@@ -10,6 +10,7 @@ const types = new Map([
   ['.mjs', 'text/javascript; charset=utf-8'],
   ['.css', 'text/css; charset=utf-8'],
   ['.json', 'application/json; charset=utf-8'],
+  ['.txt', 'text/plain; charset=utf-8'],
   ['.svg', 'image/svg+xml'],
   ['.png', 'image/png'],
   ['.jpg', 'image/jpeg'],
@@ -30,7 +31,9 @@ const server = http.createServer((req, res) => {
 
   fs.stat(filePath, (statError, stat) => {
     if (statError || !stat.isFile()) {
-      res.writeHead(404).end('Not found');
+      res.statusCode = 404;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      fs.createReadStream(path.join(root, '404.html')).pipe(res);
       return;
     }
     res.setHeader('Content-Type', types.get(path.extname(filePath).toLowerCase()) || 'application/octet-stream');

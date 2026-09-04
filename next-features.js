@@ -124,7 +124,7 @@ function injectNowCard(){
   card.innerHTML = `<h2>🎣 Mitä, missä ja millä juuri nyt?</h2><p class="ff-next-muted">Valitse tavoitelaji. FastFishing etsii seuraavan vuorokauden parhaan kahden tunnin ikkunan ja antaa aloitusvieheen sekä syvyysvinkin.</p>
     <div class="ff-next-grid"><div class="ff-next-field"><label for="ffSpecies">Tavoitelaji</label><select id="ffSpecies">${supportedSpecies.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></div>
     <div class="ff-next-field"><label for="ffSavedSelect">Oma paikka</label><select id="ffSavedSelect"><option value="">Valitse tallennettu paikka</option></select></div>
-    <div class="ff-next-field"><label for="ffPlaceName">Paikan nimi tallennusta varten</label><input id="ffPlaceName" maxlength="60" placeholder="esim. Näsijärvi / kotilahti"></div></div>
+    <div class="ff-next-field"><label for="ffPlaceName">Paikan nimi tallennusta varten</label><input id="ffPlaceName" maxlength="60"></div></div>
     <div class="ff-next-actions"><button class="btn primary" id="ffLocateBtn" type="button">Käytä nykyistä sijaintia</button><button class="btn" id="ffSaveBtn" type="button">Tallenna tämä paikka</button><button class="btn" id="ffNotifyBtn" type="button">Ota kalakeli-ilmoitukset käyttöön</button></div>
     <p class="ff-next-status" id="ffNowStatus"></p><div class="ff-next-result" id="ffNowResult" hidden></div><h3 style="margin-top:20px">Omat paikat</h3><div class="ff-next-saved" id="ffSavedPlaces"></div>`;
   section.prepend(card);
