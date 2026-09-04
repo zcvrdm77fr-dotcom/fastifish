@@ -104,7 +104,7 @@ if (config.serveFrontend) {
   // kehityksen suoja estää myös vahingossa lisätyt backend-/config-tiedostot ja dotfilet.
   const privatePrefixes = ['/data', '/node_modules', '/tests', '/scripts', '/.github'];
   const privateRootFiles = /\/(?:server|db|auth|posts|profiles|insights|depth-proxy|security|paths|wordlist|moderation|config|logger|error-handler|async-handler|session-token)\.js$/i;
-  const privateExtensions = /\.(?:env|db|sqlite|sqlite3|log|pem|key|crt|bak|ya?ml)$/i;
+  const privateExtensions = /\.(?:env|db|sqlite|sqlite3|log|map|pem|key|crt|bak|ya?ml)$/i;
 
   app.use((req, res, next) => {
     const pathName = req.path;
@@ -127,7 +127,7 @@ if (config.serveFrontend) {
 
 app.use((req, res) => {
   if (req.path.startsWith('/api/')) return apiNotFound(req, res);
-  if (config.serveFrontend) return res.sendFile(path.join(__dirname, 'index.html'));
+  if (config.serveFrontend) return res.status(404).sendFile(path.join(__dirname, '404.html'));
   return res.status(404).json({ service: 'FastFishing API', error: 'Ei löytynyt.' });
 });
 
