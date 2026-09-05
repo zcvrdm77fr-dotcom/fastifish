@@ -1,1 +1,70 @@
 .ff-next-card{margin:18px 0;padding:20px;border:1px solid var(--line,#c9d5cf);border-radius:20px;background:var(--paper-bright,#fffdf7);box-shadow:var(--shadow-small,0 8px 24px rgba(23,52,47,.09))}.ff-next-card h2,.ff-next-card h3{margin-top:0}.ff-next-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.ff-next-field{display:flex;flex-direction:column;gap:6px}.ff-next-field label{font-weight:700}.ff-next-field input,.ff-next-field select{width:100%;padding:10px 12px;border:1px solid var(--line,#c9d5cf);border-radius:12px;background:var(--paper-bright,#fffdf7);color:var(--ink,#17342f);font:inherit}.ff-next-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.ff-next-result{margin-top:16px;padding:16px;border-radius:16px;background:var(--mist,#d9e8e4)}.ff-next-score{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:800}.ff-next-muted{color:var(--ink-soft,#45645e);font-size:.94rem}.ff-next-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.ff-next-chip{padding:6px 10px;border-radius:999px;background:var(--mist,#d9e8e4);font-size:.9rem}.ff-next-list{display:grid;gap:8px;margin:10px 0 0;padding:0;list-style:none}.ff-next-list li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line,#c9d5cf)}.ff-next-profile-trigger{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}.ff-next-modal-backdrop{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:18px}.ff-next-modal{width:min(760px,100%);max-height:88vh;overflow:auto;border-radius:20px;background:var(--paper-bright,#fffdf7);color:var(--ink,#17342f);padding:20px;box-shadow:0 24px 80px rgba(0,0,0,.35)}.ff-next-modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.ff-next-close{border:0;background:transparent;color:inherit;font-size:1.6rem;cursor:pointer}.ff-next-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.ff-next-stat{padding:12px;border-radius:14px;background:var(--mist,#d9e8e4)}.ff-next-stat strong{display:block;font-size:1.35rem}.ff-next-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:14px}.ff-next-gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px}.ff-next-saved{display:grid;gap:8px;margin-top:12px}.ff-next-saved-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border:1px solid var(--line,#c9d5cf);border-radius:12px}.ff-next-status{min-height:1.4em;margin-top:8px}.ff-next-insights{margin-bottom:16px}@media(max-width:640px){.ff-next-card{padding:15px;border-radius:16px}.ff-next-grid{grid-template-columns:1fr}.ff-next-actions .btn{width:100%}.ff-next-modal{padding:16px}.ff-next-score{font-size:1.65rem}}
+
+/* Trip planning: one working surface, using the existing lake/ink theme. */
+.ff-planner{padding:clamp(18px,3vw,32px);border-top:4px solid var(--lake);font-size:1rem;line-height:1.5}
+.ff-planner [hidden]{display:none!important}
+.ff-planner-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.ff-planner-heading h2{font-family:'Fjalla One',sans-serif;font-weight:400;font-size:clamp(1.8rem,3vw,2.4rem);line-height:1.15;margin:0 0 8px}
+.ff-planner-heading p{margin:0 0 16px;font-size:1rem}
+.ff-planner-horizon{flex-shrink:0;border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-family:'JetBrains Mono',monospace;font-size:.875rem;color:var(--lake-deep)}
+.ff-planner-location{display:flex;flex-wrap:wrap;gap:4px 12px;margin:0 0 18px;overflow-wrap:anywhere}
+.ff-planner-location>span{color:var(--ink-soft)}
+.ff-planner-controls{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ff-planner .ff-next-field{min-width:0}
+.ff-planner select,.ff-planner input{font:inherit;color:var(--ink);background:var(--paper-bright);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:48px;max-width:100%}
+.ff-planner .ff-next-actions{align-items:center}
+.ff-planner .ff-next-actions>select{flex:1;min-width:160px;width:100%}
+.ff-planner .ff-next-status{font-size:.9375rem;margin:12px 0;color:var(--ink-soft)}
+.ff-planner-freshness{font-size:.875rem;color:var(--ink-soft);margin:0 0 18px;overflow-wrap:anywhere}
+.ff-planner-freshness.is-stale{padding:12px;border:1px solid var(--orange);border-radius:10px;color:var(--ink);background:var(--tan)}
+.ff-planner-alternatives{border:0;padding:0;margin:0 0 18px;min-width:0}
+.ff-planner-alternatives legend{font-weight:700;margin-bottom:10px}
+.ff-planner-windows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ff-planner-window{display:flex;flex-direction:column;gap:10px;padding:16px;text-align:left;border:1px solid var(--line);border-radius:12px;background:var(--paper-bright);color:var(--ink);font:inherit;cursor:pointer;min-width:0;overflow-wrap:anywhere}
+.ff-planner-window:hover{border-color:var(--lake)}
+.ff-planner-window[aria-pressed=true]{border:2px solid var(--lake-deep);padding:15px;background:var(--mist)}
+.ff-planner-kicker{font-size:.875rem;color:var(--ink-soft);font-weight:700;margin:0 0 4px}
+.ff-planner-window-score{margin-top:auto;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.3rem}
+.ff-planner-window-score span{display:block;font-family:'Source Sans 3',sans-serif;font-size:.875rem;font-weight:600;color:var(--ink-soft);margin-top:4px}
+.ff-planner-selected{padding:clamp(16px,3vw,24px);border-radius:14px;background:var(--mist);margin-bottom:18px}
+.ff-planner-selected-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.ff-planner-selected-head h3{font-size:1.25rem;margin:0;line-height:1.4;overflow-wrap:anywhere}
+.ff-planner-selected .ff-next-score{font-size:2.6rem;line-height:1.2;white-space:nowrap}
+.ff-planner-selected .ff-next-score span{font-size:1rem;font-weight:400;color:var(--ink-soft)}
+.ff-planner-weather,.ff-planner-tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:20px 0}
+.ff-planner-weather{padding-bottom:20px;border-bottom:1px solid var(--line)}
+.ff-planner dt{font-size:.875rem;color:var(--ink-soft);margin-bottom:4px}
+.ff-planner dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.ff-planner details summary{cursor:pointer;font-weight:700;min-height:44px;align-content:center;list-style-position:inside}
+.ff-planner details summary:focus-visible,.ff-planner button:focus-visible,.ff-planner select:focus-visible,.ff-planner input:focus-visible{outline:3px solid var(--lake-deep);outline-offset:3px}
+.ff-planner details ul{padding-left:24px;margin-bottom:0}
+.ff-planner-hours{display:flex;gap:6px;overflow-x:auto;padding:8px 4px 16px;scroll-snap-type:x proximity}
+.ff-planner-hour{flex:0 0 88px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 6px;border:1px solid var(--line);border-radius:10px;background:var(--paper-bright);color:var(--ink);font:inherit;cursor:pointer;scroll-snap-align:start}
+.ff-planner-hour>span:first-child{font-size:.875rem;white-space:nowrap}
+.ff-planner-hour[aria-pressed=true]{outline:2px solid var(--lake-deep);outline-offset:-2px;background:var(--mist)}
+.ff-planner-hour:disabled{opacity:.5;cursor:default}
+.ff-planner-bar{display:flex;align-items:flex-end;height:65px;width:22px;background:var(--mist);border-radius:4px;overflow:hidden}
+.ff-planner-bar i{display:block;width:100%;background:var(--lake);border-radius:4px 4px 0 0}
+.ff-planner-method{font-size:.875rem;margin:16px 0 0}
+.ff-planner-method a{color:var(--lake-deep);text-decoration:underline;text-underline-offset:3px;margin-left:6px}
+.ff-planner-saved{margin-top:20px;padding-top:12px;border-top:1px solid var(--line)}
+.ff-planner-save{display:flex;align-items:flex-end;gap:12px}
+.ff-planner-save .ff-next-field{flex:1}
+.ff-planner .ff-next-saved-row .btn{white-space:normal;text-align:left;justify-content:flex-start;overflow-wrap:anywhere}
+.ff-planner .ff-next-close{min-width:44px;min-height:44px}
+.ff-planner #ffNotifyBtn{margin:16px 0 8px}
+@media(max-width:700px){
+  .ff-planner-controls{grid-template-columns:1fr 1fr}
+  .ff-planner-controls>.ff-next-field:first-child{grid-column:1/-1}
+  .ff-planner-windows{grid-template-columns:1fr}
+  .ff-planner-window{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+  .ff-planner-window>strong{grid-column:1;grid-row:2}
+  .ff-planner-window-score{grid-column:2;grid-row:1/3;align-self:center;text-align:right}
+  .ff-planner-weather{grid-template-columns:1fr 1fr}
+  .ff-planner-weather>div:last-child{grid-column:1/-1}
+  .ff-planner-tips{grid-template-columns:1fr;gap:12px}
+  .ff-planner-selected-head{flex-wrap:wrap}
+  .ff-planner-save{flex-direction:column;align-items:stretch}
+  .ff-planner-horizon{display:none}
+}
+@media(prefers-reduced-motion:reduce){.ff-planner *{scroll-behavior:auto;transition:none;animation:none}}

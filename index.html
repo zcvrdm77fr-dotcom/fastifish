@@ -3756,7 +3756,6 @@ searchInput.addEventListener("input", (e) => {
   if (worldSearchController) worldSearchController.abort();
 
   if (term === "") {
-    LOCATIONS.forEach((l, i) => locSel.add(new Option(l.name, i)));
     locCountEl.textContent = "";
     return;
   }
@@ -7417,13 +7416,18 @@ function updateHeroResult(info){
   document.getElementById("heroResultLink").textContent=currentLang==='fi'?"Katso koko keli ja parhaat ajat ↓":"See full bite index and best times ↓";
   box.hidden=false;
 }
-async function refresh(){
+async function refresh(event){
   // Varmistetaan että käytetään oikeaa lokaatiota
   const locIndex = locSel.value;
   const loc=resolveLocation(locIndex);
   const species=spSel.value;
   
   if(!loc) return;
+
+  // Keep separate frontend modules in sync for search, map and GPS selections.
+  window.dispatchEvent(new CustomEvent('fastfishing:forecast-selection', {
+    detail: { location: loc, species, force: event?.type === 'click' }
+  }));
 
   const loadLabel = currentLang === 'fi' ? 'Ladataan' : 'Loading';
   const momentLabel = currentLang === 'fi' ? 'Hetki...' : 'One moment...';
