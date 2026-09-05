@@ -1,173 +1,15 @@
-import { findBestWindow, recommendForSpecies, supportedSpecies } from './fishing-advice.js';
-import { fishingScoreBand } from './score-calibration.js';
+import { initTripPlanner } from './trip-planner.js';
 
 const API_BASE = String(window.FASTFISH_API_BASE || '').trim().replace(/\/+$/, '');
-const SAVED_KEY = 'ff_saved_places_v1';
-const NOTIFY_CHECK_KEY = 'ff_saved_places_last_check';
-let activeLocation = null;
 
 function apiUrl(path){ return API_BASE + path; }
 function assetUrl(path){ return /^https?:\/\//i.test(path || '') ? path : API_BASE + (path || ''); }
 function escapeHtml(value){ const d=document.createElement('div'); d.textContent=value == null ? '' : String(value); return d.innerHTML; }
-function readSaved(){ try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'); } catch { return []; } }
-function writeSaved(items){ try { localStorage.setItem(SAVED_KEY, JSON.stringify(items.slice(0, 12))); } catch {} }
 
 async function api(path){
   const response = await fetch(apiUrl(path), { credentials: 'include' });
   if (!response.ok) throw new Error('Tietojen haku epäonnistui.');
   return response.json();
-}
-
-function formatHour(iso){
-  const d = new Date(iso);
-  return d.toLocaleTimeString('fi-FI', { hour:'2-digit', minute:'2-digit' });
-}
-
-async function weatherFor(lat, lon){
-  const params = new URLSearchParams({
-    latitude:String(lat), longitude:String(lon),
-    hourly:'temperature_2m,pressure_msl,wind_speed_10m,cloud_cover',
-    forecast_days:'2', past_days:'1', timezone:'auto', wind_speed_unit:'ms'
-  });
-  const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
-  if (!res.ok) throw new Error('Sään haku epäonnistui.');
-  const data = await res.json();
-  const times = data.hourly?.time || [];
-  const now = Date.now();
-  return times.map((time, i) => ({
-    time,
-    hour:new Date(time).getHours(),
-    temp:Number(data.hourly.temperature_2m[i]),
-    pressure:Number(data.hourly.pressure_msl[i]),
-    pressure6hAgo:Number(data.hourly.pressure_msl[Math.max(0, i - 6)]),
-    wind:Number(data.hourly.wind_speed_10m[i]),
-    cloud:Number(data.hourly.cloud_cover[i])
-  })).filter(item => new Date(item.time).getTime() >= now - 30 * 60 * 1000).slice(0, 30);
-}
-
-function locate(){
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) return reject(new Error('Sijaintia ei tueta tässä selaimessa.'));
-    navigator.geolocation.getCurrentPosition(
-      p => resolve({ lat:p.coords.latitude, lon:p.coords.longitude, name:'Nykyinen sijainti' }),
-      () => reject(new Error('Sijaintia ei saatu. Salli sijainti selaimen asetuksista.')),
-      { enableHighAccuracy:false, timeout:10000, maximumAge:10 * 60 * 1000 }
-    );
-  });
-}
-
-function renderSavedPlaces(){
-  const wrap = document.getElementById('ffSavedPlaces');
-  const select = document.getElementById('ffSavedSelect');
-  if (!wrap || !select) return;
-  const saved = readSaved();
-  select.innerHTML = '<option value="">Valitse tallennettu paikka</option>' + saved.map((p,i)=>`<option value="${i}">${escapeHtml(p.name)}</option>`).join('');
-  wrap.innerHTML = saved.length ? saved.map((p,i)=>`<div class="ff-next-saved-row"><button class="btn" type="button" data-ff-place="${i}">${escapeHtml(p.name)}</button><button class="ff-next-close" type="button" aria-label="Poista paikka" data-ff-remove="${i}">×</button></div>`).join('') : '<p class="ff-next-muted">Ei vielä tallennettuja paikkoja.</p>';
-  wrap.querySelectorAll('[data-ff-place]').forEach(btn => btn.addEventListener('click', () => useSaved(Number(btn.dataset.ffPlace))));
-  wrap.querySelectorAll('[data-ff-remove]').forEach(btn => btn.addEventListener('click', () => { const items=readSaved(); items.splice(Number(btn.dataset.ffRemove),1); writeSaved(items); renderSavedPlaces(); }));
-}
-
-async function runAdvice(location){
-  const status = document.getElementById('ffNowStatus');
-  const result = document.getElementById('ffNowResult');
-  const species = document.getElementById('ffSpecies').value;
-  activeLocation = location;
-  status.textContent = `Haetaan kalakeliä: ${location.name}…`;
-  result.hidden = true;
-  try {
-    const hourly = await weatherFor(location.lat, location.lon);
-    const best = findBestWindow(hourly, species, 2);
-    if (!best) throw new Error('Ennustetta ei löytynyt.');
-    const advice = recommendForSpecies(species, best.conditions);
-    const label = fishingScoreBand(best.score, 'fi').text.toLocaleLowerCase('fi-FI');
-    result.innerHTML = `<div class="ff-next-score">${best.score}/100 <span style="font-size:1rem">${label}</span></div>
-      <strong>${escapeHtml(advice.species)}: paras 2 h ikkuna ${formatHour(best.start)}–${formatHour(best.end)}</strong>
-      <div class="ff-next-chips"><span class="ff-next-chip">🎯 ${escapeHtml(advice.depth)}</span><span class="ff-next-chip">🪝 ${escapeHtml(advice.lure)}</span><span class="ff-next-chip">🎨 ${escapeHtml(advice.color)}</span></div>
-      <p>${escapeHtml(advice.technique)}.</p>
-      <p class="ff-next-muted">Perustuu Open-Meteon tuntiennusteeseen ja FastFishingin sääheuristiikkaan. Tämä on suuntaa-antava suositus, ei saalistakuu.</p>`;
-    result.hidden = false;
-    status.textContent = '';
-    return { best, advice };
-  } catch (error) {
-    status.textContent = error.message || 'Suosituksen laskenta epäonnistui.';
-    throw error;
-  }
-}
-
-async function useSaved(index){
-  const place = readSaved()[index];
-  if (!place) return;
-  document.getElementById('ffSavedSelect').value = String(index);
-  await runAdvice(place);
-}
-
-function saveCurrent(){
-  if (!activeLocation) return document.getElementById('ffNowStatus').textContent = 'Hae ensin nykyinen sijainti tai valitse tallennettu paikka.';
-  const nameInput = document.getElementById('ffPlaceName');
-  const name = nameInput.value.trim() || activeLocation.name || 'Kalapaikka';
-  const items = readSaved();
-  const next = { name:name.slice(0,60), lat:Number(activeLocation.lat.toFixed(5)), lon:Number(activeLocation.lon.toFixed(5)) };
-  const duplicate = items.findIndex(p => Math.abs(p.lat-next.lat)<0.0001 && Math.abs(p.lon-next.lon)<0.0001);
-  if (duplicate >= 0) items[duplicate] = next; else items.unshift(next);
-  writeSaved(items);
-  nameInput.value = '';
-  renderSavedPlaces();
-  document.getElementById('ffNowStatus').textContent = `Tallennettu: ${next.name}`;
-}
-
-function injectNowCard(){
-  const section = document.getElementById('kelimittari');
-  if (!section || document.getElementById('ffNowCard')) return;
-  const card = document.createElement('section');
-  card.id = 'ffNowCard';
-  card.className = 'ff-next-card';
-  card.innerHTML = `<h2>🎣 Mitä, missä ja millä juuri nyt?</h2><p class="ff-next-muted">Valitse tavoitelaji. FastFishing etsii seuraavan vuorokauden parhaan kahden tunnin ikkunan ja antaa aloitusvieheen sekä syvyysvinkin.</p>
-    <div class="ff-next-grid"><div class="ff-next-field"><label for="ffSpecies">Tavoitelaji</label><select id="ffSpecies">${supportedSpecies.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></div>
-    <div class="ff-next-field"><label for="ffSavedSelect">Oma paikka</label><select id="ffSavedSelect"><option value="">Valitse tallennettu paikka</option></select></div>
-    <div class="ff-next-field"><label for="ffPlaceName">Paikan nimi tallennusta varten</label><input id="ffPlaceName" maxlength="60" placeholder="esim. Näsijärvi / kotilahti"></div></div>
-    <div class="ff-next-actions"><button class="btn primary" id="ffLocateBtn" type="button">Käytä nykyistä sijaintia</button><button class="btn" id="ffSaveBtn" type="button">Tallenna tämä paikka</button><button class="btn" id="ffNotifyBtn" type="button">Ota kalakeli-ilmoitukset käyttöön</button></div>
-    <p class="ff-next-status" id="ffNowStatus"></p><div class="ff-next-result" id="ffNowResult" hidden></div><h3 style="margin-top:20px">Omat paikat</h3><div class="ff-next-saved" id="ffSavedPlaces"></div>`;
-  section.prepend(card);
-  document.getElementById('ffLocateBtn').addEventListener('click', async () => { try { await runAdvice(await locate()); } catch {} });
-  document.getElementById('ffSaveBtn').addEventListener('click', saveCurrent);
-  document.getElementById('ffSavedSelect').addEventListener('change', e => { if (e.target.value !== '') useSaved(Number(e.target.value)); });
-  document.getElementById('ffSpecies').addEventListener('change', () => { if (activeLocation) runAdvice(activeLocation).catch(()=>{}); });
-  document.getElementById('ffNotifyBtn').addEventListener('click', enableNotifications);
-  renderSavedPlaces();
-}
-
-async function showNotification(title, body){
-  try {
-    if ('serviceWorker' in navigator) {
-      const reg = await navigator.serviceWorker.ready;
-      await reg.showNotification(title, { body, icon:'/icon-192.png', badge:'/icon-192.png', tag:'fastfishing-kalakeli' });
-    } else if ('Notification' in window) new Notification(title, { body });
-  } catch {}
-}
-
-async function enableNotifications(){
-  const status = document.getElementById('ffNowStatus');
-  if (!('Notification' in window)) return status.textContent = 'Tämä selain ei tue ilmoituksia.';
-  const permission = await Notification.requestPermission();
-  if (permission !== 'granted') return status.textContent = 'Ilmoituksia ei sallittu.';
-  status.textContent = 'Kalakeli-ilmoitukset käytössä. Tallennetut paikat tarkistetaan, kun FastFishing avataan.';
-  await checkSavedPlaces(true);
-}
-
-async function checkSavedPlaces(force=false){
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  const saved = readSaved();
-  if (!saved.length) return;
-  const last = Number(localStorage.getItem(NOTIFY_CHECK_KEY) || 0);
-  if (!force && Date.now() - last < 6 * 60 * 60 * 1000) return;
-  localStorage.setItem(NOTIFY_CHECK_KEY, String(Date.now()));
-  const species = document.getElementById('ffSpecies')?.value || 'kuha';
-  for (const place of saved.slice(0,4)) {
-    try {
-      const best = findBestWindow(await weatherFor(place.lat, place.lon), species, 2);
-      if (best && best.score >= 72) await showNotification(`Hyvä kalakeli: ${place.name}`, `${best.score}/100 · paras ikkuna ${formatHour(best.start)}–${formatHour(best.end)}`);
-    } catch {}
-  }
 }
 
 async function loadWeeklyInsights(){
@@ -218,12 +60,11 @@ function decorateProfiles(root=document){
 }
 
 function init(){
-  injectNowCard();
+  initTripPlanner();
   document.querySelectorAll('[data-page="feedi"]').forEach(btn=>btn.addEventListener('click',loadWeeklyInsights,{once:true}));
   if (location.hash.includes('feedi')) loadWeeklyInsights();
   decorateProfiles();
   new MutationObserver(mutations=>mutations.forEach(m=>m.addedNodes.forEach(node=>{if(node.nodeType===1) decorateProfiles(node);}))).observe(document.body,{childList:true,subtree:true});
-  setTimeout(()=>checkSavedPlaces(false),2500);
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once:true }); else init();
