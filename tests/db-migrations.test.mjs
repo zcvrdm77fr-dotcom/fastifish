@@ -39,7 +39,16 @@ test('legacy plaintext session is migrated to a digest', async () => {
   assert.notEqual(stored.token, rawToken);
   assert.deepEqual(
     db.prepare('SELECT version FROM schema_migrations ORDER BY version').all().map(row => row.version),
-    [1, 2, 3, 4]
+    [1, 2, 3, 4, 5]
+  );
+  // Migraatio 5 luo pysyvän rate limit -taulun, jotta laskurit eivät nollaudu deployssa.
+  assert.ok(
+    db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'rate_limits'").get(),
+    'rate_limits-taulua ei luotu'
+  );
+  assert.deepEqual(
+    db.prepare('PRAGMA table_info(rate_limits)').all().map(column => column.name).sort(),
+    ['count', 'key', 'reset_at']
   );
   assert.equal(db.pragma('busy_timeout', { simple: true }), 5000);
 
