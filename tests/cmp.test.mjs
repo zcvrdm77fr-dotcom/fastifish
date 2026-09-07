@@ -3,9 +3,17 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const root = new URL('../', import.meta.url);
-const index = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-const privacy = fs.readFileSync(new URL('../tietosuoja.html', import.meta.url), 'utf8');
-const contentPagesJs = fs.readFileSync(new URL('../content-pages.js', import.meta.url), 'utf8');
+const read = (name) => fs.readFileSync(new URL(`../${name}`, import.meta.url), 'utf8');
+
+// Etusivun tyylit ja logiikka on irrotettu omiin tiedostoihinsa, joten sivun
+// käyttäytymistä koskevat väitteet tarkistetaan HTML:n ja sen omien assettien
+// yhdistelmästä. Muuten inline-lohkon poisto olisi hiljaa vesittänyt nämä testit.
+const INDEX_ASSETS = ['app.js', 'app.css'];
+const pageSource = (file) => (file === 'index.html' ? [file, ...INDEX_ASSETS] : [file]).map(read).join('\n');
+
+const index = pageSource('index.html');
+const privacy = read('tietosuoja.html');
+const contentPagesJs = read('content-pages.js');
 const htmlFiles = fs.readdirSync(root).filter((name) => name.endsWith('.html')).sort();
 const publisherMeta = /<meta\s+name=["']google-adsense-account["']\s+content=["']ca-pub-7506133239289138["']\s*\/?\s*>/i;
 
@@ -37,12 +45,13 @@ test('privacy notice documents Google CMP and has no duplicate FastFishing banne
 test('every indexable HTML page carries the AdSense account declaration and no direct consent grant', () => {
   assert.ok(htmlFiles.length >= 15, `expected at least 15 HTML pages, found ${htmlFiles.length}`);
   for (const file of htmlFiles) {
-    const html = fs.readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
+    const html = read(file);
+    const source = pageSource(file);
     assert.match(html, publisherMeta, `${file}: missing google-adsense-account meta`);
-    assert.doesNotMatch(html, /gtag\(['"]consent['"],\s*['"]update['"]/, `${file}: direct consent update must not bypass the CMP`);
+    assert.doesNotMatch(source, /gtag\(['"]consent['"],\s*['"]update['"]/, `${file}: direct consent update must not bypass the CMP`);
     if (file !== 'index.html' && file !== 'tietosuoja.html') {
-      assert.doesNotMatch(html, /cookie_consent/, `${file}: legacy FastFishing consent state remains`);
-      assert.doesNotMatch(html, /cookieConsentBanner/, `${file}: legacy FastFishing consent banner remains`);
+      assert.doesNotMatch(source, /cookie_consent/, `${file}: legacy FastFishing consent state remains`);
+      assert.doesNotMatch(source, /cookieConsentBanner/, `${file}: legacy FastFishing consent banner remains`);
     }
   }
 });

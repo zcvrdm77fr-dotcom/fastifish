@@ -17,7 +17,8 @@
     "lint:eslint": "eslint .",
     "test:api": "node --test tests/api.integration.test.mjs",
     "test:e2e": "playwright test",
-    "security:audit": "npm audit --omit=dev --audit-level=moderate"
+    "security:audit": "npm audit --omit=dev --audit-level=moderate",
+    "csp": "node scripts/inject-csp.mjs"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.22.0",
@@ -25,7 +26,7 @@
     "better-sqlite3": "^13.0.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
-    "express": "^4.19.2",
+    "express": "^5.2.1",
     "multer": "2.3.0",
     "nsfwjs": "^4.3.0",
     "sharp": "^0.35.3"

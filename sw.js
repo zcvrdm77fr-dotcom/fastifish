@@ -1,7 +1,9 @@
-const CACHE_VERSION = 'v12';
+const CACHE_VERSION = 'v13';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/index.html',
+  '/app.css',
+  '/app.js',
   '/feed-config.js',
   '/site-cleanup.js',
   '/site-cleanup.css',

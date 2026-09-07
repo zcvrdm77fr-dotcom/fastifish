@@ -119,12 +119,17 @@ Nykyisen version health-vastauksessa pitää näkyä vähintään:
   "ok": true,
   "postMetadata": true,
   "cookieOnlySessions": true,
-  "schemaVersion": 4
+  "rateLimitStore": "sqlite",
+  "schemaVersion": 5
 }
 ```
 
 GitHub Actionsin `Production health` tarkistaa saman julkisen endpointin tunnin välein ja
 myös `main`-pushien jälkeen.
+
+Huom: `schemaVersion` nousi 4 → 5 (migraatio `rate_limits`). Health palauttaa `ok: false`
+siihen asti kunnes uusi versio on deployattu, joten aja deploy ennen kuin tulkitset
+hälytystä ongelmaksi. Migraatio ajetaan automaattisesti palvelimen käynnistyessä.
 
 ## Jos `git pull --ff-only` ei onnistu
 

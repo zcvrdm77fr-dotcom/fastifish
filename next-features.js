@@ -8,7 +8,15 @@ let activeLocation = null;
 
 function apiUrl(path){ return API_BASE + path; }
 function assetUrl(path){ return /^https?:\/\//i.test(path || '') ? path : API_BASE + (path || ''); }
-function escapeHtml(value){ const d=document.createElement('div'); d.textContent=value == null ? '' : String(value); return d.innerHTML; }
+function escapeHtml(value){
+  // Escapetaan myös lainausmerkit, jotta arvo on turvallinen myös HTML-attribuutin sisällä.
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 function readSaved(){ try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'); } catch { return []; } }
 function writeSaved(items){ try { localStorage.setItem(SAVED_KEY, JSON.stringify(items.slice(0, 12))); } catch {} }
 
@@ -205,7 +213,7 @@ async function openProfile(username){
     body.innerHTML=`<div class="ff-next-stats"><div class="ff-next-stat"><strong>${p.postCount}</strong>saalista</div><div class="ff-next-stat"><strong>${p.speciesCount}</strong>lajia</div><div class="ff-next-stat"><strong>${p.likesReceived}</strong>tykkäystä</div><div class="ff-next-stat"><strong>${p.biggestWeightKg ?? '–'} kg</strong>ennätyspaino</div><div class="ff-next-stat"><strong>${p.longestFishCm ?? '–'} cm</strong>pisin kala</div></div>
       ${p.topSpecies?.length?`<h3>Yleisimmät lajit</h3><div class="ff-next-chips">${p.topSpecies.map(x=>`<span class="ff-next-chip">${escapeHtml(x.species)} · ${x.catches}</span>`).join('')}</div>`:''}
       ${p.topLures?.length?`<h3>Yleisimmät vieheet</h3><div class="ff-next-chips">${p.topLures.map(x=>`<span class="ff-next-chip">${escapeHtml(x.lure)} · ${x.catches}</span>`).join('')}</div>`:''}
-      ${p.recentPosts?.length?`<h3>Viimeisimmät saaliit</h3><div class="ff-next-gallery">${p.recentPosts.map(x=>`<img loading="lazy" src="${assetUrl(x.imageUrl)}" alt="${escapeHtml(x.species || 'Saaliskuva')}">`).join('')}</div>`:'<p>Ei vielä julkaistuja saaliita.</p>'}`;
+      ${p.recentPosts?.length?`<h3>Viimeisimmät saaliit</h3><div class="ff-next-gallery">${p.recentPosts.map(x=>`<img loading="lazy" src="${escapeHtml(assetUrl(x.imageUrl))}" alt="${escapeHtml(x.species || 'Saaliskuva')}">`).join('')}</div>`:'<p>Ei vielä julkaistuja saaliita.</p>'}`;
   } catch { body.innerHTML='<p>Profiilia ei voitu ladata.</p>'; }
 }
 

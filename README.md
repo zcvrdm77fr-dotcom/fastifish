@@ -32,7 +32,7 @@ API:n health check: **https://api.fastfishin.com/api/health**
 
 FastFishing on tarkoituksella melko kevyt kokonaisuus:
 
-- frontend: HTML, CSS ja JavaScript
+- frontend: HTML, CSS ja JavaScript (`index.html` + `app.css` + `app.js`)
 - kartta- ja kalastuslogiikka: selaimessa ajettavat JavaScript-moduulit
 - backend: Node.js + Express
 - tietokanta: SQLite / `better-sqlite3`
@@ -42,6 +42,24 @@ FastFishing on tarkoituksella melko kevyt kokonaisuus:
 - merialueiden syvyysrakenteet: Traficomin avoin WFS-data
 - staattinen frontend: GitHub Pages
 - API: erillinen Node-palvelu osoitteessa `api.fastfishin.com`
+
+### Content-Security-Policy
+
+Politiikka on yhdessä paikassa: [`csp.js`](csp.js). API-palvelin asettaa sen otsakkeena, ja
+staattiset sivut kantavat saman politiikan `<meta http-equiv>` -tagissa, koska GitHub Pages ei
+salli omia HTTP-otsakkeita. Kun `csp.js` muuttuu, aja:
+
+```bash
+npm run csp
+```
+
+`tests/csp.test.mjs` kaatuu, jos meta-tagit ovat vanhentuneet.
+
+### Rate limiting
+
+Laskurit talletetaan SQLiteen (`rate_limits`-taulu), joten ne säilyvät uudelleenkäynnistyksen
+ja deployn yli ja jakautuvat kaikille saman datalevyn jakaville prosesseille. Testeissä
+käytetään muistivarastoa; `/api/health` kertoo kentässä `rateLimitStore`, kumpi on käytössä.
 
 ## Paikallinen kehitys
 
