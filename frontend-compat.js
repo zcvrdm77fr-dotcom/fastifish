@@ -33,7 +33,21 @@ function dedupeLocationOptions() {
   if ([...select.options].some(option => option.value === selected)) select.value = selected;
 }
 
+function hardenHtmlEscaping() {
+  if (typeof window.escapeHtml !== 'function') return;
+  const replacements = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
+  window.escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => replacements[character]);
+}
+
 function installFrontendCompat() {
+  hardenHtmlEscaping();
+
   const locationSelect = document.getElementById('locationSelect');
   const speciesSelect = document.getElementById('speciesSelect');
   const refreshButton = document.getElementById('refreshBtn');

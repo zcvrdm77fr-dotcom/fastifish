@@ -20,7 +20,7 @@ jobs:
           set -euo pipefail
           for attempt in $(seq 1 20); do
             if RESPONSE="$(curl --fail --silent --show-error --max-time 15 https://api.fastfishin.com/api/health)" && \
-              node -e 'const x=JSON.parse(process.argv[1]); if (x.ok!==true || x.postMetadata!==true || x.cookieOnlySessions!==true || Number(x.schemaVersion)<4) process.exit(1)' "$RESPONSE"; then
+              node -e 'const x=JSON.parse(process.argv[1]); if (x.ok!==true || x.postMetadata!==true || x.cookieOnlySessions!==true || Number(x.schemaVersion)<5) process.exit(1)' "$RESPONSE"; then
               echo "$RESPONSE"
               exit 0
             fi

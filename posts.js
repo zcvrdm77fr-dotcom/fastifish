@@ -110,13 +110,15 @@ router.get('/', (req, res) => {
 router.post('/', requireAuth, uploadLimiter, upload.single('image'), asyncHandler(async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Liitä saaliskuva.' });
 
-  const caption = typeof req.body.caption === 'string' ? req.body.caption.trim().slice(0, MAX_CAPTION_LEN) : '';
-  const species = optionalText(req.body.species, 40);
-  const weightKg = optionalNumber(req.body.weightKg);
-  const lengthCm = optionalNumber(req.body.lengthCm);
-  const shareLocation = req.body.shareLocation === '1' || req.body.shareLocation === 'true';
-  const catchLocation = shareLocation ? optionalText(req.body.catchLocation, 100) : null;
-  const lure = optionalText(req.body.lure, 100);
+  // Express 5 ei enää aseta req.bodyä tyhjäksi objektiksi, jos mikään parseri ei osunut.
+  const body = req.body || {};
+  const caption = typeof body.caption === 'string' ? body.caption.trim().slice(0, MAX_CAPTION_LEN) : '';
+  const species = optionalText(body.species, 40);
+  const weightKg = optionalNumber(body.weightKg);
+  const lengthCm = optionalNumber(body.lengthCm);
+  const shareLocation = body.shareLocation === '1' || body.shareLocation === 'true';
+  const catchLocation = shareLocation ? optionalText(body.catchLocation, 100) : null;
+  const lure = optionalText(body.lure, 100);
 
   if (species && !ALLOWED_SPECIES.has(species)) return res.status(400).json({ error: 'Valitse kalalaji valikosta.' });
   if (weightKg !== null && (!Number.isFinite(weightKg) || weightKg <= 0 || weightKg > 500)) {
@@ -235,7 +237,7 @@ router.get('/:id/comments', (req, res) => {
 router.post('/:id/comments', requireAuth, (req, res) => {
   const post = findPostOr404(req, res);
   if (!post) return;
-  const body = typeof req.body.body === 'string' ? req.body.body.trim().slice(0, MAX_COMMENT_LEN) : '';
+  const body = typeof (req.body || {}).body === 'string' ? req.body.body.trim().slice(0, MAX_COMMENT_LEN) : '';
   if (!body) return res.status(400).json({ error: 'Kommentti ei voi olla tyhjä.' });
 
   const recent = db.prepare('SELECT created_at FROM comments WHERE user_id = ? ORDER BY id DESC LIMIT 1').get(req.user.id);
