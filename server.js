@@ -9,7 +9,8 @@ import postsRouter from './posts.js';
 import profilesRouter from './profiles.js';
 import insightsRouter from './insights.js';
 import { depthRouter } from './depth-proxy.js';
-import { createRateLimiter, securityHeaders } from './security.js';
+import { createRateLimiter, securityHeaders, apiCsp, pageCsp, useRateLimitStore, activeRateLimitStoreName } from './security.js';
+import { createSqliteRateLimitStore } from './rate-limit-store.js';
 import { UPLOADS_DIR } from './paths.js';
 import { db } from './db.js';
 import { readRuntimeConfig } from './config.js';
@@ -21,6 +22,11 @@ import { startUploadCleanupScheduler } from './upload-cleanup.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const config = readRuntimeConfig(process.env);
+
+// Laskurit talletetaan tietokantaan, jotta ne säilyvät uudelleenkäynnistyksen yli
+// ja jakautuvat saman datalevyn jakavien prosessien kesken.
+useRateLimitStore(createSqliteRateLimitStore());
+
 const app = express();
 
 app.set('trust proxy', 1);
@@ -47,7 +53,7 @@ app.use(cookieParser());
 app.use(express.json({ limit: '64kb' }));
 app.use(attachUser);
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', apiCsp, (req, res) => {
   let database = true;
   let schemaVersion = 0;
   let postMetadata = false;
@@ -62,13 +68,14 @@ app.get('/api/health', (req, res) => {
     database = false;
   }
   const backup = getBackupStatus();
-  const ok = database && postMetadata && schemaVersion >= 4;
+  const ok = database && postMetadata && schemaVersion >= 5;
   res.status(ok ? 200 : 503).json({
     ok,
     database,
     schemaVersion,
     postMetadata,
     cookieOnlySessions: true,
+    rateLimitStore: activeRateLimitStoreName(),
     cleanupQueued,
     backup,
     feed: true,
@@ -85,6 +92,8 @@ const apiLimiter = createRateLimiter({
   keyPrefix: 'api',
   message: 'Liikaa API-pyyntöjä. Yritä hetken kuluttua uudelleen.'
 });
+app.use('/api', apiCsp);
+app.use('/uploads', apiCsp);
 app.use('/api', apiLimiter);
 
 app.use('/api/auth', authRouter);
@@ -100,11 +109,12 @@ app.use('/uploads', express.static(UPLOADS_DIR, {
 }));
 
 if (config.serveFrontend) {
+  app.use(pageCsp);
   // Tuotannossa API-palvelin ei oletuksena tarjoa repositorion juurta lainkaan. Tämä paikallisen
   // kehityksen suoja estää myös vahingossa lisätyt backend-/config-tiedostot ja dotfilet.
   const privatePrefixes = ['/data', '/node_modules', '/tests', '/scripts', '/.github'];
-  const privateRootFiles = /\/(?:server|db|auth|posts|profiles|insights|depth-proxy|security|paths|wordlist|moderation|config|logger|error-handler|async-handler|session-token)\.js$/i;
-  const privateExtensions = /\.(?:env|db|sqlite|sqlite3|log|map|pem|key|crt|bak|ya?ml)$/i;
+  const privateRootFiles = /\/(?:server|db|auth|posts|profiles|insights|depth-proxy|security|paths|wordlist|moderation|config|logger|error-handler|async-handler|session-token|csp)\.js$/i;
+  const privateExtensions = /\.(?:env|db|sqlite|sqlite3|log|pem|key|crt|bak|ya?ml)$/i;
 
   app.use((req, res, next) => {
     const pathName = req.path;
@@ -127,7 +137,7 @@ if (config.serveFrontend) {
 
 app.use((req, res) => {
   if (req.path.startsWith('/api/')) return apiNotFound(req, res);
-  if (config.serveFrontend) return res.status(404).sendFile(path.join(__dirname, '404.html'));
+  if (config.serveFrontend) return res.sendFile(path.join(__dirname, 'index.html'));
   return res.status(404).json({ service: 'FastFishing API', error: 'Ei löytynyt.' });
 });
 
@@ -138,6 +148,7 @@ app.listen(config.port, '0.0.0.0', () => {
   startBackupScheduler();
   logInfo('server_started', {
     port: config.port,
+    rateLimitStore: activeRateLimitStoreName(),
     production: config.production,
     serveFrontend: config.serveFrontend,
     allowedOrigins: config.allowedOrigins
