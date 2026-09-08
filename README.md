@@ -20,6 +20,23 @@ Palvelussa on tällä hetkellä mm.:
 - 📚 omat oppaat hauelle, ahvenelle, kuhalle, jigikalastukseen, vetouisteluun ja vieheen valintaan
 - 🌦️ Open-Meteo-pohjainen säädata ja avoimesti dokumentoitu kalakelimalli
 
+### Reissun lähtöajan vertailu
+
+**Milloin kalaan?** käyttää sivun paikkahakua tai omaa sijaintia. Valitse kuha, hauki,
+ahven tai taimen, 1–4 tunnin reissu ja sopiva vuorokaudenaika. Suunnittelija vertailee
+seuraavan 48 tunnin yhtenäisiä ennustejaksoja ja näyttää enintään kolme toisistaan erillistä
+vaihtoehtoa sekä valittavan tuntiennusteen. Kaikki ajat esitetään paikan aikavyöhykkeellä.
+
+Lajin, keston ja vuorokaudenajan vaihtaminen lasketaan suunnittelijassa jo haetusta
+datasta. Säädataa säilytetään istunnon välimuistissa enintään kuudelle paikalle;
+15 minuuttia vanhempi ennuste haetaan uudelleen. Verkkovirheen aikana voidaan näyttää
+enintään kuusi tuntia vanha ennuste, jonka ikä ja välimuistista näyttäminen kerrotaan
+näkyvästi. Puuttuvia tuntihavaintoja ei pisteytetä eikä yhdistetä ehjäksi reissuksi.
+
+Omat paikat säilyvät aiemmassa selainkohtaisessa muodossa. Kalakeli-ilmoitukset voi
+ottaa käyttöön ja poistaa käytöstä suunnittelijassa; niitä tarkistetaan vain sovelluksen
+ollessa auki. Taustalla toimiva Web Push on edelleen erillinen kehityskohde (#15).
+
 > Kalakelipiste on heuristinen vertailuarvo, ei saalistodennäköisyys tai saalistakuu. Mallin laskenta ja rajoitukset on kuvattu [metodologiasivulla](https://fastfishin.com/metodologia.html).
 
 ## Demo
@@ -135,6 +152,9 @@ GitHub Actionsin **Quality**-workflow ajaa testit ja buildin pull requesteille s
 | `index.html` | Pääsivu ja vanhempi frontend-rakenne |
 | `site-cleanup.js` | Selkeämpi navigaatio ja UI-parannuksia |
 | `next-features.js` | Kalastusnyt, tallennetut paikat, profiilit ja trendit |
+| `trip-planner.js` | Lähtöajan vertailu, tuntiennuste ja suunnittelijan käyttöliittymä |
+| `forecast.js` | Aikavyöhykkeet, säädatan validointi, välimuisti ja uusimman paikkavalinnan hallinta |
+| `saved-places.js` | Omien paikkojen validointi ja selainkohtainen tallennus |
 | `fishing-advice.js` | Testattava lajikohtainen suosituslogiikka |
 | `score-calibration.js` | Käyttäjälle näytettävän kalakelipisteen kalibrointi |
 | `depth-structures.js` | Syvyysdatan käsittely ja kalastusrakenteiden tunnistus |

@@ -1,10 +1,18 @@
-const CACHE_VERSION = 'v13';
+const CACHE_VERSION = 'v14';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/index.html',
   '/404.html',
   '/app.js',
   '/feed-config.js',
+  '/next-features.js',
+  '/next-features.css',
+  '/score-calibration.js',
+  '/fishing-advice.js',
+  '/forecast.js',
+  '/saved-places.js',
+  '/trip-planner.js',
+  '/frontend-compat.js',
   '/manifest.json',
   '/favicon.ico',
   '/icon-192.png',

@@ -27,6 +27,14 @@ window.FASTFISH_API_BASE = "https://api.fastfishin.com";
       document.body.appendChild(quality);
     }
 
+    if (!document.querySelector('script[data-fastfishing-compat]')) {
+      var compat = document.createElement('script');
+      compat.type = 'module';
+      compat.src = '/frontend-compat.js';
+      compat.dataset.fastfishingCompat = '1';
+      document.body.appendChild(compat);
+    }
+
     if (!document.querySelector('script[data-fastfishing-next]')) {
       var script = document.createElement('script');
       script.type = 'module';

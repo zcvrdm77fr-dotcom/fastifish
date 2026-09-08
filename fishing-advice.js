@@ -1,4 +1,5 @@
 import { calibrateFishingScore } from './score-calibration.js';
+import { HOUR } from './forecast.js';
 
 const SPECIES = {
   kuha: {
@@ -32,6 +33,7 @@ function clamp(value, min, max) {
 }
 
 export function scoreFishingHour({ temp, pressure, pressure6hAgo, wind, cloud, hour, species = 'kuha' }) {
+  if (![temp, pressure, wind, cloud, hour].every(Number.isFinite) || wind < 0 || cloud < 0 || cloud > 100 || pressure <= 0 || hour < 0 || hour >= 24) return null;
   const prime = hour <= 8 || hour >= 18;
   const pressureDelta = Number.isFinite(pressure6hAgo) ? pressure - pressure6hAgo : 0;
   let rawScore = 48;
@@ -51,7 +53,22 @@ export function scoreFishingHour({ temp, pressure, pressure6hAgo, wind, cloud, h
   return calibrateFishingScore(clamp(Math.round(rawScore), 0, 100));
 }
 
-export function recommendForSpecies(species, conditions) {
+const ENGLISH_ADVICE = {
+  kuha: { name: 'Zander', lure: '10–14 cm jig or slender plug', depth: ({ hour, temp }) => hour >= 20 || hour <= 6 ? '2–5 m edges beside shallows' : temp > 18 ? '6–10 m drop-offs' : '4–8 m drop-offs' },
+  hauki: { name: 'Pike', lure: 'spinnerbait, spoon or 12–20 cm shad', depth: ({ temp }) => temp > 20 ? '4–8 m cooler edges' : '1–5 m weed beds and drop-offs' },
+  ahven: { name: 'Perch', lure: '5–10 cm jig, blade or small spinner', depth: ({ temp }) => temp >= 10 && temp <= 20 ? '2–7 m shoals and drop-offs' : '4–10 m deeper edges' },
+  taimen: { name: 'Trout', lure: 'spoon, plug or streamer', depth: ({ temp }) => temp > 16 ? 'deeper, cooler water and currents' : 'surface–4 m, currents and windward banks' }
+};
+
+export function recommendForSpecies(species, conditions, lang = 'fi') {
+  if (lang === 'en') {
+    const config = ENGLISH_ADVICE[species] || ENGLISH_ADVICE.kuha;
+    return {
+      species: config.name, lure: config.lure, depth: config.depth(conditions),
+      color: conditions.cloud < 35 ? 'natural or silver' : 'dark, UV or contrasting',
+      technique: conditions.wind > 7 ? 'fish the sheltered side and keep the lure under control' : conditions.hour >= 18 || conditions.hour <= 8 ? 'slow down slightly and work the edges methodically' : 'keep moving to find active fish'
+    };
+  }
   const config = SPECIES[species] || SPECIES.kuha;
   const bright = conditions.cloud < 35;
   const clearWaterColor = bright ? 'luonnollinen/hopea' : 'tumma, UV tai kontrastiväri';
@@ -64,26 +81,42 @@ export function recommendForSpecies(species, conditions) {
   };
 }
 
-export function findBestWindow(hourly, species = 'kuha', windowHours = 2) {
-  if (!Array.isArray(hourly) || hourly.length === 0) return null;
-  const scored = hourly.map(item => ({ ...item, score: scoreFishingHour({ ...item, species }) }));
-  let best = null;
+function timestampFor(item) {
+  if (Number.isFinite(item?.timestamp)) return item.timestamp;
+  if (typeof item?.time !== 'string') return NaN;
+  // Legacy callers supply local ISO hours. Treat these as a wall-clock sequence,
+  // independent of the test runner/browser's own timezone.
+  return Date.parse(/(?:Z|[+-]\d{2}:\d{2})$/.test(item.time) ? item.time : `${item.time}Z`);
+}
 
+export function rankFishingWindows(hourly, species = 'kuha', windowHours = 2, { limit = 3, period = 'all' } = {}) {
+  if (!Array.isArray(hourly) || !Number.isInteger(windowHours) || windowHours < 1 || windowHours > 12 || !Number.isInteger(limit) || limit < 1) return [];
+  const scored = hourly.filter(Boolean).map(item => ({ ...item, timestamp: timestampFor(item), score: scoreFishingHour({ ...item, species }) }))
+    .sort((a, b) => a.timestamp - b.timestamp);
+  const inPeriod = hour => period === 'morning' ? hour >= 5 && hour < 12 : period === 'day' ? hour >= 12 && hour < 18 : period === 'evening' ? hour >= 18 && hour < 24 : true;
+  const candidates = [];
   for (let i = 0; i <= scored.length - windowHours; i += 1) {
-    const slice = scored.slice(i, i + windowHours);
-    const average = slice.reduce((sum, item) => sum + item.score, 0) / slice.length;
-    if (!best || average > best.average) best = { average, items: slice };
+    const items = scored.slice(i, i + windowHours);
+    if (!items.every((item, index) => Number.isFinite(item.score) && Number.isFinite(item.timestamp) && inPeriod(item.hour) && (!index || item.timestamp - items[index - 1].timestamp === HOUR))) continue;
+    const first = items[0];
+    const endTimestamp = items.at(-1).timestamp + HOUR;
+    const average = items.reduce((sum, item) => sum + item.score, 0) / windowHours;
+    const explicitZone = /(?:Z|[+-]\d{2}:\d{2})$/.test(first.time);
+    candidates.push({ score: Math.round(average), average, start: first.time,
+      end: explicitZone ? new Date(endTimestamp).toISOString() : new Date(endTimestamp).toISOString().slice(0, 16),
+      startTimestamp: first.timestamp, endTimestamp, conditions: first, items });
   }
+  candidates.sort((a, b) => b.average - a.average || a.startTimestamp - b.startTimestamp);
+  const selected = [];
+  for (const candidate of candidates) {
+    if (selected.every(other => candidate.endTimestamp <= other.startTimestamp || candidate.startTimestamp >= other.endTimestamp)) selected.push(candidate);
+    if (selected.length === limit) break;
+  }
+  return selected;
+}
 
-  if (!best) return null;
-  const first = best.items[0];
-  const last = best.items[best.items.length - 1];
-  return {
-    score: Math.round(best.average),
-    start: first.time,
-    end: last.time,
-    conditions: first
-  };
+export function findBestWindow(hourly, species = 'kuha', windowHours = 2) {
+  return rankFishingWindows(hourly, species, windowHours, { limit: 1 })[0] || null;
 }
 
 export const supportedSpecies = Object.entries(SPECIES).map(([id, value]) => ({ id, name: value.name }));
