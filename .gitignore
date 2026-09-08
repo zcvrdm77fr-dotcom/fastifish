@@ -9,3 +9,4 @@ test-results/
 .gcp-service-account.json
 finland-strong-osm.json
 *.zip
+*.map

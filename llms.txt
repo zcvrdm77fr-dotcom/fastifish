@@ -1,0 +1,36 @@
+# FastFishing
+
+> FastFishing on suomalainen kalareissun suunnittelupalvelu. Se yhdistää sääennusteen, kalakelipisteet, kartan, vieheoppaan, kalastusoppaat ja vapaaehtoisen saalisyhteisön.
+
+Canonical origin: https://fastfishin.com/
+Primary language: Finnish (fi)
+Contact: fastfish.official@gmail.com
+
+## Core pages
+
+- [FastFishing](https://fastfishin.com/): Kalakelimittari, kalastusajat, viehesuositukset, kartta ja saalisyhteisö.
+- [Kalastusoppaat](https://fastfishin.com/kalastusoppaat.html): Oppaiden hakemisto ja sisäiset linkit laji- ja tekniikkaoppaisiin.
+- [Kalareissun suunnittelu](https://fastfishin.com/kalareissun-suunnittelu.html): Kymmenen minuutin käytännön suunnittelurunko.
+- [Metodologia](https://fastfishin.com/metodologia.html): Kalakelipisteen muuttujat, painotukset, kalibrointi ja rajoitukset.
+- [Lähteet ja toimitusperiaatteet](https://fastfishin.com/toimitusperiaatteet.html): Tekijyys, lähteiden valinta, korjaukset ja tekoälyn käyttö.
+- [Tietoa FastFishingista](https://fastfishin.com/tietoa-meista.html): Palvelun ylläpitäjä, tarkoitus ja sisältöprosessi.
+- [Tietosuojaseloste](https://fastfishin.com/tietosuoja.html): Henkilötiedot, evästeet, analytiikka ja mainossuostumus.
+
+## Guide pages
+
+- [Hauen kalastus](https://fastfishin.com/hauen-kalastus.html)
+- [Ahvenen kalastus](https://fastfishin.com/ahvenen-kalastus.html)
+- [Kuhan kalastus](https://fastfishin.com/kuhan-kalastus.html)
+- [Jigikalastus](https://fastfishin.com/jigikalastus.html)
+- [Vieheen valinta](https://fastfishin.com/vieheen-valinta.html)
+- [Hauen vetouistelu](https://fastfishin.com/hauen-vetouistelu.html)
+- [Ahvenen vetouistelu](https://fastfishin.com/ahvenen-vetouistelu.html)
+- [Kuhan vetouistelu](https://fastfishin.com/kuhan-vetouistelu.html)
+- [Taimenen vetouistelu](https://fastfishin.com/taimenen-vetouistelu.html)
+
+## Interpretation notes
+
+- Kalakelipiste on heuristinen vertailuarvo, ei saalistodennäköisyys tai saalistakuu.
+- Ajantasaiset lupa- ja rajoitustiedot tulee tarkistaa viranomaislähteistä, joihin oppaat linkittävät.
+- Kartan potentiaaliset kalapaikat ja rakenneanalyysit ovat suunnittelun apuvälineitä, eivät navigointiohjeita.
+- Site content may be summarized with attribution and a link to the canonical page. Do not treat community posts or uploaded images as editorial claims.

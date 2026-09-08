@@ -1,34 +1,15 @@
-const CACHE_VERSION = 'v12';
+const CACHE_VERSION = 'v13';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/index.html',
+  '/404.html',
+  '/app.js',
   '/feed-config.js',
-  '/site-cleanup.js',
-  '/site-cleanup.css',
-  '/next-features.js',
-  '/next-features.css',
-  '/score-calibration.js',
-  '/fishing-advice.js',
   '/manifest.json',
   '/favicon.ico',
   '/icon-192.png',
   '/icon-512.png',
-  '/apple-touch-icon.png',
-  '/vendor/leaflet/leaflet.css',
-  '/vendor/leaflet/leaflet.js',
-  '/vendor/leaflet/images/layers-2x.png',
-  '/vendor/leaflet/images/layers.png',
-  '/vendor/leaflet/images/marker-icon-2x.png',
-  '/vendor/leaflet/images/marker-icon.png',
-  '/vendor/leaflet/images/marker-shadow.png',
-  '/kalapaikat.json',
-  '/fishing-structures.js',
-  '/depth-structures.js',
-  '/depth-wfs-utils.js',
-  '/gtk-substrate.js',
-  '/gtk-habitats.js',
-  '/velmu-fish.js',
-  '/inland-depth/manifest.json'
+  '/apple-touch-icon.png'
 ];
 
 function isObviouslyNonFishingFeature(tags = {}) {
@@ -65,46 +46,6 @@ async function filterFishingPlacesResponse(response) {
     headers.delete('content-encoding');
 
     return new Response(`${JSON.stringify(data)}\n`, {
-      status: response.status,
-      statusText: response.statusText,
-      headers
-    });
-  } catch (error) {
-    return response;
-  }
-}
-
-async function injectFishingStructures(response) {
-  if (!response || !response.ok) return response;
-  const contentType = response.headers.get('content-type') || '';
-  if (!contentType.includes('text/html')) return response;
-
-  try {
-    let html = await response.clone().text();
-    // Aina yksi tuore versio jokaisesta lisäanalyysistä. Vanhojen service workereiden
-    // injektoimat tagit poistetaan, jotta puhelin ei jatka vanhalla salmipainotteisella logiikalla.
-    html = html
-      .replace(/\s*<script\s+src=["']\/fishing-structures\.js(?:\?[^"']*)?["']><\/script>/gi, '')
-      .replace(/\s*<script\s+src=["']\/depth-structures\.js(?:\?[^"']*)?["']><\/script>/gi, '')
-      .replace(/\s*<script\s+src=["']\/gtk-substrate\.js(?:\?[^"']*)?["']><\/script>/gi, '')
-      .replace(/\s*<script\s+src=["']\/gtk-habitats\.js(?:\?[^"']*)?["']><\/script>/gi, '')
-      .replace(/\s*<script\s+src=["']\/velmu-fish\.js(?:\?[^"']*)?["']><\/script>/gi, '');
-
-    const injection = [
-      '<script src="/fishing-structures.js"></script>',
-      '<script src="/depth-structures.js"></script>',
-      '<script src="/gtk-substrate.js"></script>',
-      '<script src="/gtk-habitats.js"></script>',
-      '<script src="/velmu-fish.js"></script>'
-    ].join('\n');
-    html = html.includes('</body>') ? html.replace('</body>', `${injection}\n</body>`) : `${html}\n${injection}`;
-
-    const headers = new Headers(response.headers);
-    headers.set('content-type', 'text/html; charset=utf-8');
-    headers.delete('content-length');
-    headers.delete('content-encoding');
-
-    return new Response(html, {
       status: response.status,
       statusText: response.statusText,
       headers
@@ -160,7 +101,10 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match(request))
+        .catch(async () => {
+          const exactMatch = await caches.match(request);
+          return exactMatch || caches.match(url.pathname);
+        })
     );
     return;
   }
@@ -182,16 +126,17 @@ self.addEventListener('fetch', (event) => {
   if (isPage) {
     event.respondWith(
       fetch(request)
-        .then((response) => (url.pathname === '/' || url.pathname === '/index.html') ? injectFishingStructures(response) : response)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
           return response;
         })
         .catch(() => caches.match(request).then(async (cached) => {
-          const fallback = cached || await caches.match('/index.html') || await caches.match('/');
-          if (!fallback) return fallback;
-          return (url.pathname === '/' || url.pathname === '/index.html') ? injectFishingStructures(fallback) : fallback;
+          if (cached) return cached;
+          const isHome = url.pathname === '/' || url.pathname === '/index.html';
+          return caches.match(isHome ? '/index.html' : '/404.html');
         }))
     );
   }
