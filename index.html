@@ -14,7 +14,7 @@
     }
     var theme = (stored === 'dark' || stored === 'light')
       ? stored
-      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      : 'dark';
     document.documentElement.setAttribute('data-theme', theme);
   } catch (e) {}
 })();
@@ -34,7 +34,7 @@ if ('serviceWorker' in navigator) {
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="manifest" href="/manifest.json">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="FastFishing for language models">
-<meta name="theme-color" content="#17342f">
+<meta name="theme-color" content="#071a20">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="canonical" href="https://fastfishin.com/">
@@ -1623,6 +1623,7 @@ body.device-phone .columns {
   gap: 12px !important;
 }
 </style>
+<link rel="stylesheet" href="/app-ui.css?v=1">
 <!-- Saalisfeedin palvelimen osoite. Muokkaa feed-config.js:ää, älä tätä riviä. -->
 <script src="feed-config.js"></script>
 </head>
