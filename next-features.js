@@ -1,5 +1,3 @@
-import { initTripPlanner } from './trip-planner.js';
-
 const API_BASE = String(window.FASTFISH_API_BASE || '').trim().replace(/\/+$/, '');
 
 function apiUrl(path){ return API_BASE + path; }
@@ -60,7 +58,6 @@ function decorateProfiles(root=document){
 }
 
 function init(){
-  initTripPlanner();
   document.querySelectorAll('[data-page="feedi"]').forEach(btn=>btn.addEventListener('click',loadWeeklyInsights,{once:true}));
   if (location.hash.includes('feedi')) loadWeeklyInsights();
   decorateProfiles();
