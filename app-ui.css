@@ -79,8 +79,11 @@ html[data-theme="dark"] .grid > article,
 html[data-theme="dark"] .nearby-map-wrap,
 html[data-theme="dark"] .feed-auth-card,
 html[data-theme="dark"] .feed-toolbar,
+html[data-theme="dark"] .feed-post-card,
 html[data-theme="dark"] .feed-post,
 html[data-theme="dark"] .feed-card,
+html[data-theme="dark"] .feed-comment-item,
+html[data-theme="dark"] .feed-catch-details,
 html[data-theme="dark"] .ff-next-card,
 html[data-theme="dark"] .ff-next-modal {
   border-color: var(--line);
