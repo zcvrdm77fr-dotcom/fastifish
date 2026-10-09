@@ -1623,7 +1623,7 @@ body.device-phone .columns {
   gap: 12px !important;
 }
 </style>
-<link rel="stylesheet" href="/app-ui.css?v=1">
+<link rel="stylesheet" href="/app-ui.css?v=2">
 <!-- Saalisfeedin palvelimen osoite. Muokkaa feed-config.js:ää, älä tätä riviä. -->
 <script src="feed-config.js"></script>
 </head>
@@ -1669,27 +1669,13 @@ body.device-phone .columns {
   </div>
 </div>
 
-<header class="shell hero">
-  <div class="hero-copy">
-    <div class="intent-switch" id="intentSwitch" role="group" aria-label="Valitse käyttötarkoitus">
-      <button type="button" class="intent-btn active" data-intent="kelimittari">🎣 Kalastus</button>
-      <button type="button" class="intent-btn" data-intent="merikartta">🚤 Veneily</button>
-    </div>
-    <div class="eyebrow">Kalapäivän suunnitteluun</div>
-    <h1>FastFishing</h1>
-    <p class="lead">Yksi sivu, josta näet nopeasti kalakelin, parhaat kalastusajat ja millä vieheellä kannattaa aloittaa.</p>
-    <div class="hero-actions">
-      <a class="btn primary" href="#kelimittari" data-go="kelimittari">Katso keli</a>
-      <a class="btn" href="#uistimet" data-go="uistimet">Mitä laittaisin siimaan?</a>
-    </div>
-  </div>
+<header class="shell hero ff-home-controls">
   <aside class="hero-panel" aria-label="Kalakelin valinnat">
-    <div class="panel-title"><strong>Paikka ja kala</strong><span class="pill">sää</span></div>
+    <div class="panel-title"><strong>Valitse paikka ja kohdekala</strong></div>
     <div class="controls">
       <div class="field place-search">
         <label for="locationSearch">Hae paikkaa</label>
-        <input id="locationSearch" type="search" autocomplete="off" aria-describedby="locationSearchHint">
-        <small class="field-hint" id="locationSearchHint">Voit hakea esimerkiksi Saimaata, Oulua tai Päijännettä.</small>
+        <input id="locationSearch" type="search" autocomplete="off">
         <div class="place-count" id="locationCount"></div>
       </div>
       <div class="field">
@@ -1703,28 +1689,11 @@ body.device-phone .columns {
       <button class="refresh" id="refreshBtn">Päivitä keli</button>
     </div>
     <div class="updated" id="updatedText">Valmis hakemaan kelitiedot.</div>
-    <div class="hero-result" id="heroResult" hidden>
-      <div class="hero-result-score" id="heroResultScore">--</div>
-      <div>
-        <div class="hero-result-label" id="heroResultLabel"></div>
-        <div class="hero-result-verdict" id="heroResultVerdict"></div>
-        <a class="hero-result-link" href="#kelimittari" data-go="kelimittari" id="heroResultLink">Katso koko keli ja parhaat ajat ↓</a>
-      </div>
-    </div>
+    <button type="button" id="toggleNearbyBtn" class="ff-nearby-toggle" aria-expanded="false">Näytä lähimmät kalapaikat</button>
   </aside>
 </header>
 
-<section class="shell site-intro" style="padding-block:8px 32px" aria-label="Tietoa FastFishingista">
-  <p style="max-width:760px; color:var(--ink-soft); line-height:1.7;">
-    FastFishing on suomalaisille kalastajille tehty kalakelin mittari, joka yhdistää sään, ilmanpaineen
-    muutoksen, pilvisyyden ja vuorokaudenajan yhdeksi arvioksi siitä, kannattaako lähteä vesille juuri
-    tänään. Työkalun rinnalla sivustolla on kattavat <a href="#oppaat" data-go="oppaat" style="color:var(--lake-deep); text-decoration:underline;">kalastusoppaat</a>
-    hauelle, ahvenelle, kuhalle ja taimenelle - miten kevät, kesä, syksy ja talvi sekä sää ja veden lämpötila
-    muuttavat kalan käytöstä ja mitä vieheitä kannattaa kokeilla missä olosuhteessa. Pisteytys on aina
-    suuntaa-antava apuväline, ei tae saaliista - paikallistuntemus ja oma silmämääräinen arvio ratkaisevat
-    usein enemmän kuin mikä tahansa yksittäinen mittari.
-  </p>
-</section>
+
 
 <section id="nearbySection" class="shell nearby-section" hidden>
   <div class="section-head">
@@ -1739,8 +1708,8 @@ body.device-phone .columns {
 <main class="shell">
   <section id="kelimittari" class="page active">
     <div class="section-head">
-      <h2>Kelimittari</h2>
-      <p>Suuntaa-antava arvio siitä, onko nyt järkeä lähteä rantaan vai keittää vielä kahvit.</p>
+      <h1>Kalakeli nyt</h1>
+      <p>Pisteet, sää ja päivän parhaat kalastusajat.</p>
     </div>
     <div class="dashboard">
       <section class="gauge-card">
@@ -1798,63 +1767,9 @@ body.device-phone .columns {
       </section>
     </div>
 
-    <div class="content-card" style="margin-top:32px">
-      <h2>Miten kalakelipisteytys lasketaan</h2>
-      <p>
-        FastFishingin kelimittari ei arvo satunnaislukua, vaan yhdistää kuusi
-        muuttujaa harrastuskalastuksessa käytettyjen kokemusperäisten
-        nyrkkisääntöjen pohjalta:
-        ilmanpaineen muutoksen viimeisen kuuden tunnin ajalta, tuulen
-        nopeuden, pilvisyyden, ilman lämpötilan, kuun vaiheen sekä sen,
-        osuuko ajankohta aamu- tai iltahämärään.
-      </p>
-      <p>
-        Säädata haetaan automaattisesti <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>-palvelusta valitulle
-        järvelle tai joelle. Kunkin kalalajin - hauen, ahvenen, kuhan ja
-        taimenen - painotukset eroavat toisistaan, koska esimerkiksi kuha on
-        herkempi paineenmuutokselle kuin hauki, ja ahven reagoi usein
-        voimakkaammin lämpötilan nousuun keväällä. Jos haluat testata omaa
-        mittaustasi laiturilta tai venereissulta, käsin syötettävä lomake
-        yllä laskee saman pisteytyksen sinun antamillasi luvuilla.
-      </p>
-      <p>
-        <strong>Tärkeä huomio:</strong> pisteytys on suuntaa-antava apuväline,
-        ei lupaus saaliista. Paikkakohtaiset tekijät - veden
-        lämpötilakerrostuma, ravintokalojen liikkeet, kalastuspaine ja
-        pohjanmuodot - ratkaisevat käytännössä usein enemmän kuin mikään
-        yksittäinen sääparametri. Työkalu kannattaa yhdistää omaan
-        paikallistuntemukseen, ei korvata sitä.
-      </p>
-      <p>
-        <a class="btn" href="metodologia.html">Katso tarkat painotukset, rajat ja esimerkkilasku →</a>
-      </p>
-
-      <h3>Usein kysyttyä</h3>
-      <div class="checklist">
-        <div class="check">
-          <div>
-            <b>Onko kelimittari maksullinen?</b><br>
-            Ei. Kelimittari, uistinoppaat ja kalalajitiedot ovat kaikille
-            avoimia ja ilmaisia käyttää ilman rekisteröitymistä.
-          </div>
-        </div>
-        <div class="check">
-          <div>
-            <b>Kuinka usein säädata päivittyy?</b><br>
-            Ennuste haetaan aina, kun vaihdat paikkaa tai painat
-            "Päivitä keli" -painiketta, ja se perustuu Open-Meteon
-            tuoreimpaan saatavilla olevaan ennustemalliin.
-          </div>
-        </div>
-        <div class="check">
-          <div>
-            <b>Toimiiko mittari kaikilla Suomen järvillä ja joilla?</b><br>
-            Paikkalistalta löytyy satoja suomalaisia kalavesiä. Jos oma
-            vesistösi puuttuu, voit silti syöttää sään käsin lomakkeeseen
-            ja saada saman pisteytyksen.
-          </div>
-        </div>
-      </div>
+    <div class="ff-method-note">
+      <span>Kalakelipiste on suuntaa-antava arvio, ei saalistakuu.</span>
+      <a href="metodologia.html" class="mini-link">Miten piste lasketaan?</a>
     </div>
   </section>
 
@@ -2292,7 +2207,7 @@ body.device-phone .columns {
   </div>
 </footer>
 
-<script defer src="/app.js?v=13"></script>
+<script defer src="/app.js?v=14"></script>
 
 </body>
 </html>
