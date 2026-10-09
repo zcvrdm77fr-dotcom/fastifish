@@ -362,8 +362,8 @@ const UI_TRANS = {
     nearby_status_loading_weather: "Haetaan lähimpien paikkojen säätietoja...",
     nearby_status_failed: "Säätietojen haku epäonnistui.",
     nearby_status_ok: "Lähimmät kalapaikat kelitietoineen:",
-    page_kelimittari_title: "Kelimittari",
-    page_kelimittari_desc: "Suuntaa-antava arvio siitä, onko nyt järkeä lähteä rantaan vai keittää vielä kahvit.",
+    page_kelimittari_title: "Kalakeli nyt",
+    page_kelimittari_desc: "Pisteet, sää ja päivän parhaat kalastusajat.",
     page_uistimet_title: "Uistimet ja vieheet",
     page_uistimet_desc: "Valitse kohdekala alta. Pääset omalle sivulle, jossa on vesivinkit sekä ihan oikeita uistinehdotuksia merkkeineen ja malleineen - ei vain väriä ja tyyppiä.",
     lure_rules_title: "Nyrkkisäännöt",
@@ -456,8 +456,8 @@ const UI_TRANS = {
     nearby_status_loading_weather: "Fetching weather for nearby spots...",
     nearby_status_failed: "Weather fetch failed.",
     nearby_status_ok: "Closest fishing spots with weather conditions:",
-    page_kelimittari_title: "Bite Index",
-    page_kelimittari_desc: "A guiding estimate of whether it's worth hitting the water right now or making another cup of coffee.",
+    page_kelimittari_title: "Fishing conditions",
+    page_kelimittari_desc: "Score, weather and the best times to fish.",
     page_uistimet_title: "Lures and Baits",
     page_uistimet_desc: "Select a target fish below. You'll land on its own page with water-clarity tips plus real lure suggestions, brands and models included - not just color and type.",
     lure_rules_title: "Golden Rules",
@@ -1306,7 +1306,7 @@ function setLanguage(lang, saveToLocalStorage = true) {
   Object.keys(pageHeaderMap).forEach(pageId => {
     const pageSection = document.getElementById(pageId);
     if (pageSection) {
-      const h2 = pageSection.querySelector(".section-head h2");
+      const h2 = pageSection.querySelector(".section-head h1, .section-head h2");
       if (h2) h2.textContent = pageHeaderMap[pageId].h2;
       const p = pageSection.querySelector(".section-head p");
       if (p) p.textContent = pageHeaderMap[pageId].p;
@@ -3735,12 +3735,13 @@ function showPage(id){
 
   const section = document.getElementById("nearbySection");
   if (section) {
-    if (id === 'kelimittari' && ("geolocation" in navigator)) {
-      section.hidden = false;
+    const shouldShowNearby = id === 'kelimittari'
+      && section.dataset.expanded === 'true'
+      && ("geolocation" in navigator);
+    section.hidden = !shouldShowNearby;
+    if (shouldShowNearby) {
       if (!renderNearbySpots.lastSpots) initGeoLocation(false);
       if (nearbyMap) setTimeout(()=>nearbyMap.invalidateSize(), 50);
-    } else {
-      section.hidden = true;
     }
   }
 
@@ -3762,6 +3763,24 @@ function showPage(id){
 }
 document.querySelectorAll("[data-page]").forEach(btn=>btn.addEventListener("click",()=>showPage(btn.dataset.page)));
 document.querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();showPage(a.dataset.go)}));
+
+const nearbyToggleBtn = document.getElementById("toggleNearbyBtn");
+if (nearbyToggleBtn) {
+  nearbyToggleBtn.addEventListener("click", () => {
+    const section = document.getElementById("nearbySection");
+    if (!section || !("geolocation" in navigator)) return;
+    const willOpen = section.hidden;
+    section.dataset.expanded = String(willOpen);
+    section.hidden = !willOpen;
+    nearbyToggleBtn.setAttribute("aria-expanded", String(willOpen));
+    nearbyToggleBtn.textContent = willOpen ? "Piilota lähimmät kalapaikat" : "Näytä lähimmät kalapaikat";
+    if (willOpen) {
+      if (!renderNearbySpots.lastSpots) initGeoLocation(false);
+      if (nearbyMap) setTimeout(() => nearbyMap.invalidateSize(), 50);
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+}
 
 // --- Saalisfeedi: käyttäjätilit, kuvan lataus, feedin selaus -------------------------------
 let feedUser = null;
@@ -5413,27 +5432,6 @@ initGeoLocation();
 const warmPotentialSpotDataset=()=>loadPotentialSpotDataset().catch(()=>{});
 if ('requestIdleCallback' in window) requestIdleCallback(warmPotentialSpotDataset,{timeout:3000});
 else setTimeout(warmPotentialSpotDataset,1800);
-
-(function(){
-  const switchEl=document.getElementById("intentSwitch");
-  if (!switchEl) return;
-  function setActiveBtn(intent){
-    switchEl.querySelectorAll(".intent-btn").forEach(b=>b.classList.toggle("active", b.dataset.intent===intent));
-  }
-  switchEl.querySelectorAll(".intent-btn").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      const intent=btn.dataset.intent;
-      storage.setItem('site_intent', intent);
-      setActiveBtn(intent);
-      showPage(intent);
-    });
-  });
-  const stored=storage.getItem('site_intent');
-  if (stored === 'merikartta') {
-    setActiveBtn('merikartta');
-    showPage('merikartta');
-  }
-})();
 
 // Apply device views. Aiemmin tämä avasi koko sisällön peittävän valintaikkunan jokaisella
 // ensikäynnillä (myös hakukoneiden/AdSensen tarkistusroboteilla) - sisältö ei ollut lainkaan
