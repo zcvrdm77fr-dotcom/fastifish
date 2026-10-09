@@ -4,8 +4,8 @@ const SECONDARY_GROUPS = [
   { titleFi: 'Muu tietopankki', titleEn: 'More resources', pages: ['varusteet', 'linkit'] }
 ];
 const PAGE_LABELS = {
-  fi: { kelimittari:'Keli', merikartta:'Kartta', feedi:'Saaliit', oppaat:'Oppaat', uistimet:'Uistimet', kalalajit:'Kalalajit', varusteet:'Varusteet', linkit:'Linkit', more:'Lisää' },
-  en: { kelimittari:'Conditions', merikartta:'Map', feedi:'Catches', oppaat:'Guides', uistimet:'Lures', kalalajit:'Species', varusteet:'Gear', linkit:'Links', more:'More' }
+  fi: { kelimittari:'Kelimittari', merikartta:'Kartta', feedi:'Saaliit', oppaat:'Oppaat', uistimet:'Uistimet', kalalajit:'Kalalajit', varusteet:'Varusteet', linkit:'Linkit', more:'Lisää' },
+  en: { kelimittari:'Bite Index', merikartta:'Map', feedi:'Catches', oppaat:'Guides', uistimet:'Lures', kalalajit:'Species', varusteet:'Gear', linkit:'Links', more:'More' }
 };
 
 function currentLang() {
