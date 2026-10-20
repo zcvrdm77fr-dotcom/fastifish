@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+  <meta name="theme-color" content="#0a1716">
+  <title>Kenttämuistio 07 — Taimen</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #091412;
+      --panel: #10231f;
+      --panel2: #142b26;
+      --line: #29453c;
+      --text: #eef4ed;
+      --muted: #a8bbb0;
+      --aqua: #86d8c0;
+      --orange: #f0a15f;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 90% 0%, rgba(40, 108, 89, .23), transparent 35rem),
+        linear-gradient(180deg, #0b1916 0%, var(--bg) 60%);
+      color: var(--text);
+      font: 16px/1.7 var(--sans);
+    }
+    .wrap { width: min(980px, calc(100% - 36px)); margin: 0 auto; }
+    header { padding: clamp(44px, 8vw, 88px) 0 32px; }
+    .stamp {
+      display: inline-flex; align-items: center; gap: 9px;
+      color: var(--aqua); border: 1px solid #3b7765; background: #102720;
+      padding: 7px 11px; border-radius: 5px;
+      font: 700 11px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 12px rgba(240,161,95,.65); }
+    h1 {
+      max-width: 820px; margin: 22px 0 14px;
+      font-size: clamp(2.7rem, 8vw, 5.7rem); line-height: .98; letter-spacing: -.06em;
+      font-weight: 850;
+    }
+    h1 span { color: var(--aqua); }
+    .lede { max-width: 650px; color: var(--muted); font-size: clamp(1rem, 2.4vw, 1.18rem); }
+    .meta { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 28px; color: #78968a; font: 11px/1.5 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .meta strong { color: var(--orange); font-weight: 700; }
+    .rule { height: 1px; background: linear-gradient(90deg, var(--aqua), var(--line) 55%, transparent); margin: 12px 0 30px; }
+    .callout {
+      display: grid; grid-template-columns: 42px 1fr; gap: 17px;
+      border: 1px solid #365749; background: linear-gradient(135deg, #142d26, #10201c);
+      border-radius: 12px; padding: 22px; margin: 0 0 28px;
+    }
+    .sigil { display: grid; place-items: center; border: 1px solid #427663; color: var(--aqua); width: 42px; height: 42px; border-radius: 9px; font: 700 18px var(--mono); }
+    .callout h2 { font-size: 1rem; margin: 0 0 5px; letter-spacing: .01em; }
+    .callout p { color: var(--muted); margin: 0; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    article {
+      background: rgba(16, 35, 31, .88); border: 1px solid var(--line);
+      border-radius: 12px; padding: clamp(19px, 3vw, 27px);
+    }
+    .num { color: var(--orange); font: 700 11px var(--mono); letter-spacing: .13em; }
+    h2 { margin: 10px 0 9px; font-size: clamp(1.14rem, 2.5vw, 1.42rem); line-height: 1.2; letter-spacing: -.025em; }
+    p { margin: 0 0 12px; }
+    article p { color: var(--muted); }
+    article p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); }
+    .tag { display: inline-block; margin-top: 9px; padding: 4px 8px; border: 1px solid #315547; border-radius: 4px; color: var(--aqua); font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+    .wide { margin-top: 14px; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+    .step { background: #0b1916; border: 1px solid var(--line); border-radius: 8px; padding: 15px; }
+    .step b { display: block; color: var(--aqua); font: 700 11px var(--mono); margin-bottom: 6px; }
+    .step span { color: var(--muted); font-size: .92rem; line-height: 1.5; display: block; }
+    .warning { margin-top: 14px; background: #281f17; border: 1px solid #6c4b30; border-radius: 12px; padding: 20px 22px; }
+    .warning h2 { color: #ffc18a; margin-top: 0; }
+    .warning p { color: #dbc6ae; }
+    .closing { margin: 29px 0 56px; border-top: 1px solid var(--line); padding-top: 22px; color: #78968a; font: 11px/1.8 var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .closing strong { color: var(--aqua); }
+    @media (max-width: 680px) {
+      .grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      .callout { grid-template-columns: 34px 1fr; gap: 12px; padding: 17px; }
+      .sigil { width: 34px; height: 34px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="stamp"><span class="dot" aria-hidden="true"></span> Luottamuksellinen kenttämuistio / 07</div>
+      <h1>TAIMENEN<br><span>PIILOKOODI.</span></h1>
+      <p class="lede">Hyvä taimenenkalastaja ei vain vaihda viehettä. Hän lukee vettä, virtaa, valoa ja kalan ruokareittiä. Tässä ovat havainnot, joita kannattaa testata ennen kuin heität kymmentä kertaa samaan paikkaan.</p>
+      <div class="meta"><span>Arkisto: FF–07</span><span>Tila: <strong>Vain kenttäkäyttöön</strong></span><span>Laji: Salmo trutta</span></div>
+    </header>
+
+    <div class="rule"></div>
+
+    <section class="callout">
+      <div class="sigil" aria-hidden="true">!</div>
+      <div>
+        <h2>Ensimmäinen sääntö: etsi reitti, älä pelkkää syvyyttä.</h2>
+        <p>Taimen käyttää usein virtauksen ja suojan rajaa: kiven alapuolta, virran saumaa, syvänteen niskaa tai varjon reunaa. Tarkka paikka muuttuu vedenkorkeuden ja virtauksen mukana — sama heitto ei toimi joka päivä.</p>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Taimenen kenttävinkit">
+      <article>
+        <div class="num">01 / VESI</div>
+        <h2>Virran sauma on ruokalista</h2>
+        <p>Etsi kohta, jossa nopea vesi kohtaa rauhallisemman virtauksen. Taimen voi pysyä suojaisemmassa vedessä ja napata ohi kulkevan ravinnon. Kokeile ensin saumaa ja sen alapuolista hidastumaa.</p>
+        <p><strong>Vinkki:</strong> tarkkaile pintaan tulevia hyönteisiä ja pikkukalojen liikettä ennen ensimmäistä heittoa.</p>
+        <span class="tag">Lue virtausta</span>
+      </article>
+
+      <article>
+        <div class="num">02 / VALO</div>
+        <h2>Hämärä ei ole taikatemppu</h2>
+        <p>Aamu- ja iltahämärässä taimen voi uskaltautua matalampaan veteen. Kirkkaana päivänä kokeile varjon reunaa ja syvempää reittiä; pilvisellä säällä kala saattaa liikkua rohkeammin.</p>
+        <p><strong>Vinkki:</strong> jos seuraat kalaa tai näet pintakäyntejä, vaihda ensin heittokulmaa — älä automaattisesti viehettä.</p>
+        <span class="tag">Valo muuttaa peliä</span>
+      </article>
+
+      <article>
+        <div class="num">03 / VIEHE</div>
+        <h2>Muuta yhtä asiaa kerrallaan</h2>
+        <p>Jos kala käy vieheen perässä mutta ei ota, testaa ensin nopeutta tai uiton syvyyttä. Vasta sen jälkeen vaihda kokoa tai väritystä. Näin opit, mikä muutos oikeasti vaikutti.</p>
+        <p><strong>Kirkas vesi:</strong> kokeile hillittyä ja luonnollista sävyä. <strong>Samea vesi:</strong> selkeämpi kontrasti voi auttaa viehettä erottumaan.</p>
+        <span class="tag">Pieni muutos, parempi tieto</span>
+      </article>
+
+      <article>
+        <div class="num">04 / LÄMPÖ</div>
+        <h2>Veden lämpö ratkaisee enemmän kuin ilma</h2>
+        <p>Taimen on kylmän veden kala. Kuumana jaksona lämmin ja vähähappinen vesi lisää kalan rasitusta, varsinkin pyynnin jälkeen. Mittaa veden lämpö, jos voit — älä päättele sitä pelkästä ilmanlämmöstä.</p>
+        <p><strong>Vastuullinen valinta:</strong> kun vesi lähestyy 20 °C:ta, jätä tarkoituksellinen vapautuskalastus väliin ja palaa viileämmissä oloissa.</p>
+        <span class="tag">Suojele kalaa</span>
+      </article>
+    </section>
+
+    <section class="wide">
+      <article>
+        <div class="num">05 / KENTTÄKOKEILU</div>
+        <h2>Kolmen vaiheen etsintä</h2>
+        <p>Kun paikka näyttää lupaavalta, älä jää hakkaamaan samaa kohtaa. Tee pieni järjestelmällinen koe ja anna vedelle mahdollisuus kertoa, missä kala liikkuu.</p>
+        <div class="steps">
+          <div class="step"><b>VAIHE 01</b><span>Heitä ensin sauman yläpuolelle ja anna vieheen ajautua luonnollisesti kohti kalapaikkaa.</span></div>
+          <div class="step"><b>VAIHE 02</b><span>Muuta heittokulmaa tai uiton nopeutta — vain yhtä muuttujaa kerrallaan.</span></div>
+          <div class="step"><b>VAIHE 03</b><span>Jos mitään ei tapahdu, siirry seuraavaan rakenteeseen. Kirjaa virtaus, valo ja havainto muistiin.</span></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="wide warning">
+      <h2>Salainen tieto ei ohita sääntöjä.</h2>
+      <p>Taimenen pyyntirajoitukset riippuvat vesistöstä, alueesta ja kalasta. Tarkista aina voimassa olevat rauhoitusajat, alamitat sekä rasvaevällistä taimenta koskevat rajoitukset ennen kalastusta. Jätä kutusoraikot rauhaan.</p>
+      <p>Jos vapautat kalan, valmistele pihdit ja kamera etukäteen, pidä kala mahdollisimman paljon vedessä ja käsittele sitä märin käsin. Älä nosta kalaa ilmaan vain kuvan vuoksi.</p>
+    </section>
+
+    <footer class="closing">
+      <strong>Muistion loppu.</strong><br>
+      Havainnoi ensin. Muuta yhtä asiaa. Kirjaa tulos. Kunnioita kalaa ja vettä.
+    </footer>
+  </main>
+</body>
+</html>
