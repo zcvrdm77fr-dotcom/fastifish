@@ -2853,6 +2853,49 @@ function potentialWeatherSummary(spot){
     : `${w.temp.toFixed(0)} °C · wind ${w.wind.toFixed(1)} m/s · cloud ${Math.round(w.cloud)}% · pressure ${trend}${w.isPrimeTime?' · twilight feeding window':''}`;
 }
 
+let mapAdviceClient;
+
+async function showMapFishingAdvice(spot, output, fi) {
+  const species = document.getElementById('potentialSpotSpecies')?.value;
+  if (!['hauki', 'ahven'].includes(species)) {
+    output.textContent = fi ? 'Valitse kartan lajiksi hauki tai ahven.' : 'Select pike or perch in the map filters.';
+    return;
+  }
+  output.textContent = fi ? 'Haetaan ennustetta…' : 'Loading forecast…';
+  try {
+    const [{ createForecastClient, upcomingHours }, { findBestWindow, recommendForSpecies }] = await Promise.all([
+      import('./forecast.js'),
+      import('./fishing-advice.js')
+    ]);
+    mapAdviceClient ??= createForecastClient();
+    const lang = fi ? 'fi' : 'en';
+    let window = null;
+    let forecast;
+    try {
+      forecast = await mapAdviceClient.get(spot.lat, spot.lon);
+      window = findBestWindow(upcomingHours(forecast), species);
+    } catch {
+      // The species-specific starting lure is available offline.
+    }
+    const advice = recommendForSpecies(species, window?.conditions ?? {}, lang);
+    const lure = (fi ? 'Aloitusviehe: ' : 'Starting lure: ') + advice.lure.split(',')[0];
+    if (!window) {
+      output.textContent = (fi ? 'Sopivaa ennustejaksoa ei ole saatavilla. ' : 'No forecast window available. ') + lure;
+      return;
+    }
+    const format = new Intl.DateTimeFormat(fi ? 'fi-FI' : 'en-GB', {
+      timeZone: forecast.timezone, weekday: 'short', hour: 'numeric', minute: '2-digit'
+    });
+    const time = format.formatRange(window.startTimestamp, window.endTimestamp);
+    const label = forecast.stale
+      ? (fi ? 'Aiemman ennusteen paras jakso' : 'Best window from cached forecast')
+      : (fi ? 'Paras arvioitu jakso' : 'Best estimated window');
+    output.textContent = `${label}: ${time}. ${lure}. ${advice.technique}.`;
+  } catch {
+    output.textContent = fi ? 'Suositusta ei saatu. Yritä uudelleen.' : 'Advice unavailable. Try again.';
+  }
+}
+
 function usePotentialSpot(spot){
   const key=addDynamicLocation({name:spot.name,lat:spot.lat,lon:spot.lon});
   locSel.value=key;
@@ -2908,14 +2951,28 @@ function drawPotentialSpotMarkers(spots,totalElementCount){
         <p><strong>${fi?'Mahdolliset lajit':'Potential species'}:</strong> ${escapeMapHtml(speciesText)}</p>
         <p class="potential-warning">⚠️ ${escapeMapHtml(spot.warning)} ${fi?'Tarkista aina ajantasaiset luvat ja rajoitukset.':'Always check current permits and restrictions.'}</p>
       </details>
+      <p data-map-advice-status role="status"></p>
       <div class="potential-actions">
+        <button class="btn" type="button" data-map-advice>${fi?'Aika ja viehe':'Time and lure'}</button>
         <button class="btn primary" type="button" id="${useId}">${fi?'Laske paikan keli':'Check conditions'}</button>
         <button class="btn" type="button" id="${favId}">${isPotentialFavorite(spot.id)?'★ '+(fi?'Suosikki':'Favorite'):'☆ '+(fi?'Tallenna':'Save')}</button>
         <a class="btn" href="https://kalastusrajoitus.fi/" target="_blank" rel="noopener">${fi?'Tarkista rajoitukset ↗':'Check restrictions ↗'}</a>
         <a class="btn" href="${escapeMapHtml(spot.sourceUrl)}" target="_blank" rel="noopener">${fi?'Avaa lähdetieto ↗':'Open source data ↗'}</a>
       </div>
     </div>`,{maxWidth:360});
-    marker.on('popupopen',()=>{
+    marker.on('popupopen',event=>{
+      const popup = event.popup.getElement();
+      const adviceButton = popup.querySelector('[data-map-advice]');
+      const adviceStatus = popup.querySelector('[data-map-advice-status]');
+      adviceButton.onclick = async () => {
+        adviceButton.disabled = true;
+        try {
+          await showMapFishingAdvice(spot, adviceStatus, fi);
+        } finally {
+          adviceButton.disabled = false;
+          if (adviceStatus.isConnected) event.popup.update();
+        }
+      };
       const btn=document.getElementById(useId);
       if (btn) btn.addEventListener('click',()=>usePotentialSpot(spot),{once:true});
       const fav=document.getElementById(favId);
