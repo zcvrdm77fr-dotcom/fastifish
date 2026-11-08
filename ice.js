@@ -1,4 +1,6 @@
 import { copy, gear, species } from './ice-data.js';
+import { iceScoreForecast } from './ice-score.js';
+import { fishingScoreBand } from './score-calibration.js';
 
 const byId = id => document.getElementById(id);
 const stateKey = 'fastfishing.ice.v1';
@@ -16,6 +18,9 @@ let state = readState();
 let target = 'perch';
 let map, pinLayer, mapFocus, draftHole, draftCatch;
 let tileFailed = false;
+let depthLayers, depthTilesFailed = false, depthRequest;
+const lakeWms = 'https://paikkatiedot.ymparisto.fi/geoserver/inspire_el/wms';
+const depthZoom = 12;
 let gpsMapStatus = '', gpsWeatherStatus = '';
 let forecastLocation, forecastData, forecastController;
 let weatherStatus = 'weatherEmpty';
@@ -87,8 +92,12 @@ function updateLanguage() {
   switcher.setAttribute('aria-label', language === 'fi' ? 'Switch to English' : 'Vaihda suomeksi');
   byId('ice-lake-source').href = language === 'fi' ? 'https://www.vesi.fi/jaatilanne/' : 'https://www.vesi.fi/en/ice-situation/';
   byId('ice-sea-source').href = language === 'fi' ? 'https://www.ilmatieteenlaitos.fi/jaatilanne' : 'https://en.ilmatieteenlaitos.fi/ice-conditions';
+  const scoreSpecies = byId('ice-score-species');
+  scoreSpecies.replaceChildren(...speciesKeys.map(key => new Option(localized(species[key].name), key)));
+  scoreSpecies.value = target;
   renderWeather();
   renderMapStatus();
+  renderDepthStatus();
   renderGear();
   renderHoles();
   renderGuide();
@@ -98,6 +107,7 @@ function updateLanguage() {
 function showPanel(moveFocus = false) {
   const fragment = location.hash.slice(1);
   const selected = panels.includes(fragment) ? fragment : panels[0];
+  if (selected !== 'kartta' && document.body.classList.contains('ice-map-expanded')) expandMap(false);
   document.body.dataset.iceView = selected;
   for (const id of panels) {
     byId(id).hidden = id !== selected;
@@ -144,7 +154,8 @@ function weatherUrl(place) {
     version: '2.0.0',
     request: 'getFeature',
     storedquery_id: 'fmi::forecast::harmonie::surface::point::simple',
-    parameters: 'Temperature,FeelsLike,WindSpeedMS,WindGust,Sunrise,Sunset',
+    parameters: 'Temperature,FeelsLike,WindSpeedMS,WindGust,Sunrise,Sunset,Pressure,TotalCloudCover',
+    starttime: new Date(Math.floor(Date.now() / 3600000) * 3600000 - 6 * 3600000).toISOString(),
     timestep: '60',
     endtime: new Date(Date.now() + 26 * 3600000).toISOString(),
     maxlocations: '1',
@@ -157,7 +168,7 @@ function parseForecast(xml) {
   const response = new DOMParser().parseFromString(xml, 'application/xml');
   const fmi = 'http://xml.fmi.fi/schema/wfs/2.0';
   const gml = 'http://www.opengis.net/gml/3.2';
-  const fields = { Temperature: 'temperature', FeelsLike: 'feels', WindSpeedMS: 'wind', WindGust: 'gusts', Sunrise: 'rise', Sunset: 'set' };
+  const fields = { Temperature: 'temperature', FeelsLike: 'feels', WindSpeedMS: 'wind', WindGust: 'gusts', Sunrise: 'rise', Sunset: 'set', Pressure: 'pressure', TotalCloudCover: 'cloud' };
   const position = response.getElementsByTagNameNS(gml, 'pos')[0]?.textContent.trim();
   const hourly = new Map();
   for (const entry of response.getElementsByTagNameNS(fmi, 'BsWfsElement')) {
@@ -228,6 +239,7 @@ function renderWeather() {
   byId('ice-forecast-place').textContent = forecastLocation?.name
     || (forecastLocation ? t(forecastLocation.kind === 'gps' ? 'localGps' : 'mapPoint') : '');
   byId('ice-refresh').disabled = weatherStatus === 'weatherLoading';
+  renderScore();
   const view = byId('ice-forecast');
   view.hidden = !forecastData;
   if (!forecastData) return;
@@ -261,6 +273,44 @@ function renderWeather() {
     view.append(element('p', 'ice-muted ice-weather-sun', `${t('daylight')} ${time(first.rise)}–${time(first.set)}`));
   }
   view.append(next);
+}
+
+function renderScore() {
+  const result = byId('ice-score-result');
+  const now = Date.now();
+  const { hours, best } = iceScoreForecast(forecastData || [], now, target);
+  const current = hours[0]?.score;
+  result.replaceChildren();
+  byId('ice-score-empty').hidden = current != null;
+  if (current != null) {
+    const dial = element('div', 'ice-score-dial');
+    dial.style.setProperty('--score-angle', `${current * 3.6}deg`);
+    dial.append(element('strong', '', String(current)), element('span', '', '/ 100'));
+    const summary = element('div', 'ice-score-summary');
+    summary.append(dial, element('strong', '', fishingScoreBand(current, language).text));
+    result.append(summary);
+  }
+  if (!hours.some(row => row.score != null)) return;
+  const time = value => formatTime(value, { hour: '2-digit', minute: '2-digit' });
+  if (best) {
+    const end = time(best.end);
+    result.append(element('p', 'ice-score-best', `${t('scoreBest')} ${time(best.start)}–${end} · ${best.score}/100`));
+  }
+  const details = element('details', 'ice-score-hours');
+  details.append(element('summary', '', t('scoreHours')));
+  const chart = element('ol');
+  for (const row of hours) {
+    const item = element('li');
+    const value = element('meter');
+    value.max = 100;
+    value.value = row.score ?? 0;
+    value.hidden = row.score == null;
+    value.setAttribute('aria-label', `${t('scoreTitle')} ${time(row.timestamp)}`);
+    item.append(element('span', '', time(row.timestamp)), value, element('strong', '', String(row.score ?? '—')));
+    chart.append(item);
+  }
+  details.append(chart);
+  result.append(details);
 }
 
 function renderGear() {
@@ -298,6 +348,8 @@ function mountMap() {
   if (!L) {
     byId('ice-add-hole').disabled = true;
     byId('ice-map-weather').disabled = true;
+    byId('ice-depth-layer').disabled = true;
+    byId('ice-expand-map').disabled = true;
     renderMapStatus();
     return;
   }
@@ -319,10 +371,99 @@ function mountMap() {
   });
   tiles.addTo(map);
   pinLayer = L.layerGroup().addTo(map);
-  map.on('moveend resize', updateMapCoordinates);
+  const wms = { format: 'image/png', transparent: true, minZoom: depthZoom, opacity: .8, zIndex: 2, noWrap: true };
+  depthLayers = {
+    lakes: L.tileLayer.wms(lakeWms, {
+      ...wms, maxNativeZoom: 14, maxZoom: 19, layers: 'EL.Syvyysalue,EL.ContourLine,EL.SpotElevation',
+      attribution: '<a href="https://ckan.ymparisto.fi/dataset/jarvien-ja-jokien-syvyysaineisto">Syke · CC BY 4.0</a>'
+    }),
+    sea: L.tileLayer.wms('https://ows.emodnet-bathymetry.eu/wms', {
+      ...wms, opacity: .64, maxNativeZoom: 15, maxZoom: 19, layers: 'mean_multicolour,contours',
+      attribution: '<a href="https://emodnet.ec.europa.eu/en/bathymetry">EMODnet Bathymetry</a>'
+    })
+  };
+  for (const layer of Object.values(depthLayers)) {
+    layer.on('loading tileerror', event => {
+      if (!map.hasLayer(layer)) return;
+      depthTilesFailed = event.type === 'tileerror';
+      renderDepthStatus();
+    });
+  }
+  map.on('moveend resize', () => {
+    updateMapCoordinates();
+    resetDepthReadout();
+    renderDepthStatus();
+  });
+  setDepthLayer();
   map.on('click', ({ latlng }) => map.panTo(latlng, { animate: false }));
   updateMapCoordinates();
   renderMapPins();
+}
+
+function expandMap(expanded) {
+  document.body.classList.toggle('ice-map-expanded', expanded);
+  byId('ice-expand-map').setAttribute('aria-pressed', String(expanded));
+  map?.invalidateSize({ pan: false });
+}
+
+function resetDepthReadout() {
+  depthRequest?.abort();
+  depthRequest = null;
+  byId('ice-depth-reading').textContent = '';
+}
+
+function setDepthLayer() {
+  if (!map) return;
+  resetDepthReadout();
+  depthTilesFailed = false;
+  const selected = byId('ice-depth-layer').value;
+  for (const [key, layer] of Object.entries(depthLayers)) {
+    if (key === selected) layer.addTo(map);
+    else layer.remove();
+  }
+  renderDepthStatus();
+}
+
+function renderDepthStatus() {
+  const selected = byId('ice-depth-layer').value;
+  const ready = Boolean(map && map.getZoom() >= depthZoom);
+  byId('ice-depth-check').hidden = selected !== 'lakes' || !ready;
+  const key = !map || selected === 'base' ? '' : !ready ? 'depthZoom'
+    : depthTilesFailed ? 'depthError' : selected === 'lakes' ? 'lakeDepthNote' : 'seaDepthNote';
+  byId('ice-depth-status').textContent = t(key);
+}
+
+async function checkLakeDepth() {
+  resetDepthReadout();
+  const request = new AbortController();
+  depthRequest = request;
+  const display = byId('ice-depth-reading');
+  const { lat, lng } = mapCenter();
+  const gap = .0002;
+  const params = new URLSearchParams({
+    service: 'WMS', version: '1.1.1', request: 'GetFeatureInfo',
+    layers: 'EL.Syvyysalue', query_layers: 'EL.Syvyysalue', styles: '', srs: 'EPSG:4326',
+    format: 'image/png', info_format: 'application/json', feature_count: '1',
+    bbox: [lng - gap, lat - gap, lng + gap, lat + gap].join(','),
+    width: '101', height: '101', x: '50', y: '50'
+  });
+  display.textContent = t('depthLoading');
+  const timeout = setTimeout(() => request.abort(), 9000);
+  try {
+    const response = await fetch(`${lakeWms}?${params}`, { signal: request.signal });
+    if (!response.ok) throw new Error(String(response.status));
+    const data = await response.json();
+    if (depthRequest !== request) return;
+    const value = String(data.features?.[0]?.properties?.syvyysvali_m || '');
+    const match = /^(\d+(?:[.,]\d+)?)\s*[-–]\s*(\d+(?:[.,]\d+)?)$/.exec(value);
+    display.textContent = match
+      ? `${t('depthAtPoint')} ${formatNumber(Number(match[1].replace(',', '.')))}–${formatNumber(Number(match[2].replace(',', '.')))} m`
+      : t('depthEmpty');
+  } catch {
+    if (depthRequest === request) display.textContent = t('depthError');
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function renderMapStatus() {
@@ -417,6 +558,8 @@ function renderGuide() {
 
 function selectGuide(key) {
   target = key;
+  byId('ice-score-species').value = key;
+  renderScore();
   const fish = species[key];
   for (const choice of byId('ice-species').querySelectorAll('button')) {
     choice.setAttribute('aria-pressed', String(choice.dataset.species === key));
@@ -603,6 +746,13 @@ byId('ice-map-weather').addEventListener('click', () => {
   location.hash = 'suunnittele';
   loadForecast({ kind: 'map', ...mapCenter() });
 });
+byId('ice-depth-layer').addEventListener('change', setDepthLayer);
+byId('ice-depth-check').addEventListener('click', checkLakeDepth);
+byId('ice-expand-map').addEventListener('click', () => expandMap(!document.body.classList.contains('ice-map-expanded')));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && document.body.classList.contains('ice-map-expanded') && !holeDialog.open && !catchDialog.open) expandMap(false);
+});
+byId('ice-score-species').addEventListener('change', event => selectGuide(event.target.value));
 byId('ice-reset-gear').addEventListener('click', () => {
   updateState(latest => ({ ...latest, gear: [] }));
   syncGear();
