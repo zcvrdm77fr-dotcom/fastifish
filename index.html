@@ -1623,7 +1623,7 @@ body.device-phone .columns {
   gap: 12px !important;
 }
 </style>
-<link rel="stylesheet" href="/app-ui.css?v=2">
+<link rel="stylesheet" href="/app-ui.css?v=3">
 <!-- Saalisfeedin palvelimen osoite. Muokkaa feed-config.js:ää, älä tätä riviä. -->
 <script src="feed-config.js"></script>
 </head>
@@ -1656,6 +1656,10 @@ body.device-phone .columns {
       </div>
     </nav>
     <div class="topbar-actions">
+      <a class="ff-ice-link" href="/pilkki.html" id="iceModeLink">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3v18M4.2 7.5l15.6 9m0-9-15.6 9M9 5l3 3 3-3m-6 14 3-3 3 3"/></svg>
+        <span>Pilkkitila</span>
+      </a>
       <button class="theme-toggle-btn" id="themeToggleBtn" type="button" aria-label="Vaihda tumma/vaalea tila" title="Tumma/vaalea tila">
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
@@ -2207,7 +2211,7 @@ body.device-phone .columns {
   </div>
 </footer>
 
-<script defer src="/app.js?v=16"></script>
+<script defer src="/app.js?v=17"></script>
 
 </body>
 </html>

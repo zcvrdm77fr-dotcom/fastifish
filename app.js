@@ -1264,6 +1264,9 @@ function setLanguage(lang, saveToLocalStorage = true) {
     if (tabMap[pageId]) btn.textContent = tabMap[pageId];
   });
   
+  const iceModeLabel = document.querySelector('#iceModeLink span');
+  if (iceModeLabel) iceModeLabel.textContent = lang === 'en' ? 'Ice Fishing' : 'Pilkkitila';
+
   // Hero translation
   const heroEyebrow = document.querySelector(".hero .eyebrow");
   if (heroEyebrow) heroEyebrow.textContent = trans.hero_eyebrow;
@@ -5327,7 +5330,8 @@ async function refresh(){
     lastInfo=computeScoreFromValues({delta:-1,wind:4,cloud:50,temp:14,isPrimeTime:false},species,loc);
     renderLures(species,lastInfo);
     renderFishInfo(species);
-    document.getElementById("heroResult").hidden=true;
+    const heroResult = document.getElementById("heroResult");
+    if (heroResult) heroResult.hidden = true;
   }
 }
 document.getElementById("refreshBtn").addEventListener("click",refresh);

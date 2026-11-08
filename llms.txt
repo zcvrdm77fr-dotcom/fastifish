@@ -9,6 +9,7 @@ Contact: fastfish.official@gmail.com
 ## Core pages
 
 - [FastFishing](https://fastfishin.com/): Kalakelimittari, kalastusajat, viehesuositukset, kartta ja saalisyhteisö.
+- [Pilkkitila](https://fastfishin.com/pilkki.html): Talvisää, viralliset jäätiedot, reikäkartta, pilkkivinkit ja oma saalispäiväkirja.
 - [Kalastusoppaat](https://fastfishin.com/kalastusoppaat.html): Oppaiden hakemisto ja sisäiset linkit laji- ja tekniikkaoppaisiin.
 - [Kalareissun suunnittelu](https://fastfishin.com/kalareissun-suunnittelu.html): Kymmenen minuutin käytännön suunnittelurunko.
 - [Metodologia](https://fastfishin.com/metodologia.html): Kalakelipisteen muuttujat, painotukset, kalibrointi ja rajoitukset.
