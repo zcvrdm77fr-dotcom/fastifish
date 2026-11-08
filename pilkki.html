@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <script>
+  try {
+    const theme = localStorage.getItem('color_theme') || document.cookie.match(/(?:^|; )color_theme=(dark|light)/)?.[1];
+    if (theme === 'light') document.documentElement.dataset.theme = theme;
+  } catch {}
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1925">
+  <meta name="google-adsense-account" content="ca-pub-7506133239289138">
+  <title>Pilkkitila – sää, reikäkartta ja saalispäiväkirja | FastFishing</title>
+  <meta name="description" content="Suunnittele pilkkireissu, katso talvisää ja viralliset jäätiedot, merkitse avannot kartalle ja pidä omaa saalispäiväkirjaa FastFishingin Pilkkitilassa.">
+  <meta name="author" content="FastFishingin ylläpitäjä">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://fastfishin.com/pilkki.html">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="FastFishing">
+  <meta property="og:title" content="FastFishing Pilkkitila">
+  <meta property="og:description" content="Reikäkartta, talvisää, pilkkivinkit ja oma saalispäiväkirja.">
+  <meta property="og:url" content="https://fastfishin.com/pilkki.html">
+  <meta property="og:image" content="https://fastfishin.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://fastfishin.com/og-image.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "FastFishing", "item": "https://fastfishin.com/"},
+      {"@type": "ListItem", "position": 2, "name": "Pilkkitila", "item": "https://fastfishin.com/pilkki.html"}
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="/ice.css">
+  <script defer src="/vendor/leaflet/leaflet.js"></script>
+  <script defer src="/static-theme.js"></script>
+  <script type="module" src="/ice.js"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7506133239289138" crossorigin="anonymous"></script>
+</head>
+<body>
+  <svg class="ice-icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M2 12s3.5-5 8.5-5c3.7 0 6.6 3 6.6 3l4-3v10l-4-3s-2.9 3-6.6 3C5.5 17 2 12 2 12Z"/><path d="M8 12h.01"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20m-8.7-15 17.4 10m0-10L3.3 17M9 4l3 3 3-3m-6 16 3-3 3 3M4 10l4.1-1.1L7 4.8m10 14.4-1.1-4.1L20 14M4 14l4.1 1.1L7 19.2m10-14.4-1.1 4.1L20 10"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M6 3h14v18H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm-3 15a3 3 0 0 1 3-3h14M8 7h7m-7 4h5"/></symbol>
+    <symbol id="i-gps" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19L12 3Zm0 6v4m0 3h.01"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15.3A8.5 8.5 0 0 1 8.7 4 8.6 8.6 0 1 0 20 15.3Z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  </svg>
+
+  <header class="ice-top">
+    <div class="ice-shell ice-top-row">
+      <nav class="crumb" aria-label="Murupolku" data-ice-label="breadcrumb">
+        <a href="/" class="ice-brand"><span class="ice-brand-icon"><svg aria-hidden="true"><use href="#i-fish"></use></svg></span>FastFishing</a>
+        <span class="ice-brand-divider" aria-hidden="true"></span>
+        <span class="ice-mode-tag" data-ice="mode" aria-current="page">Pilkkitila</span>
+      </nav>
+      <div class="ice-top-actions">
+        <a class="ice-back" href="/"><svg aria-hidden="true"><use href="#i-back"></use></svg><span data-ice="back">Avovesitila</span></a>
+        <button type="button" class="ice-icon-btn" id="themeToggle" aria-label="Vaihda teemaa" data-ice-label="theme">
+          <svg class="ice-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+          <svg class="ice-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+        </button>
+        <button type="button" class="ice-icon-btn" id="ice-language" aria-label="Switch to English" lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="ice-shell">
+    <header class="ice-hero">
+      <svg class="ice-contours" viewBox="0 0 590 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <path id="ice-contour" d="M409 97c33 13 44 41 23 66-14 18-47 16-59 44-13 29-54 35-77 13-19-19-17-43-43-48-32-6-36-37-15-56 22-19 53-4 76-16 32-17 64-15 95-3Z"/>
+          <pattern id="ice-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M0 0h24M0 0v24" fill="none" stroke="#9bdcf1" stroke-opacity=".12"/></pattern>
+        </defs>
+        <rect width="590" height="340" fill="url(#ice-grid)"/>
+        <g fill="none" stroke="#9bdcf1" stroke-width=".85">
+          <use href="#ice-contour" opacity=".22" transform="translate(-230 -119) scale(1.74)"/>
+          <use href="#ice-contour" opacity=".27" transform="translate(-177 -92) scale(1.57)"/>
+          <use href="#ice-contour" opacity=".32" transform="translate(-130 -67) scale(1.42)"/>
+          <use href="#ice-contour" opacity=".37" transform="translate(-87 -44) scale(1.28)"/>
+          <use href="#ice-contour" opacity=".43" transform="translate(-43 -22) scale(1.14)"/>
+          <use href="#ice-contour" opacity=".55"/>
+          <use href="#ice-contour" opacity=".62" transform="translate(49 25) scale(.84)"/>
+          <use href="#ice-contour" opacity=".64" transform="translate(106 54) scale(.66)"/>
+        </g>
+        <g fill="none" stroke="#b2ecfc"><circle cx="322" cy="157" r="33" opacity=".28"/><circle cx="322" cy="157" r="24" opacity=".4"/><circle cx="322" cy="157" r="14" opacity=".75"/><path d="M322 145v24m-12-12h24"/></g>
+        <g fill="#c8f2fb"><circle cx="322" cy="157" r="3"/><circle cx="466" cy="96" r="2.5" opacity=".7"/><circle cx="248" cy="236" r="2.5" opacity=".55"/><circle cx="402" cy="244" r="3" fill="#ffc38b"/></g>
+      </svg>
+      <div class="ice-hero-content">
+        <p class="ice-kicker"><svg aria-hidden="true"><use href="#i-snow"></use></svg><span data-ice="edition">FastFishing / Talvi</span></p>
+        <h1 data-ice="mode">Pilkkitila</h1>
+        <p class="ice-hero-lead" data-ice="lead">Suunnittele reissu. Merkitse reiät. Muista, mikä toimi.</p>
+        <a class="ice-hero-link" href="#kartta"><span data-ice="heroMap">Avaa reikäkartta</span><svg aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+      </div>
+    </header>
+
+    <nav class="ice-nav" aria-label="Pilkkitilan toiminnot" data-ice-label="nav">
+      <a href="#suunnittele" data-ice-section="suunnittele" aria-current="page"><svg aria-hidden="true"><use href="#i-snow"></use></svg><span data-ice="plan">Suunnittele</span></a>
+      <a href="#kartta" data-ice-section="kartta"><svg aria-hidden="true"><use href="#i-pin"></use></svg><span data-ice="map">Reikäkartta</span></a>
+      <a href="#vinkit" data-ice-section="vinkit"><svg aria-hidden="true"><use href="#i-fish"></use></svg><span data-ice="tips">Pilkkivinkit</span></a>
+      <a href="#saaliit" data-ice-section="saaliit"><svg aria-hidden="true"><use href="#i-book"></use></svg><span data-ice="journal">Päiväkirja</span></a>
+    </nav>
+
+    <p class="ice-banner" id="ice-offline" role="status" hidden data-ice="offline">Olet offline-tilassa. Tallennetut reiät ja saaliit ovat käytettävissä.</p>
+    <p class="ice-banner" id="ice-storage" role="status" hidden data-ice="storageError">Selain esti tallennuksen. Tämän kerran muutokset voivat kadota, kun suljet sivun.</p>
+    <p class="ice-feedback" role="status" id="ice-announcement"></p>
+    <noscript><p class="ice-banner">Ota JavaScript käyttöön sään, kartan ja päiväkirjan käyttämistä varten. Jäätiedot voi avata alla olevista linkeistä.</p></noscript>
+
+    <section class="ice-panel" id="suunnittele" aria-labelledby="ice-plan-title">
+      <div class="ice-heading"><div><p class="ice-kicker" data-ice="beforeTrip">Ennen reissua</p><h2 id="ice-plan-title" tabindex="-1" data-ice="planTitle">Keli ja jäätilanne</h2></div></div>
+      <div class="ice-plan-grid">
+        <section class="ice-card ice-weather" aria-labelledby="ice-weather-title">
+          <div class="ice-card-heading"><span class="ice-feature-icon"><svg aria-hidden="true"><use href="#i-sun"></use></svg></span><div><p class="ice-kicker" data-ice="weatherKicker">Sääennuste</p><h3 id="ice-weather-title" data-ice="weatherTitle">Pilkkikeli</h3></div></div>
+          <form id="ice-search" class="ice-search">
+            <label class="ice-search-label" for="ice-query" data-ice="place">Paikkakunta</label>
+            <input id="ice-query" type="search" required minlength="2" maxlength="80" autocomplete="off">
+            <button class="ice-btn ice-primary" type="submit" data-ice="search">Hae</button>
+          </form>
+          <button class="ice-btn ice-quiet" type="button" id="ice-weather-gps"><svg aria-hidden="true"><use href="#i-gps"></use></svg><span data-ice="useGps">Käytä sijaintiani</span></button>
+          <p class="ice-muted ice-status" id="ice-search-status" role="status"></p>
+          <div class="ice-forecast-head" id="ice-forecast-head" hidden>
+            <strong id="ice-forecast-place"></strong><button type="button" id="ice-refresh" class="ice-btn ice-quiet" data-ice="refresh">Päivitä</button>
+          </div>
+          <p class="ice-muted ice-status" role="status" id="ice-weather-status">Hae paikkakunnan nimellä tai käytä sijaintiasi nähdäksesi talvisään.</p>
+          <div id="ice-forecast" hidden></div>
+          <p class="ice-source"><a href="https://www.ilmatieteenlaitos.fi/avoin-data-lisenssi" target="_blank" rel="noopener"><span data-ice="forecastSource">Ilmatieteen laitos / HARMONIE</span> (CC BY 4.0)</a><span data-ice="weatherNote">Sääennuste kertoo säästä. Tarkista jäätilanne erikseen.</span></p>
+        </section>
+
+        <section class="ice-card ice-safety" aria-labelledby="ice-safety-title">
+          <div class="ice-card-heading"><span class="ice-feature-icon ice-feature-warm"><svg aria-hidden="true"><use href="#i-alert"></use></svg></span><div><p class="ice-kicker" data-ice="safetyKicker">Turvallisuus</p><h3 id="ice-safety-title" data-ice="safetyTitle">Tarkista jää paikan päällä</h3></div></div>
+          <p data-ice="safetyNote">Jään kantavuus voi vaihdella lyhyelläkin matkalla. Varmista jään kantavuus omalla reitilläsi ja vältä virtapaikkoja, railoja ja väyliä. Jätä reissu väliin, jos jää epäilyttää.</p>
+          <div class="ice-source-list">
+            <a href="https://www.vesi.fi/jaatilanne/" target="_blank" rel="noopener" id="ice-lake-source"><span><strong data-ice="lakeIce">Järvien jäätilanne</strong><small data-ice="lakeSource">Vesi.fi / Syke</small></span><svg aria-hidden="true"><use href="#i-out"></use></svg></a>
+            <a href="https://www.ilmatieteenlaitos.fi/jaatilanne" target="_blank" rel="noopener" id="ice-sea-source"><span><strong data-ice="seaIce">Itämeren jäätilanne</strong><small data-ice="seaSource">Ilmatieteen laitos</small></span><svg aria-hidden="true"><use href="#i-out"></use></svg></a>
+            <a href="https://kalastusrajoitus.fi/" target="_blank" rel="noopener"><span><strong data-ice="restrictions">Pilkkirajoitukset</strong><small>Kalastusrajoitus.fi</small></span><svg aria-hidden="true"><use href="#i-out"></use></svg></a>
+          </div>
+        </section>
+      </div>
+
+      <section class="ice-card ice-gear" aria-labelledby="ice-gear-title">
+        <div class="ice-card-heading ice-card-split"><div><p class="ice-kicker" data-ice="pack">Pakkaa mukaan</p><h3 id="ice-gear-title" data-ice="gearTitle">Varustelista</h3></div><span class="ice-counter" id="ice-gear-count" aria-live="polite"></span></div>
+        <ul id="ice-gear" class="ice-gear-list"></ul>
+        <button type="button" class="ice-btn ice-quiet" id="ice-reset-gear" hidden data-ice="resetGear">Tyhjennä rastit</button>
+      </section>
+    </section>
+
+    <section class="ice-panel" id="kartta" aria-labelledby="ice-map-title">
+      <div class="ice-heading"><div><p class="ice-kicker" data-ice="onIce">Reissun aikana</p><h2 id="ice-map-title" tabindex="-1" data-ice="map">Reikäkartta</h2><p data-ice="mapIntro">Tallenna reiän paikka, veden syvyys ja omat muistiinpanot.</p></div></div>
+      <div class="ice-card ice-map-card">
+        <div class="ice-map-wrap">
+          <div id="ice-map" tabindex="0" role="region" aria-label="Pilkkireikien kartta" data-ice-label="mapLabel"></div>
+          <span class="ice-crosshair" aria-hidden="true"></span>
+        </div>
+        <div class="ice-map-controls">
+          <div><p class="ice-muted" data-ice="mapHelp">Siirrä karttaa tai napauta kohtaa. Ristikko näyttää tallennettavan pisteen.</p><output id="ice-coordinates" class="ice-coordinates"></output></div>
+          <div class="ice-actions">
+            <button type="button" class="ice-btn ice-secondary" id="ice-hole-gps"><svg aria-hidden="true"><use href="#i-gps"></use></svg><span data-ice="markGps">Merkitse GPS:llä</span></button>
+            <button type="button" class="ice-btn ice-primary" id="ice-add-hole"><svg aria-hidden="true"><use href="#i-plus"></use></svg><span data-ice="markMap">Tallenna karttapiste</span></button>
+          </div>
+        </div>
+        <div class="ice-map-extra">
+          <button type="button" class="ice-btn ice-quiet" id="ice-map-weather" data-ice="mapWeather">Sää tähän pisteeseen</button>
+          <p class="ice-muted ice-status" id="ice-map-status" role="status"></p>
+        </div>
+      </div>
+      <section class="ice-list-section" aria-labelledby="ice-holes-title">
+        <div class="ice-card-heading ice-card-split"><div><p class="ice-kicker" data-ice="privateLabel">Vain tällä laitteella</p><h3 id="ice-holes-title" tabindex="-1" data-ice="savedHoles">Omat reiät</h3></div><span class="ice-counter" id="ice-hole-count"></span></div>
+        <p class="ice-muted" data-ice="measurementNote">Oma jäähavainto koskee mittaushetkeä ja yhtä pistettä. Tarkista kantavuus uudelleen ennen uutta reissua.</p>
+        <div class="ice-entries" id="ice-holes"></div>
+      </section>
+    </section>
+
+    <section class="ice-panel" id="vinkit" aria-labelledby="ice-tips-title">
+      <div class="ice-heading"><div><p class="ice-kicker" data-ice="fieldGuide">Lajiopas</p><h2 id="ice-tips-title" tabindex="-1" data-ice="tips">Pilkkivinkit</h2><p data-ice="tipsIntro">Valitse kala ja katso, mistä aloittaa ja miten uittaa pilkkiä.</p></div></div>
+      <div class="ice-fish-picker" id="ice-species" role="group" aria-label="Kohdekala" data-ice-label="target"></div>
+      <article class="ice-card ice-fish-guide" id="ice-guide">
+        <p class="ice-kicker">Yleinen lähtökohta</p><h3>Ahven</h3>
+        <p>Aloita pienellä pystypilkillä tai morrilla. Kokeile pohjan tuntumassa lyhyitä nostoja ja pidä välissä tauko.</p>
+      </article>
+      <p class="ice-muted ice-guide-note" data-ice="tipsNote">Kokeile yhtä muutosta kerrallaan, esimerkiksi syvyyttä tai tauon pituutta. Kirjaa onnistunut yhdistelmä päiväkirjaan.</p>
+    </section>
+
+    <section class="ice-panel" id="saaliit" aria-labelledby="ice-journal-title">
+      <div class="ice-heading ice-journal-head"><div><p class="ice-kicker" data-ice="privateLabel">Vain tällä laitteella</p><h2 id="ice-journal-title" tabindex="-1" data-ice="catchJournal">Saalispäiväkirja</h2><p data-ice="journalIntro">Kirjaa laji, viehe ja reikä, jotta löydät toimivan yhdistelmän uudelleen.</p></div>
+        <button type="button" class="ice-btn ice-primary" id="ice-add-catch"><svg aria-hidden="true"><use href="#i-plus"></use></svg><span data-ice="addCatch">Kirjaa saalis</span></button>
+      </div>
+      <div class="ice-journal-stats" id="ice-journal-stats"></div>
+      <div class="ice-entries" id="ice-catches"></div>
+    </section>
+
+    <footer class="ice-footer">
+      <a href="/" data-ice="backFull">← Takaisin FastFishingiin</a>
+      <p data-ice="privacyNote">Reiät, saaliit ja varustelista säilyvät tässä selaimessa. Sään ja karttapohjan haku vaatii verkkoyhteyden.</p>
+    </footer>
+  </main>
+
+  <dialog class="ice-dialog" id="ice-hole-dialog" aria-labelledby="ice-hole-heading">
+    <form id="ice-hole-form">
+      <div class="ice-dialog-head"><h2 id="ice-hole-heading" data-ice="newHole">Uusi reikä</h2><button type="button" class="ice-icon-btn" data-close aria-label="Sulje" data-ice-label="close"><svg aria-hidden="true"><use href="#i-close"></use></svg></button></div>
+      <p class="ice-coordinates" id="ice-hole-position"></p>
+      <label><span data-ice="holeName">Reiän nimi</span><input id="ice-hole-name" required maxlength="48" autofocus></label>
+      <div class="ice-field-row">
+        <label><span data-ice="depth">Veden syvyys (m)</span><input id="ice-hole-depth" type="number" inputmode="decimal" min="0.1" max="500" step="0.1"></label>
+        <label><span data-ice="thickness">Oma jäämittaus (cm)</span><input id="ice-hole-thickness" type="number" inputmode="decimal" min="0" max="300" step="0.1" aria-describedby="ice-thickness-note"></label>
+      </div>
+      <p class="ice-muted" id="ice-thickness-note" data-ice="measurementField">Syötä vain itse mitattu arvo. Mittaus ei kerro reitin kantavuudesta.</p>
+      <label><span data-ice="notes">Muistiinpanot</span><textarea id="ice-hole-notes" rows="2" maxlength="280"></textarea></label>
+      <div class="ice-dialog-actions"><button type="button" class="ice-btn ice-danger" id="ice-delete-hole" hidden data-ice="remove">Poista</button><button type="submit" class="ice-btn ice-primary" data-ice="saveHole">Tallenna reikä</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="ice-dialog" id="ice-catch-dialog" aria-labelledby="ice-catch-heading">
+    <form id="ice-catch-form">
+      <div class="ice-dialog-head"><h2 id="ice-catch-heading" data-ice="newCatch">Uusi saalis</h2><button type="button" class="ice-icon-btn" data-close aria-label="Sulje" data-ice-label="close"><svg aria-hidden="true"><use href="#i-close"></use></svg></button></div>
+      <div class="ice-field-row">
+        <label><span data-ice="species">Kalalaji</span><select id="ice-catch-species" required autofocus></select></label>
+        <label><span data-ice="date">Päivä</span><input id="ice-catch-date" type="date" required></label>
+      </div>
+      <div class="ice-field-row">
+        <label><span data-ice="count">Määrä</span><input id="ice-catch-count" type="number" inputmode="numeric" min="1" max="999" step="1" required></label>
+        <label><span data-ice="length">Pisin kala (cm)</span><input id="ice-catch-length" type="number" inputmode="decimal" min="0.1" max="300" step="0.1"></label>
+      </div>
+      <label><span data-ice="hole">Reikä</span><select id="ice-catch-hole"></select></label>
+      <label><span data-ice="lure">Pilkkiviehe</span><input id="ice-catch-lure" maxlength="80"></label>
+      <label><span data-ice="notes">Muistiinpanot</span><textarea id="ice-catch-notes" rows="2" maxlength="280"></textarea></label>
+      <div class="ice-dialog-actions"><button type="button" class="ice-btn ice-danger" id="ice-delete-catch" hidden data-ice="remove">Poista</button><button type="submit" class="ice-btn ice-primary" data-ice="saveCatch">Tallenna saalis</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

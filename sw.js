@@ -1,10 +1,17 @@
-const CACHE_VERSION = 'v17';
+const CACHE_VERSION = 'v18';
 const CACHE_NAME = `fastfishing-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
   '/index.html',
   '/404.html',
   '/app.js',
   '/app-ui.css',
+  '/pilkki.html',
+  '/ice.css',
+  '/ice.js',
+  '/ice-data.js',
+  '/static-theme.js',
+  '/vendor/leaflet/leaflet.css',
+  '/vendor/leaflet/leaflet.js',
   '/feed-config.js',
   '/manifest.json',
   '/favicon.ico',

@@ -50,6 +50,7 @@ const GOOGLE_ADS_FRAMES = [
 const OPEN_DATA_CONNECT = [
   'https://api.fastfishin.com',
   'https://api.open-meteo.com',
+  'https://opendata.fmi.fi',
   'https://marine-api.open-meteo.com',
   'https://nominatim.openstreetmap.org',
   'https://overpass-api.de',

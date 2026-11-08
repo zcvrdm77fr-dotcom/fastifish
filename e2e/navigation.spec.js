@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 test('primary navigation and fishing score copy stay consistent', async ({ page }, testInfo) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'FastFishing', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Kalakeli nyt', exact: true })).toBeVisible();
   await expect(page.getByText('7 vuorokauden kalakeliennuste', { exact: true })).toBeVisible();
   await expect(page.getByText('7 vuorokauden syöntiennuste', { exact: true })).toHaveCount(0);
 

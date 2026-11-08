@@ -364,3 +364,29 @@ html[data-theme="dark"] .section-head { padding-top: 10px; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+.ff-ice-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 6px 11px;
+  border: 1px solid #a8cbdc;
+  border-radius: 999px;
+  background: #e0f1fa;
+  color: #174f6b;
+  font-size: .86rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.ff-ice-link:hover { background: #cce9f7; }
+.ff-ice-link svg { flex: none; }
+html[data-theme="dark"] .ff-ice-link { border-color: #42647a; background: #203f54; color: #baeefa; }
+html[data-theme="dark"] .ff-ice-link:hover { background: #2a5069; }
+
+@media (681px <= width <= 880px) {
+  .topbar .nav { flex-wrap: wrap; row-gap: 0; padding-top: 5px; }
+  .topbar .tabs { order: 1; flex-basis: 100%; min-height: 42px; }
+}
