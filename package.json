@@ -26,12 +26,12 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "multer": "2.3.0",
+    "multer": "2.5.0",
     "nsfwjs": "^4.3.0",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.5"
   },
   "overrides": {
-    "qs": "6.16.0"
+    "qs": "6.16.1"
   },
   "engines": {
     "node": ">=22"
