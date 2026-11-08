@@ -439,7 +439,8 @@ async function checkLakeDepth() {
   depthRequest = request;
   const display = byId('ice-depth-reading');
   const { lat, lng } = mapCenter();
-  const gap = .0002;
+  // Keep the feature-info request within the published layer’s visible scale.
+  const gap = .004;
   const params = new URLSearchParams({
     service: 'WMS', version: '1.1.1', request: 'GetFeatureInfo',
     layers: 'EL.Syvyysalue', query_layers: 'EL.Syvyysalue', styles: '', srs: 'EPSG:4326',

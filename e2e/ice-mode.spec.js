@@ -99,8 +99,11 @@ test('depth layers switch on the hole map and a lake depth lookup uses the selec
   const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aYt8AAAAASUVORK5CYII=', 'base64');
   await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/png', body: pixel }));
   await page.route('https://paikkatiedot.ymparisto.fi/geoserver/inspire_el/wms?**', route => {
-    if (new URL(route.request().url()).searchParams.get('request') === 'GetFeatureInfo') {
-      return route.fulfill({ json: { features: [{ properties: { syvyysvali_m: '3-6' } }] } });
+    const params = new URL(route.request().url()).searchParams;
+    if (params.get('request') === 'GetFeatureInfo') {
+      const [west, , east] = params.get('bbox').split(',').map(Number);
+      const features = east - west >= .006 ? [{ properties: { syvyysvali_m: '3-6' } }] : [];
+      return route.fulfill({ json: { features } });
     }
     return route.fulfill({ contentType: 'image/png', body: pixel });
   });
