@@ -39,7 +39,16 @@ test('winter mode saves a hole and its catch locally and reopens the journal off
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   await context.setOffline(true);
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await expect(page.getByText('You’re offline.', { exact: false })).toBeVisible();
+  const reachedNetwork = await page.evaluate(async () => {
+    try {
+      await fetch('/llms.txt?ice-offline-check=1', { cache: 'no-store' });
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  expect(reachedNetwork).toBe(false);
+  await expect(page.getByRole('heading', { name: 'Perch × 2' })).toBeVisible();
   await expect(page.getByText(/Kaislikon reuna · Morripilkki/)).toBeVisible();
   await page.getByRole('link', { name: 'Hole map', exact: true }).click();
   await expect(page.getByRole('heading', { name: '1 · Kaislikon reuna' })).toBeVisible();
