@@ -122,6 +122,15 @@
 
     <section class="ice-panel" id="suunnittele" aria-labelledby="ice-plan-title">
       <div class="ice-heading"><div><p class="ice-kicker" data-ice="beforeTrip">Ennen reissua</p><h2 id="ice-plan-title" tabindex="-1" data-ice="planTitle">Keli ja jäätilanne</h2></div></div>
+      <section class="ice-card ice-score" aria-labelledby="ice-score-title">
+        <div class="ice-card-heading ice-card-split">
+          <div><p class="ice-kicker" data-ice="scoreKicker">Pilkkikeli</p><h3 id="ice-score-title" data-ice="scoreTitle">Kelimittari</h3></div>
+          <label class="ice-score-species"><span data-ice="target">Kohdekala</span><select id="ice-score-species"></select></label>
+        </div>
+        <div id="ice-score-result" aria-live="polite"></div>
+        <p class="ice-muted" id="ice-score-empty" data-ice="scoreEmpty">Hae paikkakunta tai valitse piste kartalta, niin saat pilkkikelipisteet.</p>
+        <p class="ice-muted ice-score-note" data-ice="scoreNote">Suuntaa-antava arvio pilkkikelistä. Tarkista jään kantavuus erikseen.</p>
+      </section>
       <div class="ice-plan-grid">
         <section class="ice-card ice-weather" aria-labelledby="ice-weather-title">
           <div class="ice-card-heading"><span class="ice-feature-icon"><svg aria-hidden="true"><use href="#i-sun"></use></svg></span><div><p class="ice-kicker" data-ice="weatherKicker">Sääennuste</p><h3 id="ice-weather-title" data-ice="weatherTitle">Pilkkikeli</h3></div></div>
@@ -161,6 +170,16 @@
     <section class="ice-panel" id="kartta" aria-labelledby="ice-map-title">
       <div class="ice-heading"><div><p class="ice-kicker" data-ice="onIce">Reissun aikana</p><h2 id="ice-map-title" tabindex="-1" data-ice="map">Reikäkartta</h2><p data-ice="mapIntro">Tallenna reiän paikka, veden syvyys ja omat muistiinpanot.</p></div></div>
       <div class="ice-card ice-map-card">
+        <div class="ice-map-tools">
+          <label class="ice-layer-label"><span data-ice="mapLayers">Karttataso</span>
+            <select id="ice-depth-layer">
+              <option value="base" data-ice="mapBase">Peruskartta</option>
+              <option value="lakes" data-ice="mapLakes" selected>Järvien syvyydet</option>
+              <option value="sea" data-ice="mapSea">Meren syvyydet</option>
+            </select>
+          </label>
+          <button type="button" class="ice-btn ice-secondary" id="ice-expand-map" aria-pressed="false" data-ice="mapExpand">Suuri kartta</button>
+        </div>
         <div class="ice-map-wrap">
           <div id="ice-map" tabindex="0" role="region" aria-label="Pilkkireikien kartta" data-ice-label="mapLabel"></div>
           <span class="ice-crosshair" aria-hidden="true"></span>
@@ -173,6 +192,9 @@
           </div>
         </div>
         <div class="ice-map-extra">
+          <p class="ice-muted ice-status" id="ice-depth-status" role="status"></p>
+          <button type="button" class="ice-btn ice-quiet" id="ice-depth-check" hidden data-ice="depthCheck">Syvyys kartan pisteessä</button>
+          <p class="ice-depth-reading ice-status" id="ice-depth-reading" role="status"></p>
           <button type="button" class="ice-btn ice-quiet" id="ice-map-weather" data-ice="mapWeather">Sää tähän pisteeseen</button>
           <p class="ice-muted ice-status" id="ice-map-status" role="status"></p>
         </div>

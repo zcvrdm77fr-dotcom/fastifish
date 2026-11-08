@@ -310,3 +310,32 @@ html[data-theme="dark"] .ice-moon, html[data-theme="light"] .ice-sun { display: 
   .ice-heading { align-items: start; flex-direction: column; gap: 11px; margin-bottom: 13px; }
   .ice-gear-list, .ice-guide-picks { grid-template-columns: 1fr; }
 }
+
+.ice-score { margin-bottom: 16px; }
+.ice-score-species { display: grid; gap: 3px; font-size: .82rem; color: var(--ice-dim); }
+.ice-score-species select { min-height: 42px; padding: 5px 9px; border: 1px solid var(--ice-line); border-radius: 9px; background: var(--ice-bg); color: var(--ice-text); }
+.ice-score-summary { display: flex; align-items: center; gap: 17px; }
+.ice-score-dial { display: grid; justify-content: center; align-content: center; position: relative; isolation: isolate; width: 101px; height: 101px; flex: none; text-align: center; border-radius: 50%; background: conic-gradient(var(--ice-blue) var(--score-angle), var(--ice-sub) 0); }
+.ice-score-dial::before { content: ""; position: absolute; inset: 8px; z-index: -1; border-radius: 50%; background: var(--ice-card); }
+.ice-score-dial strong { font-size: 1.9rem; line-height: 1; }
+.ice-score-dial span { font-size: .75rem; color: var(--ice-dim); }
+.ice-score-best { margin-top: 10px; color: var(--ice-blue); font-weight: 700; }
+.ice-score-hours { margin-top: 9px; }
+.ice-score-hours summary { cursor: pointer; }
+.ice-score-hours ol { display: grid; gap: 6px; max-width: 440px; padding: 0; list-style: none; }
+.ice-score-hours li { display: grid; grid-template-columns: 3.6em minmax(0, 1fr) 2em; align-items: center; gap: 9px; }
+.ice-score-hours meter { width: 100%; grid-column: 2; }
+.ice-score-hours li strong { grid-column: 3; }
+.ice-score-note { margin-top: 10px; }
+
+.ice-map-tools, .ice-layer-label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ice-map-tools { justify-content: space-between; padding: 8px 12px; }
+.ice-layer-label { color: var(--ice-dim); font-size: .86rem; }
+.ice-layer-label select { min-height: 44px; padding-inline: 8px; border: 1px solid var(--ice-line); border-radius: 9px; background: var(--ice-sub); color: var(--ice-text); }
+.ice-depth-reading { color: var(--ice-blue); font-weight: 700; }
+.ice-crosshair { background: none; }
+.ice-map-expanded { overflow: hidden; }
+.ice-map-expanded .ice-map-card { position: fixed; inset: 0; z-index: 25; display: flex; flex-direction: column; border-radius: 0; overflow: auto; }
+.ice-map-expanded .ice-map-wrap { min-height: 220px; flex: 1; }
+.ice-map-expanded #ice-map { height: 100%; }
+#ice-expand-map[aria-pressed="true"] { border-color: var(--ice-blue); color: var(--ice-blue); }

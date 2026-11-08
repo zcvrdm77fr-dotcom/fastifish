@@ -74,7 +74,7 @@ test('winter forecast handles missing fields and unresolved towns while keeping 
     }
     await route.fulfill({
       contentType: 'application/xml',
-      body: `<root xmlns:f="http://xml.fmi.fi/schema/wfs/2.0" xmlns:g="http://www.opengis.net/gml/3.2">${reading('Temperature', -6)}${reading('FeelsLike', -9)}${reading('WindSpeedMS', 3)}${reading('WindGust', 'NaN')}</root>`
+      body: `<root xmlns:f="http://xml.fmi.fi/schema/wfs/2.0" xmlns:g="http://www.opengis.net/gml/3.2">${reading('Temperature', -6)}${reading('FeelsLike', -9)}${reading('WindSpeedMS', 3)}${reading('TotalCloudCover', 60)}${reading('WindGust', 'NaN')}</root>`
     });
   });
   await page.goto('/pilkki.html');
@@ -82,10 +82,55 @@ test('winter forecast handles missing fields and unresolved towns while keeping 
   await page.getByRole('button', { name: 'Hae', exact: true }).click();
   await expect(page.getByText('Tampere', { exact: true })).toBeVisible();
   await expect(page.getByText('−6 °C', { exact: true })).toBeVisible();
+  const score = page.getByRole('region', { name: 'Kelimittari' });
+  await expect(score.getByText('/ 100', { exact: true })).toBeVisible();
+  await score.getByLabel('Kohdekala').selectOption('burbot');
+  await score.getByText('Tuntikohtaiset kelipisteet').click();
+  await expect(score.getByRole('meter')).toHaveCount(1);
   await expect(page.getByRole('region', { name: 'Pilkkikeli' }).getByText('—', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: /Järvien jäätilanne/ })).toHaveAttribute('href', 'https://www.vesi.fi/jaatilanne/');
   await page.getByLabel('Paikkakunta').fill('tuntematon');
   await page.getByRole('button', { name: 'Hae', exact: true }).click();
   await expect(page.getByText(/Paikkakuntaa ei löytynyt/)).toBeVisible();
   await expect(page.getByText('−6 °C', { exact: true })).toBeHidden();
+});
+
+test('depth layers switch on the hole map and a lake depth lookup uses the selected point', async ({ page }) => {
+  const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aYt8AAAAASUVORK5CYII=', 'base64');
+  await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ contentType: 'image/png', body: pixel }));
+  await page.route('https://paikkatiedot.ymparisto.fi/geoserver/inspire_el/wms?**', route => {
+    const params = new URL(route.request().url()).searchParams;
+    if (params.get('request') === 'GetFeatureInfo') {
+      const [west, , east] = params.get('bbox').split(',').map(Number);
+      const features = east - west >= .006 ? [{ properties: { syvyysvali_m: '3-6' } }] : [];
+      return route.fulfill({ json: { features } });
+    }
+    return route.fulfill({ contentType: 'image/png', body: pixel });
+  });
+  await page.route('https://ows.emodnet-bathymetry.eu/wms?**', route => route.fulfill({ contentType: 'image/png', body: pixel }));
+  await page.goto('/pilkki.html#kartta');
+  await expect(page.getByText('Lähennä karttaa nähdäksesi syvyystason.')).toBeVisible();
+  await page.route('https://opendata.fmi.fi/wfs?**', route => route.fulfill({
+    contentType: 'application/xml',
+    body: `<root xmlns:f="http://xml.fmi.fi/schema/wfs/2.0" xmlns:g="http://www.opengis.net/gml/3.2">
+      <f:BsWfsElement><g:pos>61.4225 23.0345</g:pos><f:Time>${new Date().toISOString()}</f:Time>
+      <f:ParameterName>Temperature</f:ParameterName><f:ParameterValue>-5</f:ParameterValue></f:BsWfsElement>
+    </root>`
+  }));
+  await page.getByRole('link', { name: 'Suunnittele', exact: true }).click();
+  await page.getByLabel('Paikkakunta').fill('Sastamala');
+  await page.getByRole('button', { name: 'Hae', exact: true }).click();
+  await expect(page.getByText('−5 °C', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Reikäkartta', exact: true }).click();
+  await page.getByRole('button', { name: 'Syvyys kartan pisteessä' }).click();
+  await expect(page.getByText('Kartta-aineiston syvyysväli 3–6 m')).toBeVisible();
+  const sea = page.waitForRequest(request => request.url().includes('ows.emodnet-bathymetry.eu/wms'));
+  await page.getByLabel('Karttataso').selectOption('sea');
+  await sea;
+  await expect(page.getByText(/EMODnetin merisyvyydet/)).toBeVisible();
+  await expect(page.getByText(/Kartta-aineiston syvyysväli/)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Suuri kartta' }).click();
+  await expect(page.getByRole('button', { name: 'Suuri kartta' })).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: 'Suuri kartta' })).toHaveAttribute('aria-pressed', 'false');
 });
